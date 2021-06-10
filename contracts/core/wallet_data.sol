@@ -16,6 +16,9 @@ library Core {
     }
 
     struct Wallet { 
+        address owner;
+        bool locked;
+
         bytes16 rootHash;
         uint8 merkelHeight;
         uint timePeriod; 

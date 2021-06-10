@@ -1,5 +1,6 @@
 pragma solidity ^0.7.6;
 import "../core/wallet_data.sol";
+import "htop_util.sol";
 
 library Recovery {
 
@@ -7,17 +8,20 @@ library Recovery {
         "startRecovery(bytes16, uint8, uint, uint)"
     );
 
-    function startRecovery(Core.Wallet storage wallet_, bytes16 rootHash_, uint8 merkelHeight_, uint timePeriod_, 
-                uint timeOffset_, bytes calldata signatures_) public {
-        
-        uint requiredSignatures = ceil(wallet_.guardians.length, 2);
-        require(requiredSignatures * 65 == signatures_.length, "Wrong number of signatures");
+    function startRecovery(Core.Wallet storage wallet_, address newOwner, bytes16[] calldata confirmMaterial, bytes20 sides , bytes calldata signatures_) public {
+        if (confirmMaterial.length != 0) {
+            require(_reduceConfirmMaterial(confirmMaterial, sides) == wallet_.rootHash, "INCORRECT PROOF");
+            wallet_.owner = newOwner;
+        }
 
-        bytes32 signHash = getSignHash(rootHash_, merkelHeight_, timePeriod_, timeOffset_);
-        require(validateSignatures(wallet_, signHash, signatures_), "Invalid signatures");
+        // uint requiredSignatures = ceil(wallet_.guardians.length, 2);
+        // require(requiredSignatures * 65 == signatures_.length, "Wrong number of signatures");
+
+        // bytes32 signHash = getSignHash(rootHash_, merkelHeight_, timePeriod_, timeOffset_);
+        // require(validateSignatures(wallet_, signHash, signatures_), "Invalid signatures");
 
         // queue it for next 24hrs
-        wallet_.recovery = Core.RecoveryInfo(rootHash_, merkelHeight_, timePeriod_, timeOffset_, block.timestamp + 86400);
+        //wallet_.recovery = Core.RecoveryInfo(rootHash_, merkelHeight_, timePeriod_, timeOffset_, block.timestamp + 86400);
     }
 
     function finalizeRecovery(Core.Wallet storage wallet_) public {

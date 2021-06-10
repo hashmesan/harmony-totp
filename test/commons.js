@@ -12,6 +12,7 @@ function h16a(a) { return web3.utils.soliditySha3(a).substring(0, 34); }
 function padNumber(x) { return web3.utils.padRight(x, 32); }
 function getTOTP(counter, duration) { return totp("JBSWY3DPEHPK3PXP", {period: duration, counter: counter}); }
 
+// time-based OTP
 function getLeavesAndRoot(timeOffset, duration, depth) {
     var leaves = [];
     // 1year / 300 ~= 105120
@@ -28,6 +29,7 @@ function getLeavesAndRoot(timeOffset, duration, depth) {
     const root = merkle.reduceMT(leaves);
     return {startCounter, leaves, root};
 }
+
 async function createWallet(timeOffset, duration, depth, drainAddr) {
     const {startCounter, leaves, root} = getLeavesAndRoot(timeOffset, duration, depth);
 

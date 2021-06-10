@@ -18,27 +18,34 @@ contract TOTPWallet {
     event WalletTransfer(address to, uint amount);
     event Deposit(address indexed sender, uint value);
 
-    constructor(bytes16 rootHash_, uint8 merkelHeight_, uint timePeriod_, 
-                uint timeOffset_, address payable drainAddr_, uint dailyLimit_)
+    constructor(address owner_, bytes16 rootHash_, uint8 merkelHeight_, address payable drainAddr_, uint dailyLimit_)
     {
+        wallet.owner = owner_;
         wallet.rootHash = rootHash_;
         wallet.merkelHeight = merkelHeight_;
-        wallet.timePeriod = timePeriod_;
-        wallet.timeOffset = timeOffset_;
         wallet.drainAddr = drainAddr_;
         wallet.dailyLimit = dailyLimit_;
 
     }   
-
-    modifier onlyValidTOTP(bytes16[] memory confirmMaterial, bytes20 sides) 
+    modifier onlyFromWalletOrOwnerWhenUnlocked()
     {
-        require(_deriveChildTreeIdx(sides) == getCurrentCounter(), "unexpected counter value"); 
-        bytes16 reduced = _reduceConfirmMaterial(confirmMaterial, sides);
-        require(reduced==wallet.rootHash, "unexpected proof");
+        require(
+            msg.sender == address(this) ||
+            (msg.sender == wallet.owner && !wallet.locked),
+             "NOT_FROM_WALLET_OR_OWNER_OR_WALLET_LOCKED"
+        );
         _;
     }
 
-    function makeTransfer(address payable to, uint amount, bytes16[] calldata confirmMaterial, bytes20 sides) external onlyValidTOTP(confirmMaterial, sides) 
+    modifier onlyValidHOTP(bytes16[] memory confirmMaterial, bytes20 sides) 
+    {
+        require(_deriveChildTreeIdx(sides) == getCurrentCounter(), "unexpected counter value"); 
+        bytes16 reduced = _reduceConfirmMaterial(confirmMaterial, sides);
+        require(reduced==wallet.rootHash, "UNEXPECTED PROOF");
+        _;
+    }
+
+    function makeTransfer(address payable to, uint amount) external onlyFromWalletOrOwnerWhenUnlocked() 
     {
         require(wallet.isUnderLimit(amount), "over withdrawal limit");
         require(address(this).balance >= amount, "not enough balance");  
@@ -49,7 +56,7 @@ contract TOTPWallet {
     }
 
     //TODO: Drain ERC20 tokens too
-    function drain(bytes16[] calldata confirmMaterial, bytes20 sides) external onlyValidTOTP(confirmMaterial, sides)  {
+    function drain(bytes16[] calldata confirmMaterial, bytes20 sides) external onlyFromWalletOrOwnerWhenUnlocked()  {
         wallet.drainAddr.transfer(address(this).balance);            
     }
 
@@ -64,14 +71,14 @@ contract TOTPWallet {
     //
     function addGuardian(address guardian, bytes16[] calldata confirmMaterial, bytes20 sides)
         external
-        onlyValidTOTP(confirmMaterial, sides)
+        onlyFromWalletOrOwnerWhenUnlocked()
     {
         wallet.addGuardian(guardian);
     }
 
     function revokeGuardian(address guardian, bytes16[] calldata confirmMaterial, bytes20 sides)
         external
-        onlyValidTOTP(confirmMaterial, sides)
+        onlyFromWalletOrOwnerWhenUnlocked()
     {
         wallet.revokeGuardian(guardian);
     }
@@ -95,10 +102,10 @@ contract TOTPWallet {
     //
     // Recovery functions
     //
-
-    function startRecovery(bytes16 rootHash_, uint8 merkelHeight_, uint timePeriod_, 
-                uint timeOffset_, bytes calldata signatures_) external {
-        wallet.startRecovery(rootHash_, merkelHeight_, timePeriod_, timeOffset_, signatures_);
+    // In default setup with only HTOP setup, wallet recovery is done on its own.
+    // In a more secure setup with HTOP + guardians, HTOP is considered as 1 guardian.
+    function startRecovery(address newOwner, bytes16[] calldata confirmMaterial, bytes20 sides, bytes calldata signatures_) external {
+        wallet.startRecovery(newOwner, confirmMaterial, sides, signatures_);
     }
 
     function isRecovering() external view returns (bool) {
@@ -120,45 +127,7 @@ contract TOTPWallet {
     //
     // Utility functions
     //
-
-    // 1609459200 is 2021-01-01 00:00:00
-    function getCurrentCounter() public view returns (uint) {
-        return (block.timestamp-wallet.timeOffset)/wallet.timePeriod;
-    }
-
-    function remainingTokens() public view returns (uint) {
-        // timeOffset + (DURATION*2^depth) < current time
-        //uint lastTokenExpires = timeOffset + (timePeriod * (2**treeHeight));
-        return 2**uint(wallet.merkelHeight) - getCurrentCounter();
-    }
         
-    function _deriveChildTreeIdx(bytes20 sides) private view returns (uint32) {
-        uint32 derivedIdx = 0;
-        for(uint8 i = 0 ; i <wallet.merkelHeight ; i++){
-            if(byte(0x01) == sides[i]){
-                derivedIdx |=  uint32(0x01) << i;
-            }
-        }
-        return derivedIdx;
-    }
-    
-    function _reduceConfirmMaterial(bytes16[] memory confirmMaterial, bytes20 sides) public returns (bytes16) {
-        //  and then compute h(OTP) to get the leaf of the tree
-        confirmMaterial[0] = bytes16(keccak256(abi.encodePacked(confirmMaterial[0])));
-        return _reduceAuthPath(confirmMaterial, sides);
-    }
-
-    function _reduceAuthPath(bytes16[] memory authPath, bytes20 sides) internal returns (bytes16){
-        for (uint8 i = 1; i < authPath.length ; i++) {
-            if(byte(0x00) == sides[i - 1]){
-                authPath[0] = bytes16(keccak256(abi.encodePacked(authPath[0], authPath[i])));
-            } else{
-                authPath[0] = bytes16(keccak256(abi.encodePacked(authPath[i], authPath[0])));
-            }
-        }
-        //emit DebugEvent(authPath[0]);
-        return authPath[0];
-    }
 
 
     /// @dev Fallback function allows to deposit ether.
