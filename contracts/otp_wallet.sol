@@ -18,7 +18,7 @@ contract TOTPWallet {
     event WalletTransfer(address to, uint amount);
     event Deposit(address indexed sender, uint value);
 
-    constructor(address owner_, bytes16 rootHash_, uint8 merkelHeight_, address payable drainAddr_, uint dailyLimit_)
+    constructor(address owner_, bytes32 rootHash_, uint8 merkelHeight_, address payable drainAddr_, uint dailyLimit_)
     {
         wallet.owner = owner_;
         wallet.rootHash = rootHash_;
@@ -37,10 +37,12 @@ contract TOTPWallet {
         _;
     }
 
-    modifier onlyValidHOTP(bytes16[] memory confirmMaterial, bytes20 sides) 
+
+    // confirmMaterial contains OTP + intermediatory hashes + sides
+    modifier onlyValidTOTP(bytes32[] memory confirmMaterial) 
     {
-        require(_deriveChildTreeIdx(sides) == getCurrentCounter(), "unexpected counter value"); 
-        bytes16 reduced = _reduceConfirmMaterial(confirmMaterial, sides);
+        //require(_deriveChildTreeIdx(sides) == getCurrentCounter(), "unexpected counter value"); 
+        bytes32 reduced = Recovery._reduceConfirmMaterial(confirmMaterial);
         require(reduced==wallet.rootHash, "UNEXPECTED PROOF");
         _;
     }
@@ -55,6 +57,20 @@ contract TOTPWallet {
         emit WalletTransfer(to, amount);             
     }
 
+    function getOwner()  public
+        view
+        returns (address) 
+    {
+        return wallet.owner;
+    }
+
+    function getCounter()  public
+        view
+        returns (uint) 
+    {
+        return wallet.counter;
+    }
+
     //TODO: Drain ERC20 tokens too
     function drain(bytes16[] calldata confirmMaterial, bytes20 sides) external onlyFromWalletOrOwnerWhenUnlocked()  {
         wallet.drainAddr.transfer(address(this).balance);            
@@ -62,7 +78,7 @@ contract TOTPWallet {
 
     function drain() external {
         require(msg.sender == wallet.drainAddr, "sender != drain");        
-        require(remainingTokens() <= 0, "not depleted tokens");
+        // require(remainingTokens() <= 0, "not depleted tokens");
         wallet.drainAddr.transfer(address(this).balance);            
     }
 
@@ -104,20 +120,27 @@ contract TOTPWallet {
     //
     // In default setup with only HTOP setup, wallet recovery is done on its own.
     // In a more secure setup with HTOP + guardians, HTOP is considered as 1 guardian.
-    function startRecovery(address newOwner, bytes16[] calldata confirmMaterial, bytes20 sides, bytes calldata signatures_) external {
-        wallet.startRecovery(newOwner, confirmMaterial, sides, signatures_);
+    function startRecoverCommit(bytes32 commitHash) external {
+        wallet.commitHash[commitHash] = true;
+    }
+
+    function startRecoveryReveal(address newOwner, bytes32[] calldata confirmMaterial) external {
+        bytes32 hash = keccak256(abi.encodePacked(newOwner, confirmMaterial[0]));
+        require(wallet.commitHash[hash], "NO COMMIT");
+
+        wallet.startRecovery(newOwner, confirmMaterial);
     }
 
     function isRecovering() external view returns (bool) {
-        return wallet.recovery.rootHash != 0x0;
+        return wallet.pendingRecovery.expiration != 0;
     }
 
-    function cancelRecovery(bytes16[] calldata confirmMaterial, bytes20 sides) external onlyValidTOTP(confirmMaterial, sides) {
-        wallet.recovery = Core.RecoveryInfo(0, 0, 0, 0, 0);
+    function cancelRecovery() external onlyFromWalletOrOwnerWhenUnlocked() {
+        wallet.pendingRecovery = Core.RecoveryInfo(address(0),0);
     }
 
-    function getRecovery() external view returns (bytes16, uint8, uint, uint) {
-        return (wallet.recovery.rootHash, wallet.recovery.merkelHeight, wallet.recovery.timePeriod, wallet.recovery.timeOffset);
+    function getRecovery() external view returns (address,uint) {
+        return (wallet.pendingRecovery.newOwner, wallet.pendingRecovery.expiration);
     }
 
     function finalizeRecovery() external {
@@ -127,8 +150,6 @@ contract TOTPWallet {
     //
     // Utility functions
     //
-        
-
 
     /// @dev Fallback function allows to deposit ether.
     receive() external payable {

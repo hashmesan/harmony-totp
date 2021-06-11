@@ -8,10 +8,7 @@ library Core {
     }   
 
     struct RecoveryInfo {
-        bytes16 rootHash;
-        uint8 merkelHeight;
-        uint timePeriod; 
-        uint timeOffset;
+        address newOwner;
         uint expiration;
     }
 
@@ -19,10 +16,9 @@ library Core {
         address owner;
         bool locked;
 
-        bytes16 rootHash;
+        bytes32 rootHash;
         uint8 merkelHeight;
-        uint timePeriod; 
-        uint timeOffset;
+        uint counter;
         address payable drainAddr;
 
         // the list of guardians
@@ -37,6 +33,7 @@ library Core {
         uint spentToday;
 
         // recovery
-        RecoveryInfo recovery;
+        RecoveryInfo pendingRecovery;
+        mapping(bytes32 => bool) commitHash;
     }
 }

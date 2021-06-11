@@ -1,6 +1,5 @@
 pragma solidity ^0.7.6;
 import "../core/wallet_data.sol";
-import "htop_util.sol";
 
 library Recovery {
 
@@ -8,10 +7,11 @@ library Recovery {
         "startRecovery(bytes16, uint8, uint, uint)"
     );
 
-    function startRecovery(Core.Wallet storage wallet_, address newOwner, bytes16[] calldata confirmMaterial, bytes20 sides , bytes calldata signatures_) public {
+    function startRecovery(Core.Wallet storage wallet_, address newOwner, bytes32[] calldata confirmMaterial) public {
         if (confirmMaterial.length != 0) {
-            require(_reduceConfirmMaterial(confirmMaterial, sides) == wallet_.rootHash, "INCORRECT PROOF");
-            wallet_.owner = newOwner;
+            require(_reduceConfirmMaterial(confirmMaterial) == wallet_.rootHash, "INCORRECT PROOF");
+            wallet_.pendingRecovery = Core.RecoveryInfo(newOwner, block.timestamp + 86400);
+            wallet_.counter = wallet_counter + 1;
         }
 
         // uint requiredSignatures = ceil(wallet_.guardians.length, 2);
@@ -25,14 +25,10 @@ library Recovery {
     }
 
     function finalizeRecovery(Core.Wallet storage wallet_) public {
-        require(uint64(block.timestamp) > wallet_.recovery.expiration, "ongoing recovery period");
-
-        wallet_.rootHash = wallet_.recovery.rootHash;
-        wallet_.merkelHeight = wallet_.recovery.merkelHeight;
-        wallet_.timePeriod = wallet_.recovery.timePeriod;
-        wallet_.timeOffset = wallet_.recovery.timeOffset;
-
-        wallet_.recovery = Core.RecoveryInfo(0,0,0,0,0);
+        require(wallet_.pendingRecovery.expiration > 0, "no pending recovery");
+        require(uint64(block.timestamp) > wallet_.pendingRecovery.expiration, "ongoing recovery period");
+        wallet_.owner = wallet_.pendingRecovery.newOwner;
+        wallet_.pendingRecovery = Core.RecoveryInfo(address(0),0);
     }
 
     //
@@ -125,4 +121,36 @@ library Recovery {
         return recoveredAddress;
     }
 
+    //
+    // HOTP Verification functions
+    //
+    function _deriveChildTreeIdx(uint merkelHeight, bytes32 sides) private view returns (uint32) {
+        uint32 derivedIdx = 0;
+        for(uint8 i = 0 ; i < merkelHeight ; i++){
+            if(byte(0x01) == sides[i]){
+                derivedIdx |=  uint32(0x01) << i;
+            }
+        }
+        return derivedIdx;
+    }
+    
+    function _reduceConfirmMaterial(bytes32[] memory confirmMaterial) public returns (bytes32) {
+        //  and then compute h(OTP) to get the leaf of the tree
+        confirmMaterial[0] = keccak256(abi.encodePacked(confirmMaterial[0]));
+        bytes32 sides = confirmMaterial[confirmMaterial.length - 1];
+        return _reduceAuthPath(confirmMaterial, sides);
+    }
+
+    function _reduceAuthPath(bytes32[] memory authPath, bytes32 sides) internal returns (bytes32){
+        for (uint8 i = 1; i < authPath.length - 1; i++) {
+            if(byte(0x00) == sides[i - 1]){
+                authPath[0] = keccak256(abi.encodePacked(authPath[0], authPath[i]));
+            } else{
+                authPath[0] = keccak256(abi.encodePacked(authPath[i], authPath[0]));
+            }
+        }
+        //emit DebugEvent(authPath[0]);
+        return authPath[0];
+    }
+    
 }

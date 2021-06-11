@@ -6,32 +6,30 @@ const totp = require("../lib/totp.js");
 const merkle = require("../lib/merkle.js");
 const ethers = require("ethers");
 const ethAbi = require("web3-eth-abi");
+const NUMOFTOKENS = 5;
 
 function h16(a) { return web3.utils.soliditySha3({v: a, t: "bytes", encoding: 'hex' }).substring(0, 34); }
+function h32(a) { return web3.utils.soliditySha3(a); }
 function h16a(a) { return web3.utils.soliditySha3(a).substring(0, 34); }
-function padNumber(x) { return web3.utils.padRight(x, 32); }
-function getTOTP(counter, duration) { return totp("JBSWY3DPEHPK3PXP", {period: duration, counter: counter}); }
+function padNumber(x) { return web3.utils.padRight(x, 64); }
+function getTOTP(counter) { return totp("JBSWY3DPEHPK3PXP", {counter: counter}); }
 
-// time-based OTP
-function getLeavesAndRoot(timeOffset, duration, depth) {
+function getLeavesAndRoot(depth) {
     var leaves = [];
-    // 1year / 300 ~= 105120
-    // 2^17 = 131072
-    // 1609459200 is 2021-01-01 00:00:00 -- 
-    // to save space, we're going to start from counter above!
-    var startCounter = timeOffset / duration;
-    //console.log("Start counter=", startCounter);
-
     for ( var i=0; i < Math.pow(2, depth); i++) {
-        //console.log(i, web3.utils.padRight(getTOTP(startCounter+i),6));
-        leaves.push(h16(padNumber(web3.utils.toHex(getTOTP(startCounter+i, duration)))));
+      var token = "";
+      for(var j=0;j < NUMOFTOKENS; j++) {
+        token = token + getTOTP((i*NUMOFTOKENS)+j);
+      }
+      //console.log(token);
+      leaves.push(h32(padNumber(web3.utils.toHex(token))));
     }
     const root = merkle.reduceMT(leaves);
-    return {startCounter, leaves, root};
+    return {leaves, root};
 }
 
-async function createWallet(timeOffset, duration, depth, drainAddr) {
-    const {startCounter, leaves, root} = getLeavesAndRoot(timeOffset, duration, depth);
+async function createWallet(owner, depth, drainAddr) {
+    const {leaves, root} = getLeavesAndRoot(depth);
 
     const guardians = await Guardians.new();
     const dailyLimit = await DailyLimit.new();
@@ -40,25 +38,23 @@ async function createWallet(timeOffset, duration, depth, drainAddr) {
     await TOTPWallet.link("DailyLimit", dailyLimit.address);
     await TOTPWallet.link("Recovery", recovery.address);
     
-    var wallet = await TOTPWallet.new(root, depth, duration, timeOffset, drainAddr, web3.utils.toWei("0.01", "ether"));
+    var wallet = await TOTPWallet.new(owner, root, depth, drainAddr, web3.utils.toWei("0.01", "ether"));
 
     return {
-        startCounter,
         root,
         leaves,
         wallet
     }
 }
 
-async function getTOTPAndProof(leaves, timeOffset, duration) {
-    const { timestamp } = await web3.eth.getBlock("latest");
-    console.log("time=", timestamp);
+async function getTOTPAndProof(counter, leaves) {
+    var token = "";
+    for(var j=0;j < NUMOFTOKENS; j++) {
+      token = token + getTOTP((counter*NUMOFTOKENS)+j);
+    }
 
-    var startCounter = timeOffset / duration;
-    var currentCounter = Math.floor((timestamp - timeOffset) / duration);
-    var currentOTP = getTOTP(startCounter + currentCounter, duration);
-    var proof = merkle.getProof(leaves, currentCounter, padNumber(web3.utils.toHex(currentOTP)))
-    return proof;
+    var proof = merkle.getProof(leaves, counter, padNumber(web3.utils.toHex(token)))
+    return {token, proof};
 }
 
 
