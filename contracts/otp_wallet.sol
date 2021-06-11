@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 pragma solidity ^0.7.6;
 pragma experimental ABIEncoderV2;
 
@@ -5,12 +7,15 @@ import "./core/wallet_data.sol";
 import "./features/guardians.sol";
 import "./features/daily_limit.sol";
 import "./features/recovery.sol";
+import "./features/metatx.sol";
 
 contract TOTPWallet {
 
     using Guardians for Core.Wallet;
     using DailyLimit for Core.Wallet;
     using Recovery for Core.Wallet;
+    using MetaTx for Core.Wallet;
+
     Core.Wallet public wallet;
 
     event DebugEvent(bytes16 data);
@@ -25,7 +30,6 @@ contract TOTPWallet {
         wallet.merkelHeight = merkelHeight_;
         wallet.drainAddr = drainAddr_;
         wallet.dailyLimit = dailyLimit_;
-
     }   
     modifier onlyFromWalletOrOwnerWhenUnlocked()
     {
@@ -45,6 +49,34 @@ contract TOTPWallet {
         bytes32 reduced = Recovery._reduceConfirmMaterial(confirmMaterial);
         require(reduced==wallet.rootHash, "UNEXPECTED PROOF");
         _;
+    }
+
+    function getRequiredSignatures(bytes calldata _data) public view returns (uint8, Core.OwnerSignature) {
+        bytes4 methodId = functionPrefix(_data);
+
+        if(methodId == TOTPWallet.makeTransfer.selector) {
+            return (1, Core.OwnerSignature.Required);
+        }
+
+        revert("unknown method");
+    }    
+
+    function executeMetaTx(
+            address to, 
+            bytes   calldata data,
+            bytes   calldata signatures,
+            uint256 nonce,
+            uint256 gasPrice,
+            uint256 gasLimit,
+            address refundToken,
+            address refundAddress            
+        ) external 
+    {
+        uint8 requiredSignatures;
+        Core.OwnerSignature ownerSignatureRequirement;        
+        (requiredSignatures, ownerSignatureRequirement) = getRequiredSignatures(data);        
+
+        MetaTx.executeMetaTx(wallet, to, data, signatures, nonce, gasPrice, gasLimit, refundToken, refundAddress);
     }
 
     function makeTransfer(address payable to, uint amount) external onlyFromWalletOrOwnerWhenUnlocked() 
@@ -72,15 +104,15 @@ contract TOTPWallet {
     }
 
     //TODO: Drain ERC20 tokens too
-    function drain(bytes16[] calldata confirmMaterial, bytes20 sides) external onlyFromWalletOrOwnerWhenUnlocked()  {
-        wallet.drainAddr.transfer(address(this).balance);            
-    }
+    // function drain() external onlyFromWalletOrOwnerWhenUnlocked()  {
+    //     wallet.drainAddr.transfer(address(this).balance);            
+    // }
 
-    function drain() external {
-        require(msg.sender == wallet.drainAddr, "sender != drain");        
-        // require(remainingTokens() <= 0, "not depleted tokens");
-        wallet.drainAddr.transfer(address(this).balance);            
-    }
+    // function drain() external {
+    //     require(msg.sender == wallet.drainAddr, "sender != drain");        
+    //     // require(remainingTokens() <= 0, "not depleted tokens");
+    //     wallet.drainAddr.transfer(address(this).balance);            
+    // }
 
     //
     // Guardians functions
@@ -151,6 +183,16 @@ contract TOTPWallet {
     // Utility functions
     //
 
+    /**
+    * @notice Helper method to parse data and extract the method signature.
+    */
+    function functionPrefix(bytes memory _data) internal pure returns (bytes4 prefix) {
+        require(_data.length >= 4, "Utils: Invalid functionPrefix");
+        // solhint-disable-next-line no-inline-assembly
+        assembly {
+            prefix := mload(add(_data, 0x20))
+        }
+    }
     /// @dev Fallback function allows to deposit ether.
     receive() external payable {
         if (msg.value > 0)

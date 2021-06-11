@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 pragma solidity ^0.7.6;
 pragma experimental ABIEncoderV2;
 
@@ -10,6 +12,14 @@ library Core {
     struct RecoveryInfo {
         address newOwner;
         uint expiration;
+    }
+
+    enum OwnerSignature {
+        Anyone,             // Anyone
+        Required,           // Owner required
+        Optional,           // Owner and/or guardians
+        Disallowed,         // Guardians only
+        Session             // Session only
     }
 
     struct Wallet { 

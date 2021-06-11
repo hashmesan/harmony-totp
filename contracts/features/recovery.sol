@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 pragma solidity ^0.7.6;
 import "../core/wallet_data.sol";
 
@@ -7,11 +9,15 @@ library Recovery {
         "startRecovery(bytes16, uint8, uint, uint)"
     );
 
+    /* 1 of 1 (HOTP)
+     * 2 of 2 (HOTP + Guardian)
+     * 2 of 3 (2 guardians or HOTP + Guardian)
+     */
     function startRecovery(Core.Wallet storage wallet_, address newOwner, bytes32[] calldata confirmMaterial) public {
         if (confirmMaterial.length != 0) {
             require(_reduceConfirmMaterial(confirmMaterial) == wallet_.rootHash, "INCORRECT PROOF");
             wallet_.pendingRecovery = Core.RecoveryInfo(newOwner, block.timestamp + 86400);
-            wallet_.counter = wallet_counter + 1;
+            wallet_.counter = wallet_.counter + 1;
         }
 
         // uint requiredSignatures = ceil(wallet_.guardians.length, 2);
@@ -24,11 +30,19 @@ library Recovery {
         //wallet_.recovery = Core.RecoveryInfo(rootHash_, merkelHeight_, timePeriod_, timeOffset_, block.timestamp + 86400);
     }
 
+    function startRecovery(Core.Wallet storage wallet_, address newOwner) public {
+        require(wallet_.guardians.length >= 3, "ONLY_3_GUARDIANS_OR_MORE_CAN_START");
+    }
+
     function finalizeRecovery(Core.Wallet storage wallet_) public {
         require(wallet_.pendingRecovery.expiration > 0, "no pending recovery");
         require(uint64(block.timestamp) > wallet_.pendingRecovery.expiration, "ongoing recovery period");
         wallet_.owner = wallet_.pendingRecovery.newOwner;
         wallet_.pendingRecovery = Core.RecoveryInfo(address(0),0);
+    }
+
+    function approveRecovery(Core.Wallet storage wallet_, address newOwner) public {
+        
     }
 
     //
@@ -47,7 +61,7 @@ library Recovery {
         }
     }
 
-    function validateSignatures(Core.Wallet storage wallet_, bytes32 _signHash, bytes memory _signatures) internal view returns (bool)
+    function validateSignatures(Core.Wallet storage wallet_, bytes32 _signHash, bytes memory _signatures, Core.OwnerSignature ownerSignatureRequirement) internal view returns (bool)
     {
         if (_signatures.length == 0) {
             return true;
