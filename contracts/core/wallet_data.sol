@@ -22,6 +22,11 @@ library Core {
         Session             // Session only
     }
 
+    struct SignatureRequirement {
+        uint8 requiredSignatures;
+        OwnerSignature ownerSignatureRequirement;
+    }
+
     struct Wallet { 
         address owner;
         bool locked;

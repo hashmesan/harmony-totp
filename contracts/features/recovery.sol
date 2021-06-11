@@ -60,6 +60,9 @@ library Recovery {
             return c + 1;
         }
     }
+    function _isOwner(Core.Wallet storage wallet_, address signer) internal view returns (bool) {
+        return wallet_.owner == signer;
+    }
 
     function validateSignatures(Core.Wallet storage wallet_, bytes32 _signHash, bytes memory _signatures, Core.OwnerSignature ownerSignatureRequirement) internal view returns (bool)
     {
@@ -72,6 +75,21 @@ library Recovery {
 
         for (uint256 i = 0; i < _signatures.length / 65; i++) {
             address signer = recoverSigner(_signHash, _signatures, i);
+
+            if (i == 0) {
+                if (ownerSignatureRequirement == Core.OwnerSignature.Required) {
+                    // First signer must be owner
+                    if (_isOwner(wallet_, signer)) {
+                        continue;
+                    }
+                    return false;
+                } else if (ownerSignatureRequirement == Core.OwnerSignature.Optional) {
+                    // First signer can be owner
+                    if (_isOwner(wallet_, signer)) {
+                        continue;
+                    }
+                }
+            }
 
             if (signer <= lastSigner) {
                 return false; // Signers must be different

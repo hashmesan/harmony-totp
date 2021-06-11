@@ -62,7 +62,6 @@ contract TOTPWallet {
     }    
 
     function executeMetaTx(
-            address to, 
             bytes   calldata data,
             bytes   calldata signatures,
             uint256 nonce,
@@ -73,10 +72,10 @@ contract TOTPWallet {
         ) external 
     {
         uint8 requiredSignatures;
-        Core.OwnerSignature ownerSignatureRequirement;        
-        (requiredSignatures, ownerSignatureRequirement) = getRequiredSignatures(data);        
+        Core.SignatureRequirement memory sigRequirement;        
+        (sigRequirement.requiredSignatures, sigRequirement.ownerSignatureRequirement) = getRequiredSignatures(data);        
 
-        MetaTx.executeMetaTx(wallet, to, data, signatures, nonce, gasPrice, gasLimit, refundToken, refundAddress);
+        MetaTx.executeMetaTx(wallet, address(this), data, signatures, nonce, gasPrice, gasLimit, refundAddress, sigRequirement);
     }
 
     function makeTransfer(address payable to, uint amount) external onlyFromWalletOrOwnerWhenUnlocked() 

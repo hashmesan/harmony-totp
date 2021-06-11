@@ -2,6 +2,7 @@ const TOTPWallet = artifacts.require("TOTPWallet");
 const Guardians = artifacts.require("Guardians");
 const DailyLimit = artifacts.require("DailyLimit");
 const Recovery = artifacts.require("Recovery");
+const MetaTx = artifacts.require("MetaTx");
 const totp = require("../lib/totp.js");
 const merkle = require("../lib/merkle.js");
 const ethers = require("ethers");
@@ -34,10 +35,13 @@ async function createWallet(owner, depth, drainAddr) {
     const guardians = await Guardians.new();
     const dailyLimit = await DailyLimit.new();
     const recovery = await Recovery.new();
+    const metatx = await MetaTx.new();
+
     await TOTPWallet.link("Guardians", guardians.address);
     await TOTPWallet.link("DailyLimit", dailyLimit.address);
     await TOTPWallet.link("Recovery", recovery.address);
-    
+    await TOTPWallet.link("MetaTx", metatx.address);
+
     var wallet = await TOTPWallet.new(owner, root, depth, drainAddr, web3.utils.toWei("0.01", "ether"));
 
     return {
@@ -71,6 +75,45 @@ async function signRecoveryOffchain(signers, rootHash, merkelHeight, timePeriod,
 
     return joinedSignatures;
   }
+
+ async function signOffchain2(signers, from, value, data, chainId, nonce, gasPrice, gasLimit, refundToken, refundAddress) {
+    const messageHash = getMessageHash2(from, value, data, chainId, nonce, gasPrice, gasLimit, refundToken, refundAddress);
+    const signatures = await Promise.all(
+      signers.map(async (signer) => {
+        const sig = await signMessage(messageHash, signer);
+        return sig.slice(2);
+      })
+    );
+    const joinedSignatures = `0x${signatures.join("")}`;
+
+    return joinedSignatures;
+  }
+
+async function getNonceForRelay() {
+    const block = await web3.eth.getBlockNumber();
+    const timestamp = new Date().getTime();
+    return `0x${ethers.utils.hexZeroPad(ethers.utils.hexlify(block), 16)
+      .slice(2)}${ethers.utils.hexZeroPad(ethers.utils.hexlify(timestamp), 16).slice(2)}`;
+  }
+
+function getMessageHash2(from, value, data, chainId, nonce, gasPrice, gasLimit, refundToken, refundAddress) {
+  const message = `0x${[
+    "0x19",
+    "0x00",
+    from,
+    ethers.utils.hexZeroPad(ethers.utils.hexlify(value), 32),
+    data,
+    ethers.utils.hexZeroPad(ethers.utils.hexlify(chainId), 32),
+    nonce,
+    ethers.utils.hexZeroPad(ethers.utils.hexlify(gasPrice), 32),
+    ethers.utils.hexZeroPad(ethers.utils.hexlify(gasLimit), 32),
+    refundToken,
+    refundAddress,
+  ].map((hex) => hex.slice(2)).join("")}`;
+
+  const messageHash = ethers.utils.keccak256(message);
+  return messageHash;
+}
 
 function getMessageHash(rootHash, merkelHeight, timePeriod, timeOffset) {
     const TYPE_STR = "startRecovery(bytes16, uint8, uint, uint)";
@@ -162,5 +205,8 @@ module.exports = {
     getTOTPAndProof,
     getLeavesAndRoot,
     signRecoveryOffchain,
-    increaseTime
+    increaseTime,
+    getMessageHash2,
+    signOffchain2,
+    getNonceForRelay
 }
