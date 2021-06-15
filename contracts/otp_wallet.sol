@@ -22,10 +22,12 @@ contract TOTPWallet {
     event WalletTransfer(address to, uint amount);
     event Deposit(address indexed sender, uint value);
 
-    constructor(address owner_, bytes32 rootHash_, uint8 merkelHeight_, address payable drainAddr_, uint dailyLimit_)
+    constructor(address owner_, bytes32[] memory rootHash_, uint8 merkelHeight_, address payable drainAddr_, uint dailyLimit_)
     {
         wallet.owner = owner_;
-        wallet.rootHash = rootHash_;
+        for (uint32 i = 0; i < rootHash_.length; i++) {
+            wallet.rootHash.push(rootHash_[i]);
+        }        
         wallet.merkelHeight = merkelHeight_;
         wallet.drainAddr = drainAddr_;
         wallet.dailyLimit = dailyLimit_;
@@ -50,7 +52,14 @@ contract TOTPWallet {
     {
         //require(_deriveChildTreeIdx(sides) == getCurrentCounter(), "unexpected counter value"); 
         bytes32 reduced = Recovery._reduceConfirmMaterial(confirmMaterial);
-        require(reduced==wallet.rootHash, "UNEXPECTED PROOF");
+
+        bool foundMatch = false;
+        for (uint32 i = 0; i < wallet.rootHash.length; i++) {
+            if(reduced==wallet.rootHash[i]) {
+                foundMatch = true;
+            }
+        }
+        require(foundMatch, "UNEXPECTED PROOF");
         _;
     }
 
@@ -187,10 +196,9 @@ contract TOTPWallet {
         wallet.commitHash[commitHash] = true;
     }
 
-    function startRecoveryReveal(address newOwner, bytes32[] calldata confirmMaterial)  onlySelf() external {
+    function startRecoveryReveal(address newOwner, bytes32[] calldata confirmMaterial)  onlySelf() onlyValidTOTP(confirmMaterial) external {
         bytes32 hash = keccak256(abi.encodePacked(newOwner, confirmMaterial[0]));
         require(wallet.commitHash[hash], "NO COMMIT");
-        require(Recovery._reduceConfirmMaterial(confirmMaterial) == wallet.rootHash, "INCORRECT PROOF");
 
         wallet.startRecovery(newOwner);
         delete wallet.commitHash[hash];

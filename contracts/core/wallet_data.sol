@@ -31,7 +31,7 @@ library Core {
         address owner;
         bool locked;
 
-        bytes32 rootHash;
+        bytes32[] rootHash;
         uint8 merkelHeight;
         uint counter;
         address payable drainAddr;

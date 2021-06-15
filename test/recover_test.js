@@ -15,8 +15,8 @@ contract("Recovery", accounts => {
         const nonce = await commons.getNonceForRelay();
         var tmpWallet = web3.eth.accounts.create();
         var newOwnerWallet = web3.eth.accounts.create();
-        var {root, leaves, wallet} = await commons.createWallet(accounts[0] ,8, tmpWallet.address);
-        var {token, proof} = await commons.getTOTPAndProof(0, leaves);
+        var {root_arr, leaves_arr, wallet} = await commons.createWallet(accounts[0] ,8, tmpWallet.address);
+        var {token, proof} = await commons.getTOTPAndProof(0, 0, leaves_arr);
         console.log(newOwnerWallet.address, proof[0]);
         var commitHash =  web3.utils.soliditySha3(merkle.concat(newOwnerWallet.address,proof[0]));
         console.log("commitHash: ", commitHash)
@@ -76,6 +76,58 @@ contract("Recovery", accounts => {
 
         // validate transaction works
     })
+    it("should start recovery with HOTP with 3 offsets", async () => {
+        const gasLimit = 100000;
+        const nonce = await commons.getNonceForRelay();
+        var tmpWallet = web3.eth.accounts.create();
+        var newOwnerWallet = web3.eth.accounts.create();
+        var {root_arr, leaves_arr, wallet} = await commons.createWallet(accounts[0] ,8, tmpWallet.address);
+
+        // attempting to use HOTP, 3 offset off..
+        var {token, proof} = await commons.getTOTPAndProof(3, 0, leaves_arr);
+
+        console.log(newOwnerWallet.address, proof[0]);
+        var commitHash =  web3.utils.soliditySha3(merkle.concat(newOwnerWallet.address,proof[0]));
+        console.log("commitHash: ", commitHash)
+        // await wallet.startRecoverCommit(commitHash);
+
+        const methodData = wallet.contract.methods.startRecoverCommit(commitHash).encodeABI();
+                
+        // zero signature required, just HOTP
+        var sigs = await commons.signOffchain2(
+            [],
+            wallet.address,
+            0,
+            methodData,
+            0,
+            nonce,
+            0,
+            gasLimit,
+            ethers.constants.AddressZero,
+            ethers.constants.AddressZero
+        );
+
+        await wallet.executeMetaTx(methodData, sigs, nonce, 0, gasLimit, ethers.constants.AddressZero, ethers.constants.AddressZero);
+
+        const methodData2 = wallet.contract.methods.startRecoveryReveal(newOwnerWallet.address, proof).encodeABI();
+        sigs = await commons.signOffchain2(
+            [],
+            wallet.address,
+            0,
+            methodData2,
+            0,
+            nonce,
+            0,
+            gasLimit,
+            ethers.constants.AddressZero,
+            ethers.constants.AddressZero
+        );
+
+        await wallet.executeMetaTx(methodData2, sigs, nonce, 0, gasLimit, ethers.constants.AddressZero, ethers.constants.AddressZero);
+
+        var pendingRecovery = await wallet.getRecovery();
+        assert.equal(pendingRecovery[0], newOwnerWallet.address);
+    });
 
     it("should able to cancel recovery", async () => {
 

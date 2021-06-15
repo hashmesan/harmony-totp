@@ -15,12 +15,12 @@ function h16a(a) { return web3.utils.soliditySha3(a).substring(0, 34); }
 function padNumber(x) { return web3.utils.padRight(x, 64); }
 function getTOTP(counter) { return totp("JBSWY3DPEHPK3PXP", {counter: counter}); }
 
-function getLeavesAndRoot(depth) {
+function getLeavesAndRoot(offset, depth) {
     var leaves = [];
     for ( var i=0; i < Math.pow(2, depth); i++) {
       var token = "";
       for(var j=0;j < NUMOFTOKENS; j++) {
-        token = token + getTOTP((i*NUMOFTOKENS)+j);
+        token = token + getTOTP((i*NUMOFTOKENS)+j+offset);
       }
       //console.log(token);
       leaves.push(h32(padNumber(web3.utils.toHex(token))));
@@ -30,8 +30,13 @@ function getLeavesAndRoot(depth) {
 }
 
 async function createWallet(owner, depth, drainAddr) {
-    const {leaves, root} = getLeavesAndRoot(depth);
-
+    var leaves_arr = [], root_arr = [];
+    for(var i=0; i < 5; i++) {
+      const {leaves, root} = getLeavesAndRoot(i, depth);
+      leaves_arr.push(leaves);
+      root_arr.push(root);
+    }
+    
     const guardians = await Guardians.new();
     const dailyLimit = await DailyLimit.new();
     const recovery = await Recovery.new();
@@ -42,21 +47,36 @@ async function createWallet(owner, depth, drainAddr) {
     await TOTPWallet.link("Recovery", recovery.address);
     await TOTPWallet.link("MetaTx", metatx.address);
 
-    var wallet = await TOTPWallet.new(owner, root, depth, drainAddr, web3.utils.toWei("0.01", "ether"));
+    var wallet = await TOTPWallet.new(owner, root_arr, depth, drainAddr, web3.utils.toWei("0.01", "ether"));
 
     return {
-        root,
-        leaves,
+        root_arr,
+        leaves_arr,
         wallet
     }
 }
 
-async function getTOTPAndProof(counter, leaves) {
+function findInLeavesSet(hash, leavesSet) {
+  for(var i=0;i<leavesSet.length;i++){
+    for(var j=0;j<leavesSet[i].length; j++) {
+      if(hash==leavesSet[i][j]) {
+        return leavesSet[i];
+      }
+    }
+  }
+  return null;
+}
+
+async function getTOTPAndProof(offset, counter, leavesSet) {
     var token = "";
     for(var j=0;j < NUMOFTOKENS; j++) {
-      token = token + getTOTP((counter*NUMOFTOKENS)+j);
+      token = token + getTOTP((counter*NUMOFTOKENS)+j+offset);
     }
 
+    var leaves = findInLeavesSet(h32(padNumber(web3.utils.toHex(token))), leavesSet);
+    if(leaves == null) {
+      throw Exception("Hash not found in leaves")
+    }
     var proof = merkle.getProof(leaves, counter, padNumber(web3.utils.toHex(token)))
     return {token, proof};
 }
