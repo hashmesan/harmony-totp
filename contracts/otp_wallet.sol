@@ -15,10 +15,7 @@ contract TOTPWallet {
     using DailyLimit for Core.Wallet;
     using Recovery for Core.Wallet;
     using MetaTx for Core.Wallet;
-
     Core.Wallet public wallet;
-
-
 
     event DebugEvent(bytes16 data);
     event DebugEventN(uint32 data);
@@ -68,7 +65,7 @@ contract TOTPWallet {
 
         if(methodId == TOTPWallet.startRecoverGuardianOnly.selector) {
             require(wallet.guardians.length >= 2, "NOT_MEET_MINIMUM_GUARDIANS");
-            uint requiredSignatures = Recovery.ceil(wallet.guardians.length, 2);
+            uint requiredSignatures = MetaTx.ceil(wallet.guardians.length, 2);
             return (uint8(requiredSignatures), Core.OwnerSignature.Disallowed);            
         }
 
@@ -76,7 +73,7 @@ contract TOTPWallet {
         // 2 of 2 = 1 sig + HOTP
         // 2 of 3 = 1 sig + HOTP
         if(methodId == TOTPWallet.startRecoverCommit.selector) {
-            uint requiredSignatures = Recovery.ceil(wallet.guardians.length, 2);
+            uint requiredSignatures = MetaTx.ceil(wallet.guardians.length, 2);
             return (uint8(requiredSignatures), Core.OwnerSignature.Disallowed);            
         }
         if(methodId == TOTPWallet.startRecoveryReveal.selector) {
@@ -182,7 +179,7 @@ contract TOTPWallet {
     // when greater than 2 guardians can recover without HOTP.
     function startRecoverGuardianOnly(address newOwner_) onlySelf() external {
         // move into recovery state
-        wallet.pendingRecovery = Core.RecoveryInfo(newOwner_, block.timestamp + 86400);
+        wallet.startRecovery(newOwner_);
     }
 
     // recover with combination of commithash and signatures
@@ -193,9 +190,11 @@ contract TOTPWallet {
     function startRecoveryReveal(address newOwner, bytes32[] calldata confirmMaterial)  onlySelf() external {
         bytes32 hash = keccak256(abi.encodePacked(newOwner, confirmMaterial[0]));
         require(wallet.commitHash[hash], "NO COMMIT");
+        require(Recovery._reduceConfirmMaterial(confirmMaterial) == wallet.rootHash, "INCORRECT PROOF");
 
-        wallet.startRecovery(newOwner, confirmMaterial);
+        wallet.startRecovery(newOwner);
         delete wallet.commitHash[hash];
+        wallet.counter = wallet.counter + 1;
     }
 
     function isRecovering() external view returns (bool) {
