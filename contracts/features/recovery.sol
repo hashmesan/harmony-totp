@@ -2,6 +2,7 @@
 
 pragma solidity ^0.7.6;
 import "../core/wallet_data.sol";
+import "./metatx.sol";
 
 library Recovery {
 
@@ -14,24 +15,13 @@ library Recovery {
      * 2 of 3 (2 guardians or HOTP + Guardian)
      */
     function startRecovery(Core.Wallet storage wallet_, address newOwner, bytes32[] calldata confirmMaterial) public {
-        if (confirmMaterial.length != 0) {
-            require(_reduceConfirmMaterial(confirmMaterial) == wallet_.rootHash, "INCORRECT PROOF");
-            wallet_.pendingRecovery = Core.RecoveryInfo(newOwner, block.timestamp + 86400);
-            wallet_.counter = wallet_.counter + 1;
-        }
+        uint requiredSignatures = ceil(wallet_.guardians.length, 2);
 
-        // uint requiredSignatures = ceil(wallet_.guardians.length, 2);
-        // require(requiredSignatures * 65 == signatures_.length, "Wrong number of signatures");
-
-        // bytes32 signHash = getSignHash(rootHash_, merkelHeight_, timePeriod_, timeOffset_);
-        // require(validateSignatures(wallet_, signHash, signatures_), "Invalid signatures");
+        require(_reduceConfirmMaterial(confirmMaterial) == wallet_.rootHash, "INCORRECT PROOF");
+        wallet_.counter = wallet_.counter + 1;
 
         // queue it for next 24hrs
-        //wallet_.recovery = Core.RecoveryInfo(rootHash_, merkelHeight_, timePeriod_, timeOffset_, block.timestamp + 86400);
-    }
-
-    function startRecovery(Core.Wallet storage wallet_, address newOwner) public {
-        require(wallet_.guardians.length >= 3, "ONLY_3_GUARDIANS_OR_MORE_CAN_START");
+        wallet_.pendingRecovery = Core.RecoveryInfo(newOwner, block.timestamp + 86400);
     }
 
     function finalizeRecovery(Core.Wallet storage wallet_) public {
@@ -39,10 +29,6 @@ library Recovery {
         require(uint64(block.timestamp) > wallet_.pendingRecovery.expiration, "ongoing recovery period");
         wallet_.owner = wallet_.pendingRecovery.newOwner;
         wallet_.pendingRecovery = Core.RecoveryInfo(address(0),0);
-    }
-
-    function approveRecovery(Core.Wallet storage wallet_, address newOwner) public {
-        
     }
 
     //

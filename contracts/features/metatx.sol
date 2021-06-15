@@ -27,7 +27,7 @@ library MetaTx {
     {
         StackExtension memory ex;
 
-        require(sigRequirement.requiredSignatures > 0 || sigRequirement.ownerSignatureRequirement == Core.OwnerSignature.Anyone, "RM: Wrong signature requirement");
+        //require(sigRequirement.requiredSignatures > 0 || sigRequirement.ownerSignatureRequirement == Core.OwnerSignature.Anyone, "RM: Wrong signature requirement");
         require(sigRequirement.requiredSignatures * 65 == signatures.length, "Wrong number of signatures");
 
         ex.signHash = getSignHash(

@@ -18,6 +18,8 @@ contract TOTPWallet {
 
     Core.Wallet public wallet;
 
+
+
     event DebugEvent(bytes16 data);
     event DebugEventN(uint32 data);
     event WalletTransfer(address to, uint amount);
@@ -41,6 +43,10 @@ contract TOTPWallet {
         _;
     }
 
+    modifier onlySelf() {
+        require(msg.sender == address(this), "must be metatx");
+        _;
+    }
 
     // confirmMaterial contains OTP + intermediatory hashes + sides
     modifier onlyValidTOTP(bytes32[] memory confirmMaterial) 
@@ -54,10 +60,29 @@ contract TOTPWallet {
     function getRequiredSignatures(bytes calldata _data) public view returns (uint8, Core.OwnerSignature) {
         bytes4 methodId = functionPrefix(_data);
 
-        if(methodId == TOTPWallet.makeTransfer.selector) {
+        if(methodId == TOTPWallet.makeTransfer.selector ||
+            methodId == TOTPWallet.addGuardian.selector ||
+            methodId == TOTPWallet.revokeGuardian.selector) {
             return (1, Core.OwnerSignature.Required);
         }
 
+        if(methodId == TOTPWallet.startRecoverGuardianOnly.selector) {
+            require(wallet.guardians.length >= 2, "NOT_MEET_MINIMUM_GUARDIANS");
+            uint requiredSignatures = Recovery.ceil(wallet.guardians.length, 2);
+            return (uint8(requiredSignatures), Core.OwnerSignature.Disallowed);            
+        }
+
+        // 1 of 1 = 0 sig
+        // 2 of 2 = 1 sig + HOTP
+        // 2 of 3 = 1 sig + HOTP
+        if(methodId == TOTPWallet.startRecoverCommit.selector) {
+            uint requiredSignatures = Recovery.ceil(wallet.guardians.length, 2);
+            return (uint8(requiredSignatures), Core.OwnerSignature.Disallowed);            
+        }
+        if(methodId == TOTPWallet.startRecoveryReveal.selector) {
+            return (0, Core.OwnerSignature.Disallowed);            
+        }
+        
         revert("unknown method");
     }    
 
@@ -149,17 +174,28 @@ contract TOTPWallet {
     //
     // Recovery functions
     //
-    // In default setup with only HTOP setup, wallet recovery is done on its own.
-    // In a more secure setup with HTOP + guardians, HTOP is considered as 1 guardian.
-    function startRecoverCommit(bytes32 commitHash) external {
+    // In default setup with only HOTP setup, wallet recovery is done on its own.
+    // In a more secure setup with HOTP + guardians, HOTP is considered as 1 guardian.
+    //
+    // Relay/or other coordinating system will coordinate the signatures collections 
+    // from guardian and submit along with the HOTP together. In rare case, HOTP may be ommitted
+    // when greater than 2 guardians can recover without HOTP.
+    function startRecoverGuardianOnly(address newOwner_) onlySelf() external {
+        // move into recovery state
+        wallet.pendingRecovery = Core.RecoveryInfo(newOwner_, block.timestamp + 86400);
+    }
+
+    // recover with combination of commithash and signatures
+    function startRecoverCommit(bytes32 commitHash)  onlySelf() external {
         wallet.commitHash[commitHash] = true;
     }
 
-    function startRecoveryReveal(address newOwner, bytes32[] calldata confirmMaterial) external {
+    function startRecoveryReveal(address newOwner, bytes32[] calldata confirmMaterial)  onlySelf() external {
         bytes32 hash = keccak256(abi.encodePacked(newOwner, confirmMaterial[0]));
         require(wallet.commitHash[hash], "NO COMMIT");
 
         wallet.startRecovery(newOwner, confirmMaterial);
+        delete wallet.commitHash[hash];
     }
 
     function isRecovering() external view returns (bool) {
