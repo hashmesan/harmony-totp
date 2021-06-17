@@ -15,14 +15,24 @@ contract TOTPWallet {
     using DailyLimit for Core.Wallet;
     using Recovery for Core.Wallet;
     using MetaTx for Core.Wallet;
+
+    // DATA LAYOUT - ALWAYS ADD NEW VAR TO LAST
+
+    address masterCopy;
     Core.Wallet public wallet;
+
+    // END OF DATA LAYOUT
 
     event DebugEvent(bytes16 data);
     event DebugEventN(uint32 data);
     event WalletTransfer(address to, uint amount);
     event Deposit(address indexed sender, uint value);
+    event WalletUpgraded(address newImpl);
 
-    constructor(address owner_, bytes32[] memory rootHash_, uint8 merkelHeight_, address payable drainAddr_, uint dailyLimit_)
+    constructor() {
+    }
+
+    function initialize(address owner_, bytes32[] memory rootHash_, uint8 merkelHeight_, address payable drainAddr_, uint dailyLimit_) external
     {
         wallet.owner = owner_;
         for (uint32 i = 0; i < rootHash_.length; i++) {
@@ -52,6 +62,7 @@ contract TOTPWallet {
     {
         //require(_deriveChildTreeIdx(sides) == getCurrentCounter(), "unexpected counter value"); 
         bytes32 reduced = Recovery._reduceConfirmMaterial(confirmMaterial);
+        require(wallet.counter == Recovery._deriveChildTreeIdx(wallet.merkelHeight, confirmMaterial[confirmMaterial.length-1]), "Wrong counter");
 
         bool foundMatch = false;
         for (uint32 i = 0; i < wallet.rootHash.length; i++) {
@@ -68,7 +79,8 @@ contract TOTPWallet {
 
         if(methodId == TOTPWallet.makeTransfer.selector ||
             methodId == TOTPWallet.addGuardian.selector ||
-            methodId == TOTPWallet.revokeGuardian.selector) {
+            methodId == TOTPWallet.revokeGuardian.selector||
+            methodId == TOTPWallet.upgradeMasterCopy.selector) {
             return (1, Core.OwnerSignature.Required);
         }
 
@@ -147,14 +159,14 @@ contract TOTPWallet {
     //
     // Guardians functions
     //
-    function addGuardian(address guardian, bytes16[] calldata confirmMaterial, bytes20 sides)
+    function addGuardian(address guardian, bytes16[] calldata confirmMaterial, bytes32 sides)
         external
         onlyFromWalletOrOwnerWhenUnlocked()
     {
         wallet.addGuardian(guardian);
     }
 
-    function revokeGuardian(address guardian, bytes16[] calldata confirmMaterial, bytes20 sides)
+    function revokeGuardian(address guardian, bytes16[] calldata confirmMaterial, bytes32 sides)
         external
         onlyFromWalletOrOwnerWhenUnlocked()
     {
@@ -221,6 +233,10 @@ contract TOTPWallet {
         wallet.finalizeRecovery();
     }
 
+    function upgradeMasterCopy(address newMasterCopy) external onlySelf() {
+        masterCopy = newMasterCopy;
+        emit WalletUpgraded(newMasterCopy);
+    }
     //
     // Utility functions
     //

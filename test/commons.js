@@ -3,6 +3,8 @@ const Guardians = artifacts.require("Guardians");
 const DailyLimit = artifacts.require("DailyLimit");
 const Recovery = artifacts.require("Recovery");
 const MetaTx = artifacts.require("MetaTx");
+const WalletFactory = artifacts.require("WalletFactory");
+
 const totp = require("../lib/totp.js");
 const merkle = require("../lib/merkle.js");
 const ethers = require("ethers");
@@ -29,14 +31,55 @@ function getLeavesAndRoot(offset, depth) {
     return {leaves, root};
 }
 
+async function createWalletFactory() {
+  const guardians = await Guardians.new();
+  const dailyLimit = await DailyLimit.new();
+  const recovery = await Recovery.new();
+  const metatx = await MetaTx.new();
+
+  await TOTPWallet.link("Guardians", guardians.address);
+  await TOTPWallet.link("DailyLimit", dailyLimit.address);
+  await TOTPWallet.link("Recovery", recovery.address);
+  await TOTPWallet.link("MetaTx", metatx.address);
+
+  var wallet = await TOTPWallet.new();
+
+  var walletFactory = await WalletFactory.new(wallet.address);
+  return walletFactory;
+}
+
+async function createNewImplementation() {
+  const guardians = await Guardians.new();
+  const dailyLimit = await DailyLimit.new();
+  const recovery = await Recovery.new();
+  const metatx = await MetaTx.new();
+
+  await TOTPWallet.link("Guardians", guardians.address);
+  await TOTPWallet.link("DailyLimit", dailyLimit.address);
+  await TOTPWallet.link("Recovery", recovery.address);
+  await TOTPWallet.link("MetaTx", metatx.address);
+
+  var wallet = await TOTPWallet.new();
+  return wallet;
+}
+
+function createHOTP(depth) {
+  var leaves_arr = [], root_arr = [];
+  for(var i=0; i < 5; i++) {
+    const {leaves, root} = getLeavesAndRoot(i, depth);
+    leaves_arr.push(leaves);
+    root_arr.push(root);
+  }
+  return {root_arr, leaves_arr};
+}
+
+async function walletWithAddress(address) {
+  return await TOTPWallet.at(address);
+}
+
 async function createWallet(owner, depth, drainAddr) {
-    var leaves_arr = [], root_arr = [];
-    for(var i=0; i < 5; i++) {
-      const {leaves, root} = getLeavesAndRoot(i, depth);
-      leaves_arr.push(leaves);
-      root_arr.push(root);
-    }
-    
+    const {root_arr, leaves_arr} = createHOTP(depth);
+
     const guardians = await Guardians.new();
     const dailyLimit = await DailyLimit.new();
     const recovery = await Recovery.new();
@@ -47,7 +90,8 @@ async function createWallet(owner, depth, drainAddr) {
     await TOTPWallet.link("Recovery", recovery.address);
     await TOTPWallet.link("MetaTx", metatx.address);
 
-    var wallet = await TOTPWallet.new(owner, root_arr, depth, drainAddr, web3.utils.toWei("0.01", "ether"));
+    var wallet = await TOTPWallet.new();
+    await wallet.initialize(owner, root_arr, depth, drainAddr, web3.utils.toWei("0.01", "ether"));
 
     return {
         root_arr,
@@ -82,11 +126,12 @@ async function getTOTPAndProof(offset, counter, leavesSet) {
 }
 
 
-async function signRecoveryOffchain(signers, rootHash, merkelHeight, timePeriod, timeOffset) {
-    const messageHash = getMessageHash(rootHash, merkelHeight, timePeriod, timeOffset);
+async function signCreateTx(signers,owner, rootHash, merkleHeight, drainAddr, dailyLimit, salt ) {
+    const messageHash = getCreateHash(owner, rootHash, merkleHeight, drainAddr, dailyLimit, salt);
     const signatures = await Promise.all(
       signers.map(async (signer) => {
         const sig = await signMessage(messageHash, signer);
+        //console.log(signer.address, sig);
         return sig.slice(2);
       })
     );
@@ -135,15 +180,13 @@ function getMessageHash2(from, value, data, chainId, nonce, gasPrice, gasLimit, 
   return messageHash;
 }
 
-function getMessageHash(rootHash, merkelHeight, timePeriod, timeOffset) {
-    const TYPE_STR = "startRecovery(bytes16, uint8, uint, uint)";
+function getCreateHash(owner, rootHash, merkleHeight, drainAddr, dailyLimit, salt) {
+    const TYPE_STR = "createWallet(address owner, bytes32[] rootHash, uint8 merkelHeight, address payable drainAddr, uint dailyLimit,uint256 salt)";
     const TYPE_HASH = ethers.utils.keccak256(Buffer.from(TYPE_STR));
 
-    //console.log(rootHash, merkelHeight, timePeriod, timeOffset, TYPE_HASH);
-
     const encodedRequest = ethAbi.encodeParameters(
-        ["bytes32", "bytes16", "uint8", "uint", "uint"],
-        [TYPE_HASH, rootHash, merkelHeight, timePeriod, timeOffset]
+        ["bytes32", "address", "bytes32[]", "uint8", "address","uint", "uint256"],
+        [TYPE_HASH, owner, rootHash, merkleHeight, drainAddr, dailyLimit, salt]
       );
 
     const messageHash = ethers.utils.keccak256(encodedRequest);
@@ -152,7 +195,6 @@ function getMessageHash(rootHash, merkelHeight, timePeriod, timeOffset) {
 
 async function signMessage(message, signer) {
     const sig = await signer.sign(message).signature;
-    //console.log(message, sig);
     let v = parseInt(sig.substring(130, 132), 16);
     if (v < 27) v += 27;
     const normalizedSig = `${sig.substring(0, 130)}${v.toString(16)}`;
@@ -224,9 +266,13 @@ module.exports = {
     createWallet,
     getTOTPAndProof,
     getLeavesAndRoot,
-    signRecoveryOffchain,
+    signCreateTx,
     increaseTime,
     getMessageHash2,
     signOffchain2,
-    getNonceForRelay
+    getNonceForRelay,
+    createWalletFactory,
+    createHOTP,
+    walletWithAddress,
+    createNewImplementation
 }

@@ -57,7 +57,7 @@ library MetaTx {
         address _refundAddress
     )
         internal
-        view
+        pure
         returns (bytes32)
     {
         return keccak256(
@@ -132,7 +132,7 @@ library MetaTx {
         return true;
     }
     
-    function isGuardianAddress(address[] memory _guardians, address _guardian) internal view returns (bool) {
+    function isGuardianAddress(address[] memory _guardians, address _guardian) internal pure returns (bool) {
         for (uint256 i = 0; i < _guardians.length; i++) {
             if (_guardian == _guardians[i]) {
                 return true;

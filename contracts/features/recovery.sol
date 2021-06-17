@@ -34,7 +34,7 @@ library Recovery {
     //
     // HOTP Verification functions
     //
-    function _deriveChildTreeIdx(uint merkelHeight, bytes32 sides) private view returns (uint32) {
+    function _deriveChildTreeIdx(uint merkelHeight, bytes32 sides) public pure returns (uint32) {
         uint32 derivedIdx = 0;
         for(uint8 i = 0 ; i < merkelHeight ; i++){
             if(byte(0x01) == sides[i]){
@@ -44,14 +44,14 @@ library Recovery {
         return derivedIdx;
     }
     
-    function _reduceConfirmMaterial(bytes32[] memory confirmMaterial) public returns (bytes32) {
+    function _reduceConfirmMaterial(bytes32[] memory confirmMaterial) public pure returns (bytes32) {
         //  and then compute h(OTP) to get the leaf of the tree
         confirmMaterial[0] = keccak256(abi.encodePacked(confirmMaterial[0]));
         bytes32 sides = confirmMaterial[confirmMaterial.length - 1];
         return _reduceAuthPath(confirmMaterial, sides);
     }
 
-    function _reduceAuthPath(bytes32[] memory authPath, bytes32 sides) internal returns (bytes32){
+    function _reduceAuthPath(bytes32[] memory authPath, bytes32 sides) internal pure returns (bytes32){
         for (uint8 i = 1; i < authPath.length - 1; i++) {
             if(byte(0x00) == sides[i - 1]){
                 authPath[0] = keccak256(abi.encodePacked(authPath[0], authPath[i]));

@@ -46,6 +46,7 @@ library Core {
         uint dailyLimit;
         uint lastDay;
         uint spentToday;
+        
 
         // recovery
         RecoveryInfo pendingRecovery;
