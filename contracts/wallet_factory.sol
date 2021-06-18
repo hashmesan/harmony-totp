@@ -14,22 +14,22 @@ contract WalletFactory
     event WalletCreated (address wallet, address owner);
     event Debug(bytes32 signHash, address addr);
 
-    address             public immutable walletImplementation;
+    address public immutable walletImplementation;
 
     string  public constant WALLET_CREATION = "WALLET_CREATION";
 
-		//address owner_, bytes32[] memory rootHash_, uint8 merkelHeight_, address payable drainAddr_, uint dailyLimit_
     bytes32 public constant CREATE_WALLET_TYPEHASH = keccak256(
         "createWallet(address owner, bytes32[] rootHash, uint8 merkelHeight, address payable drainAddr, uint dailyLimit,uint256 salt)");
 
     struct WalletConfig
     {
-				address owner;
-				bytes32[] rootHash;
-				uint8 		merkelHeight;
-				address	drainAddr;
-				uint 			dailyLimit;
+        address   owner;
+        bytes32[] rootHash;
+        uint8 	  merkelHeight;
+        address	  drainAddr;
+        uint 	  dailyLimit;
         bytes     signature;
+        uint      salt;
     }
 
     constructor(
@@ -39,15 +39,12 @@ contract WalletFactory
         walletImplementation = _walletImplementation;
     }
 
-    function createWallet(
-        WalletConfig calldata config,
-        uint                  salt
-        )
+    function createWallet(WalletConfig calldata config)
         external
         returns (address wallet)
     {
-        _validateRequest(config, salt);
-        wallet = _deploy(config.owner, salt);
+        _validateRequest(config);
+        wallet = _deploy(config.owner, config.salt);
         _initializeWallet(wallet, config);
     }
 
@@ -85,8 +82,7 @@ contract WalletFactory
     }
 
     function _validateRequest(
-        WalletConfig memory config,
-        uint                salt
+        WalletConfig memory config
         )
         public
     {
@@ -99,7 +95,7 @@ contract WalletFactory
             config.merkelHeight,
             config.drainAddr,
             config.dailyLimit,
-            salt
+            config.salt
         );
 
         bytes32 signHash = keccak256(abi.encodePacked(

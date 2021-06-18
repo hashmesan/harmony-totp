@@ -22,8 +22,9 @@ contract("Upgrade", accounts => {
 			merkelHeight: merkelHeight,
 			drainAddr: tmpWallet.address,
 			dailyLimit: dailyLimit,
-			signature: sigs
-		}, salt);
+			signature: sigs,
+			salt: salt
+		});
 
 		const walletAddrComputed = await walletFactory.computeWalletAddress(
 			tmpWallet.address,
