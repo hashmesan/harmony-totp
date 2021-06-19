@@ -58,7 +58,7 @@ contract WalletFactory
     {
         return Create2.computeAddress(
             keccak256(abi.encodePacked(WALLET_CREATION, owner, salt)),
-            _getWalletCode()
+            getWalletCode()
         );
     }
 
@@ -121,11 +121,11 @@ contract WalletFactory
         // Deploy the wallet proxy
         wallet = Create2.deploy(
             keccak256(abi.encodePacked(WALLET_CREATION, owner, salt)),
-            _getWalletCode()
+            getWalletCode()
         );
     }
 
-    function _getWalletCode()
+    function getWalletCode()
         internal
         view
         returns (bytes memory)

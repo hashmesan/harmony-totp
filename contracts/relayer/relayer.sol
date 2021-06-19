@@ -4,6 +4,7 @@ pragma solidity ^0.7.6;
 pragma experimental ABIEncoderV2;
 
 import "../wallet_factory.sol";
+import "./forwarder.sol";
 
 /**
  * Relayer contract is responsible for accept queued up new wallet
@@ -19,23 +20,44 @@ contract Relayer
 {
     struct WalletState {
         WalletFactory.WalletConfig config;
-        uint deposits;
+        uint256 deposits;
         bool created;
         uint networkFee;
         bool exists;
     }
 
-    event NewWallet(address wallet, address forwarder);
+    modifier onlyOwner() {
+        if (msg.sender != owner) {
+            revert("Caller is not the owner");
+        }
+        _;
+    }
+
+    event WalletCreated(address wallet, address forwarder);
+    event EnqueuedNewWallet(address forwarder);
+    event DepositReceived(address forwarder, uint deposit);
+
+    address owner;
+    address forwardImpl;
+    bytes forwardInitCode;
+    uint public totalForwarderCount;
 
     // forward address -> Config
-    mapping (address => WalletState) public walletQueue;
+    mapping (address => WalletState) walletQueue;
     address[] availableForwarders;
-    address[] forwardersToProcess;
 
     WalletFactory factory;
 
-    constructor(address factory_) {
+    constructor(address factory_, uint initialForwarder) {
         factory = WalletFactory(factory_);
+        forwardImpl = address(new Forwarder());
+        forwardInitCode = getInitCode(forwardImpl);    
+
+        for(uint i=0;i<initialForwarder;i++){
+            Forwarder f = deployForwarder(totalForwarderCount);
+            availableForwarders.push(address(f));
+            totalForwarderCount++;
+        }    
     }
 
     function submitNewWalletQueue(
@@ -52,40 +74,87 @@ contract Relayer
 
         address lastForwarder = availableForwarders[availableForwarders.length-1];
         walletQueue[lastForwarder] = WalletState(config, 0, false, networkFee, true);
-        availableForwarders.pop();            
+        availableForwarders.pop();   
+        
+        emit EnqueuedNewWallet(lastForwarder);
     }
 
-    function isNext() external view returns(bool) {
-        return forwardersToProcess.length > 0;
+
+    function isReady(address forwarder) public view returns(bool) {
+        return walletQueue[forwarder].deposits > walletQueue[forwarder].networkFee;
     }
 
-    function processNext() external {
-        address lastForwarder = forwardersToProcess[forwardersToProcess.length-1];
-        WalletState storage state = walletQueue[lastForwarder];
+    function processWallet(address forwarder) external {
+        require(isReady(forwarder), "Address not ready");
+
+        WalletState storage state = walletQueue[forwarder];
         factory.createWallet(state.config);
 
         // send excess network fees to the new wallet
         address wallet = factory.computeWalletAddress(state.config.owner, state.config.salt);
         if (state.deposits > state.networkFee) {
-            payable(wallet).transfer(state.deposits-state.networkFee);
+            wallet.call{value: (state.deposits - state.networkFee), gas: 100000}("");
         }
 
-        delete walletQueue[lastForwarder];
-        forwardersToProcess.pop();
-        availableForwarders.push(lastForwarder);
+        delete walletQueue[forwarder];
+        availableForwarders.push(forwarder);
+        emit WalletCreated(wallet, forwarder);
+    }
 
-        emit NewWallet(wallet, lastForwarder);
+    function processDeposit(address addr) external payable{
+        require(walletQueue[msg.sender].exists, "NO QUEUED ACCOUNT FOUND");
+        walletQueue[msg.sender].deposits += msg.value;
+        emit DepositReceived(msg.sender, msg.value);
     }
 
     /// @dev Fallback function allows to deposit ether.
-    receive() external payable {
-        if (msg.value > 0) {
-            if(walletQueue[msg.sender].exists) {
-                walletQueue[msg.sender].deposits += msg.value;
-                forwardersToProcess.push(msg.sender);
-            } else {
-                revert();
-            }
+    fallback() external payable {
+        emit DepositReceived(msg.sender, msg.value);
+    }
+
+    //
+    // Forwarding Factory
+    //
+
+    function getForwarder(uint salt_) public view returns (address) {
+        bytes32 salt = keccak256(abi.encodePacked(address(this), salt_));
+        bytes32 hash = keccak256(abi.encodePacked(bytes1(0xff), address(this), salt, keccak256(abi.encodePacked(forwardInitCode))));
+        address forwarder = address(uint160(uint256(hash)));
+        return forwarder;
+    }
+
+    function deployForwarder(uint salt_) public returns (Forwarder) {
+        Forwarder forwarder = _deployForwarder(salt_);
+        forwarder.init(address(this));
+        return forwarder;
+    }
+
+    function forward(uint salt, address _token) external {
+        address forwarder = getForwarder(salt);
+        //Forwarder(forwarder).forward(_token);
+    }
+
+    function _deployForwarder(uint salt_) internal returns (Forwarder forwarder) {
+        
+        // load the init code to memory
+        bytes memory mInitCode = forwardInitCode;
+
+        // compute the salt from the destination
+        bytes32 salt = keccak256(abi.encodePacked(address(this), salt_));
+
+        assembly {
+            forwarder := create2(0, add(mInitCode, 0x20), mload(mInitCode), salt)
+            if iszero(extcodesize(forwarder)) { revert(0, 0) }
+        }
+    }
+
+    function getInitCode(address _implementation) internal pure returns (bytes memory code) {
+        bytes20 targetBytes = bytes20(_implementation);
+        code = new bytes(55);
+        assembly {
+            mstore(add(code, 0x20), 0x3d602d80600a3d3981f3363d3d373d3d3d363d73000000000000000000000000)
+            mstore(add(code, add(0x20,0x14)), targetBytes)
+            mstore(add(code, add(0x20,0x28)), 0x5af43d82803e903d91602b57fd5bf30000000000000000000000000000000000)
         }
     }
 }
