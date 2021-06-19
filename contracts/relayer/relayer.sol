@@ -3,6 +3,7 @@
 pragma solidity ^0.7.6;
 pragma experimental ABIEncoderV2;
 
+import "openzeppelin-solidity/contracts/access/Ownable.sol";
 import "../wallet_factory.sol";
 import "./forwarder.sol";
 
@@ -16,7 +17,7 @@ import "./forwarder.sol";
  * generated on the application relayer.
  * 
  */
-contract Relayer
+contract Relayer is Ownable
 {
     struct WalletState {
         WalletFactory.WalletConfig config;
@@ -26,21 +27,14 @@ contract Relayer
         bool exists;
     }
 
-    modifier onlyOwner() {
-        if (msg.sender != owner) {
-            revert("Caller is not the owner");
-        }
-        _;
-    }
-
     event WalletCreated(address wallet, address forwarder);
     event EnqueuedNewWallet(address forwarder);
     event DepositReceived(address forwarder, uint deposit);
 
-    address owner;
     address forwardImpl;
     bytes forwardInitCode;
     uint public totalForwarderCount;
+    uint256 collectedFees;
 
     // forward address -> Config
     mapping (address => WalletState) walletQueue;
@@ -64,7 +58,7 @@ contract Relayer
         WalletFactory.WalletConfig calldata config, 
         uint networkFee,
         bool createForwarderIfNeeded
-    ) external {
+    ) external onlyOwner() {
         if (!createForwarderIfNeeded) {
             require(availableForwarders.length > 0,"NOT ENOUGH FORWARDER");
         } else {
@@ -79,12 +73,11 @@ contract Relayer
         emit EnqueuedNewWallet(lastForwarder);
     }
 
-
     function isReady(address forwarder) public view returns(bool) {
         return walletQueue[forwarder].deposits > walletQueue[forwarder].networkFee;
     }
 
-    function processWallet(address forwarder) external {
+    function processWallet(address forwarder) external onlyOwner() {
         require(isReady(forwarder), "Address not ready");
 
         WalletState storage state = walletQueue[forwarder];
@@ -104,7 +97,13 @@ contract Relayer
     function processDeposit(address addr) external payable{
         require(walletQueue[msg.sender].exists, "NO QUEUED ACCOUNT FOUND");
         walletQueue[msg.sender].deposits += msg.value;
+        collectedFees += walletQueue[msg.sender].networkFee;
         emit DepositReceived(msg.sender, msg.value);
+    }
+
+    function collectFees() external onlyOwner() {
+        payable(owner()).transfer(collectedFees);
+        collectedFees = 0;
     }
 
     /// @dev Fallback function allows to deposit ether.
@@ -123,15 +122,10 @@ contract Relayer
         return forwarder;
     }
 
-    function deployForwarder(uint salt_) public returns (Forwarder) {
+    function deployForwarder(uint salt_) internal returns (Forwarder) {
         Forwarder forwarder = _deployForwarder(salt_);
         forwarder.init(address(this));
         return forwarder;
-    }
-
-    function forward(uint salt, address _token) external {
-        address forwarder = getForwarder(salt);
-        //Forwarder(forwarder).forward(_token);
     }
 
     function _deployForwarder(uint salt_) internal returns (Forwarder forwarder) {

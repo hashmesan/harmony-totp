@@ -58,5 +58,7 @@ contract("Relayer", accounts => {
 		newBalance = await web3.eth.getBalance(smartWallet);
 		console.log("smartWalletBalance", newBalance);
 
+
+		await relay.collectFees();
   });
 });
