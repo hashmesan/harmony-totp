@@ -8,7 +8,7 @@ function init (createRequest) {
     app.use(bodyParser.json())
 
     app.post('/', (req, res) => {
-      console.log('POST Data: ', req.body)
+      //console.log('POST Data: ', req.body)
       createRequest(req.body, (status, result) => {
         console.log('Result: ', result)
         res.status(status).json(result)

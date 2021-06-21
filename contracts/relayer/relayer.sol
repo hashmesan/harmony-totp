@@ -87,14 +87,14 @@ contract Relayer is Ownable
     }
 
     // returns deposits, and ready status
-    function getStatus(address forwarder) public view returns(uint256, bool) {
+    function getStatus(address forwarder) external view returns(uint256, bool) {
         return (walletQueue[forwarder].deposits, walletQueue[forwarder].deposits > walletQueue[forwarder].networkFee);
     }
 
     function processWallet(address forwarder) external onlyOwner() {
         uint256 deposits;
         bool isReady;
-        (deposits, isReady) = getStatus(forwarder);
+        (deposits, isReady) = this.getStatus(forwarder);
         require(isReady, "Address not ready");
 
         WalletState storage state = walletQueue[forwarder];

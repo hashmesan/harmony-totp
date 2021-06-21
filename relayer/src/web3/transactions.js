@@ -35,12 +35,17 @@ async function submitNewWalletQueue(config, networkFee) {
 }
 
 // returns how much deposits receive
-function getStatus(forwarder) {
-
+async function getStatus(forwarder) {
+    const relayer = await getRelayer();
+    var tx = await relayer.getStatus(forwarder);
+    console.log("getStatus", tx[0].toString());
+    return {deposits: tx[0], isReady: tx[1]};
 }
 
-function processWallet(forwarder) {
-
+async function processWallet(forwarder) {
+    const relayer = await getRelayer();
+    var tx = await relayer.processWallet(forwarder);
+    return tx.logs[0].args[0];
 }
 
 function submitMetaTx() {
@@ -48,5 +53,7 @@ function submitMetaTx() {
 }
 
 module.exports = {
-    submitNewWalletQueue: submitNewWalletQueue
+    submitNewWalletQueue,
+    getStatus,
+    processWallet
 }
