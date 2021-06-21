@@ -48,14 +48,15 @@ contract TOTPWallet {
         emit WalletTransfer(to, amount);             
     }
 
-    //TODO: Drain ERC20 tokens too
+    //TODO: Drain ERC20 tokens too 
+    // IH: there should be also some other conditions met, like noone transferred from wallet longer than some time interval (e.g., 2 months)
     function drain(bytes16[] calldata confirmMaterial, bytes20 sides) external onlyValidTOTP(confirmMaterial, sides)  {
         wallet.drainAddr.transfer(address(this).balance);            
     }
 
     function drain() external {
-        require(msg.sender == wallet.drainAddr, "sender != drain");        
-        require(remainingTokens() <= 0, "not depleted tokens");
+        require(msg.sender == wallet.drainAddr, "sender != drain");         
+        require(remainingTokens() <= 0, "not depleted tokens");             // is this necessary? Would not it better to just constrain on time of inactivity, which might indericlty show that user lost her authenticator?
         wallet.drainAddr.transfer(address(this).balance);            
     }
 
