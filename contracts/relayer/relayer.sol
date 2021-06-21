@@ -38,6 +38,7 @@ contract Relayer is Ownable
 
     // forward address -> Config
     mapping (address => WalletState) walletQueue;
+    mapping (bytes32 => bool) dedupMap;
     address[] availableForwarders;
 
     WalletFactory factory;
@@ -59,26 +60,42 @@ contract Relayer is Ownable
         uint networkFee,
         bool createForwarderIfNeeded
     ) external onlyOwner() {
+        bytes32 hash = getConfigHash(config);
+        require(dedupMap[hash] == false, "DUPLICATE ITEM");
+
         if (!createForwarderIfNeeded) {
             require(availableForwarders.length > 0,"NOT ENOUGH FORWARDER");
         } else {
             if(availableForwarders.length == 0) {
+                Forwarder f = deployForwarder(totalForwarderCount);
+                availableForwarders.push(address(f));
+                totalForwarderCount++;                
             }
-        }
+        }        
 
+        // hash the owner info
         address lastForwarder = availableForwarders[availableForwarders.length-1];
         walletQueue[lastForwarder] = WalletState(config, 0, false, networkFee, true);
         availableForwarders.pop();   
+        dedupMap[hash]=true;
         
         emit EnqueuedNewWallet(lastForwarder);
     }
 
-    function isReady(address forwarder) public view returns(bool) {
-        return walletQueue[forwarder].deposits > walletQueue[forwarder].networkFee;
+    function getConfigHash(WalletFactory.WalletConfig calldata config) internal view returns(bytes32) {
+        return keccak256(abi.encodePacked(config.owner, config.rootHash, config.merkelHeight, config.drainAddr, config.dailyLimit, config.signature, config.salt));
+    }
+
+    // returns deposits, and ready status
+    function getStatus(address forwarder) public view returns(uint256, bool) {
+        return (walletQueue[forwarder].deposits, walletQueue[forwarder].deposits > walletQueue[forwarder].networkFee);
     }
 
     function processWallet(address forwarder) external onlyOwner() {
-        require(isReady(forwarder), "Address not ready");
+        uint256 deposits;
+        bool isReady;
+        (deposits, isReady) = getStatus(forwarder);
+        require(isReady, "Address not ready");
 
         WalletState storage state = walletQueue[forwarder];
         factory.createWallet(state.config);

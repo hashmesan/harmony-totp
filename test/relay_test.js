@@ -28,6 +28,8 @@ contract("Relayer", accounts => {
 			signature: sigs,
 			salt: salt
 		}
+		console.log(walletConfig)
+		
 		var networkFee = web3.utils.toWei("0.01", "ether");
 		var tx = await relay.submitNewWalletQueue(walletConfig, networkFee, false);
 		var forwarderAddr;
@@ -57,7 +59,7 @@ contract("Relayer", accounts => {
 
 		newBalance = await web3.eth.getBalance(smartWallet);
 		console.log("smartWalletBalance", newBalance);
-
+		assert.equal(newBalance, 990000000000000000);
 
 		await relay.collectFees();
   });
