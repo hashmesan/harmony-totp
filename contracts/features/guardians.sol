@@ -13,7 +13,7 @@ library Guardians
      * @param _wallet The target wallet.
      * @param _guardian The guardian to add.
      */
-    function addGuardian(Core.Wallet storage _wallet, address _guardian) public {
+    function addGuardian(Core.Wallet storage _wallet, address _guardian) public {        
         _wallet.guardians.push(_guardian);
         _wallet.info[_guardian] = Core.GuardianInfo(true, uint128(_wallet.guardians.length - 1));
     }
@@ -24,6 +24,8 @@ library Guardians
      * @param _guardian The guardian to revoke.
      */
     function revokeGuardian(Core.Wallet storage _wallet, address _guardian) public {
+        
+        // IH: I'd suggest to use EnumerableSet from from OpenZeppelin library instead. One might save a lot of confusion here and elsewhere.
         address lastGuardian = _wallet.guardians[_wallet.guardians.length - 1];
         if (_guardian != lastGuardian) {
             uint128 targetIndex = _wallet.info[_guardian].index;
@@ -49,6 +51,8 @@ library Guardians
      * @return the list of guardians.
      */
     function getGuardians(Core.Wallet storage _wallet) public view returns (address[] memory) {
+        // IH: maybe you should also check whether it exists since you have that attribute?
+        
         address[] memory guardians = new address[](_wallet.guardians.length);
         for (uint256 i = 0; i < _wallet.guardians.length; i++) {
             guardians[i] = _wallet.guardians[i];

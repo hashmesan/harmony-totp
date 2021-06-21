@@ -7,11 +7,12 @@ library Recovery {
         "startRecovery(bytes16, uint8, uint, uint)"
     );
 
+    // IH: it is unreallistic to submit all signatures within one tx. I'd remake this mechanism and allow each guardian to submit signature on her own. So, you won't need any explicit siganture verification since you will rely on native signature verification of tx.
     function startRecovery(Core.Wallet storage wallet_, bytes16 rootHash_, uint8 merkelHeight_, uint timePeriod_, 
                 uint timeOffset_, bytes calldata signatures_) public {
         
-        uint requiredSignatures = ceil(wallet_.guardians.length, 2);
-        require(requiredSignatures * 65 == signatures_.length, "Wrong number of signatures");
+        uint requiredSignatures = ceil(wallet_.guardians.length, 2); 
+        require(requiredSignatures * 65 == signatures_.length, "Wrong number of signatures");// IH: seems strange here - why times 65? I'd just compare required with collected on greater equal.
 
         bytes32 signHash = getSignHash(rootHash_, merkelHeight_, timePeriod_, timeOffset_);
         require(validateSignatures(wallet_, signHash, signatures_), "Invalid signatures");
@@ -36,8 +37,9 @@ library Recovery {
     //
 
     /**
-    * @notice Returns ceil(a / b).
+    * @notice Returns ceil(a / b).signHash
     */
+    //IH: not a good name for this funtion. Maybe getMinSignatures. Also, why it is not just a/2 + 1, which would ensure that more than a half of guardians are required?
     function ceil(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a / b;
         if (a % b == 0) {
@@ -47,6 +49,7 @@ library Recovery {
         }
     }
 
+    // IH: To me, all explicit signature verification stuff can be deleted and utilized only implicit signature verification by blockchain.
     function validateSignatures(Core.Wallet storage wallet_, bytes32 _signHash, bytes memory _signatures) internal view returns (bool)
     {
         if (_signatures.length == 0) {

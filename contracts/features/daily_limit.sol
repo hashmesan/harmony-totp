@@ -16,7 +16,7 @@ library DailyLimit {
             _wallet.lastDay = block.timestamp;
             _wallet.spentToday = 0;
         }
-        if (_wallet.spentToday + amount > _wallet.dailyLimit || _wallet.spentToday + amount < _wallet.spentToday)
+        if (_wallet.spentToday + amount > _wallet.dailyLimit || _wallet.spentToday + amount < _wallet.spentToday) // IH: 2nd condition can be removed if you will use solc 0.8.0 that had embedded overflow/underflow protection
             return false;
         return true;
     }
@@ -27,13 +27,13 @@ library DailyLimit {
     /// @dev Returns maximum withdraw amount.
     /// @return Returns amount.
     function calcMaxWithdraw(Core.Wallet storage _wallet)
-        public
+        public // IH: should be also view
         returns (uint)
     {
         if (block.timestamp > _wallet.lastDay + 24 hours)
             return _wallet.dailyLimit;
         if (_wallet.dailyLimit < _wallet.spentToday)
-            return 0;
+            return 0; // IH: I guess this is for cases when the user decreases the daily limit after spending more than the target value
         return _wallet.dailyLimit - _wallet.spentToday;
     }    
 }
