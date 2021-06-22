@@ -25,6 +25,24 @@ const getStatus = (input, callback) => {
   })
 };
 
+const getTransactionCount = (input, callback) => {
+  transactions.getTransactionCount(input.address).then(res => {
+    callback(200, {result: res});
+  }).catch(ex=>{
+    console.log(ex)
+    callback(500,{})
+  })
+};
+
+const checkName = (input, callback) => {
+  transactions.checkName(input.address).then(res => {
+    callback(200, {result: res});
+  }).catch(ex=>{
+    console.log(ex)
+    callback(500,{})
+  })
+};
+
 const processWallet = (input, callback) => {
   transactions.processWallet(input.forwarder).then(res => {
     callback(200, {result: res});
@@ -47,7 +65,9 @@ const createRequest = (input, callback) => {
     switch(operation) {
       case "create": createWallet(input, callback); break;
       case "getStatus": getStatus(input, callback); break;
+      case "getTransactionCount": getTransactionCount(input, callback); break;
       case "processWallet": processWallet(input, callback); break;
+      case "checkName": checkName(input, callback); break;
       default: callback(400, "Invalid operation");
     }
 

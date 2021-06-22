@@ -3,6 +3,10 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 require("@babel/polyfill");
 
 module.exports = {
+  devServer: {
+    contentBase: path.join(__dirname, 'public'),
+    compress: true,
+  },
     node: {
         fs: 'empty',
         child_process: 'empty',

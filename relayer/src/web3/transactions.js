@@ -48,12 +48,35 @@ async function processWallet(forwarder) {
     return tx.logs[0].args[0];
 }
 
-function submitMetaTx() {
+/*
+function executeMetaTx(
+    bytes   calldata data,
+    bytes   calldata signatures,
+    uint256 nonce,
+    uint256 gasPrice,  
+    uint256 gasLimit,
+    address refundToken, 0x0
+    address refundAddress my main address         
+) external 
+ */       
+function submitMetaTx(data, signatures, nonce) {
 
+}
+
+// used for nonce
+async function getTransactionCount(address) {
+    const provider = getHarmonyProvider();
+    const tx = await new Web3(provider).eth.getTransactionCount(address);
+    return {result: tx}
+}
+
+async function checkName(name) {
+    return true;
 }
 
 module.exports = {
     submitNewWalletQueue,
     getStatus,
-    processWallet
+    processWallet,
+    checkName
 }
