@@ -2,6 +2,9 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
 const port = process.env.EA_PORT || 8080
+const cors = require('cors')
+
+app.use(cors());
 
 function init (createRequest) {
   return () => {

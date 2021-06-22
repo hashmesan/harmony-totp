@@ -9,6 +9,7 @@ import {
     Link
   } from "react-router-dom";
 import { withRouter } from 'react-router-dom';
+import { getTOTP } from '../../../lib/wallet';
 
 var StyledOTPContainer = styled.div`
     .inputStyle {
@@ -30,17 +31,28 @@ class ScanQRCode extends Component {
     handleChange(otp) {
         this.setState({ otp });
     }
+
+    checkFirstTOTP(input) {
+        return getTOTP(this.props.secret, 0) == input;
+    }
     
     // check for valid OTP
     validate(e) {
         e.preventDefault();
+        console.log(this.checkFirstTOTP(this.state.otp));
+
+        // submit tx
+
+        // wait tx to finish
+
         this.props.history.push("/create/step3")
     }
 
     render() {
-        var uri = "";
-        var encodedQuery="";
-        const qr_fixed = `https://chart.googleapis.com/chart?chs=166x166&chld=L|0&cht=qr&chl=${uri}${encodedQuery}`;
+        const query = `?counter=0&secret=${this.props.secret}&issuer=smartvault.one`
+        const encodedQuery = query.replace('?', '%3F').replace('&', '%26')
+        const uri = `otpauth://hotp/${this.props.name}${encodedQuery}`
+        const qr_fixed = `https://chart.googleapis.com/chart?chs=200x200&chld=L|0&cht=qr&chl=${uri}`;
 
         return (
             <React.Fragment>
@@ -48,6 +60,7 @@ class ScanQRCode extends Component {
                 <h5 className="mt-4 mb-4">Scan this QR code with your Google Authenticator.<br/>This code is used to authorize higher transfers, and recover your wallet.</h5>
                 <div className="mb-4">
                     <img src={qr_fixed}/><br/>
+                    {uri}
                     <a className="btn btn-link">Generate New Secret</a>
                 </div>
 

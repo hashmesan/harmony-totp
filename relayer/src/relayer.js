@@ -35,7 +35,7 @@ const getTransactionCount = (input, callback) => {
 };
 
 const checkName = (input, callback) => {
-  transactions.checkName(input.address).then(res => {
+  transactions.checkName(input.name).then(res => {
     callback(200, {result: res});
   }).catch(ex=>{
     console.log(ex)

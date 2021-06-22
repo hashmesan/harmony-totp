@@ -2,10 +2,38 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 
 class ChooseName extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+          name: '',
+          error: null
+        }
+    }
+
+    handleChange(event) {
+        this.setState({name: event.target.value});
+        this.props.handleUpdate({name: event.target.value});
+    }
+
     // check if name is valid
     validate(e) {
-        this.props.history.push("/create/step2")
+        var self = this;
+        fetch("http://localhost:8080/", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+              },
+            body: JSON.stringify({
+                operation: "checkName",
+                name: this.state.name
+            })
+        }).then((res)=> {
+            self.props.history.push("/create/step2");
+        }).catch((ex)=>{
+            self.setState({error: ex});
+        })
     }
+
     render() {
         return (
             <React.Fragment>
@@ -18,7 +46,7 @@ class ChooseName extends Component {
                 </div>
                 <div className="row justify-content-md-center">
                     <div className="mt-4 w-50 input-group">
-                        <input type="text" className="form-control"/>
+                        <input type="text" className="form-control" value={this.state.name} onChange={this.handleChange.bind(this)}/>
                         <div className="input-group-append">
                             <span className="input-group-text" id="basic-addon2">.smartvault.one</span>
                         </div>
