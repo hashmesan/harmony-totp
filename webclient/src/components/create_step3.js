@@ -48,6 +48,11 @@ class FirstDeposit extends Component {
         this.checkBalance();
     }
 
+
+    saveWalletToLocalStorage() {
+        localStorage.setState("SMARTVAULT", JSON.stringify(this.props.data));
+    }
+
     /*
         address   owner;     
         bytes32[] rootHash;
@@ -89,6 +94,8 @@ class FirstDeposit extends Component {
         .then(res=>{
             self.setState({busy: false});
             console.log("Wallet created! ", res);
+            self.saveWalletToLocalStorage();
+            self.props.history.push("/wallet");
         })
         .catch(e=>{
             self.setState({error: e});

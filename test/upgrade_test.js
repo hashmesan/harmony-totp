@@ -27,12 +27,12 @@ contract("Upgrade", accounts => {
 		console.log("WalltComputed", newBalance);		
 
 		var wallet = await walletFactory.createWallet({
+			name: web3.utils.utf8ToHex("testname"),
 			owner: tmpWallet.address,
 			rootHash: root_arr,
 			merkelHeight: merkelHeight,
 			drainAddr: tmpWallet.address,
 			dailyLimit: dailyLimit,
-			signature: sigs,
 			salt: salt,
 			feeReceipient: feeReceipient,
 			feeAmount: feeAmount

@@ -38,8 +38,8 @@ class Create extends Component {
         const account = new Web3EthAccounts().create();
         const bin = crypto.randomBytes(20);
         const base32 = b32.encode(bin).toString("utf8").replace(/=/g, "");
-        const merkleHeight = 8;
-        
+        const merkleHeight = 12;
+
         const secret = base32
           .toLowerCase()
           .replace(/(\w{4})/g, "$1 ")

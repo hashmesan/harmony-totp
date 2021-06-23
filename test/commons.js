@@ -4,6 +4,7 @@ const DailyLimit = artifacts.require("DailyLimit");
 const Recovery = artifacts.require("Recovery");
 const MetaTx = artifacts.require("MetaTx");
 const WalletFactory = artifacts.require("WalletFactory");
+const NameRegistry = artifacts.require("NameRegistry");
 
 const totp = require("../lib/totp.js");
 const merkle = require("../lib/merkle.js");
@@ -36,6 +37,7 @@ async function createWalletFactory() {
   const dailyLimit = await DailyLimit.new();
   const recovery = await Recovery.new();
   const metatx = await MetaTx.new();
+  const registry = await NameRegistry.new();
 
   await TOTPWallet.link("Guardians", guardians.address);
   await TOTPWallet.link("DailyLimit", dailyLimit.address);
@@ -44,6 +46,7 @@ async function createWalletFactory() {
 
   var wallet = await TOTPWallet.new();
 
+  WalletFactory.link("NameRegistry", registry.address);
   var walletFactory = await WalletFactory.new(wallet.address);
   return walletFactory;
 }
