@@ -57,7 +57,7 @@ class ScanQRCode extends Component {
 
         // submit tx
         var self = this;
-        this.setState({busy: true});
+        self.setState({busy: true});
 
         // wait tx to finish
         fetch("http://localhost:8080/", {
@@ -73,7 +73,15 @@ class ScanQRCode extends Component {
                 }
             })
         })
-        .then(res => res.json())
+        .then(res => {
+            if(res.ok) {
+                return res.json()
+            } else {
+                return res.json().then(e=>{
+                    self.setState({error: e});
+                })
+            }
+        })
         .then((res)=> {
             self.setState({busy: false});
             self.props.handleUpdate({walletAddress: res.result.address, networkFee: res.result.networkFee});
@@ -96,8 +104,7 @@ class ScanQRCode extends Component {
                 <h2>Scan your HOTP Secret</h2>
                 <h5 className="mt-4 mb-4">Scan this QR code with your Google Authenticator.<br/>This code is used to authorize higher transfers, and recover your wallet.</h5>
                 <div className="mb-4">
-                    <img src={qr_fixed}/><br/>
-                    {uri}
+                    <img src={qr_fixed} width="200" height="200" className="img-thumbnail"/><br/>
                     <a className="btn btn-link">Generate New Secret</a>
                 </div>
 
@@ -113,8 +120,19 @@ class ScanQRCode extends Component {
                     separator={<span></span>}
                 />
                 </StyledOTPContainer>
+
+                {this.state.error &&                
+                    <div className="row justify-content-md-center mt-4">
+                        <div className="alert alert-danger w-50" role="alert">
+                            {this.state.error.toString()}
+                        </div>
+                    </div>}
+
                 {!this.state.busy && <button className="mt-5 btn btn-lg btn-primary" onClick={this.validate.bind(this)}>Continue</button>}
-                {this.state.busy && <button disabled className="mt-5 btn btn-lg btn-primary" onClick={this.validate.bind(this)}>Continue</button>}
+                {this.state.busy && <button disabled className="mt-5 btn btn-lg btn-primary" type="button">
+                        <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Loading...
+                    </button>}
             </React.Fragment>
         );
     }

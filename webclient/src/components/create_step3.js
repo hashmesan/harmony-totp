@@ -1,13 +1,19 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 const web3utils = require("web3-utils");
+const {
+    toBech32,
+    fromBech32,
+  } = require('@harmony-js/crypto');
 
 class FirstDeposit extends Component {
     constructor(props) {
         super(props)
         this.state = {
           balance: 0,
-          continue: false
+          continue: false,
+          showQR: false,
+          busy: false
         }
     }
     checkBalance() {
@@ -33,6 +39,11 @@ class FirstDeposit extends Component {
         })
     }
 
+    toggleQR(e) {
+        e.preventDefault(); 
+        this.setState({showQR: !this.state.showQR});
+    }
+
     componentDidMount() {
         this.checkBalance();
     }
@@ -46,6 +57,8 @@ class FirstDeposit extends Component {
         uint      salt;
     */    
     createWallet(ev) {
+        var self = this;
+        self.setState({busy: true});
         ev.preventDefault();
         fetch("http://localhost:8080/", {
             method: 'POST',
@@ -64,9 +77,21 @@ class FirstDeposit extends Component {
                 }
             })
         })
-        .then(res => res.json())
+        .then(res => {
+            if(res.ok) {
+                return res.json()
+            } else {
+                return res.json().then(e=>{
+                    self.setState({error: e});
+                })
+            }
+        })
         .then(res=>{
+            self.setState({busy: false});
             console.log("Wallet created! ", res);
+        })
+        .catch(e=>{
+            self.setState({error: e});
         })
     }
 
@@ -78,22 +103,36 @@ class FirstDeposit extends Component {
                 <h2>YOUR FIRST DEPOSIT</h2>
                 <h5 className="mt-4 mb-5">There is a network fee to activate your wallet as it is a smart contract. <br/>This fee will be taken from your first deposit</h5>
                 <div className="mt-5">
-                    <p><b>Wallet Address:</b>{this.props.data.walletAddress} <a href="#" className="btn btn-link">Show QR Code</a></p>
+                    <p>
+                        <b>Wallet Address:</b> {toBech32(this.props.data.walletAddress)} {this.props.data.walletAddress}
+                        <a href="#" className="btn btn-link" onClick={this.toggleQR.bind(this)}>{this.state.showQR ? "Hide QR Code": "Show QR Code"}</a>
+                        {this.state.showQR && <div><img src={"https://chart.googleapis.com/chart?chs=200x200&chld=L|0&cht=qr&chl=" + this.props.data.walletAddress} width="200" height="200"/></div>}
+                    </p>
                     <p><b>Network Fee:</b> {this.props.data.networkFee && web3utils.fromWei(this.props.data.networkFee)} ONE</p>
                     
                     {!this.state.continue ? 
                     <div className="text-center">
-                        <p>Status: Waiting for deposit...</p>
+                        <p><b>Status:</b> Waiting for deposit...</p>
                         <div className="spinner-grow text-primary" role="status">
                             <span className="sr-only">Loading...</span>
                         </div>
                     </div>
                     : <div className="text-center">
-                            <p>Status: Received deposit of  {web3utils.fromWei(this.state.deposits)} ONE</p>                            
+                            <p><b>Status:</b> Received deposit of  {web3utils.fromWei(this.state.deposits)} ONE</p> 
                         </div>
                         }
-                
-                    {this.state.continue && <button className="mt-5 btn btn-lg btn-primary" onClick={this.createWallet.bind(this)}>Continue</button>} 
+                    {this.state.error &&                
+                    <div className="row justify-content-md-center mt-4">
+                        <div className="alert alert-danger w-50" role="alert">
+                            {this.state.error && JSON.stringify(this.state.error.message)}
+                        </div>
+                    </div>}
+
+                    {(this.state.continue && !this.state.busy)&& <button className="mt-5 btn btn-lg btn-primary" onClick={this.createWallet.bind(this)}>Create Wallet</button>} 
+                    {(this.state.continue && this.state.busy) && <button className="mt-5 btn btn-lg btn-primary" onClick={this.createWallet.bind(this)}>
+                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Waiting for tx...                            
+                        </button>}
                 </div>
             </React.Fragment>
         );

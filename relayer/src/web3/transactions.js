@@ -10,7 +10,7 @@ var WalletFactory = contract(walletFactoryArtifacts)
 const FACTORY_ADDRESS = walletFactoryArtifacts.networks[process.env.NETWORK_ID].address;
 const NETWORK_FEE = Web3.utils.toWei("0.00123", "ether");
 
-console.log("Deployed relayer=", FACTORY_ADDRESS);
+console.log("Deployed WALLET FACTORY=", FACTORY_ADDRESS);
 
 function getHarmonyProvider() {
     const provider = new Provider(process.env.PRIVATE_KEY, "https://api.s0.b.hmny.io");
@@ -28,6 +28,8 @@ async function getWalletFactory() {
     const accounts = await new Web3(provider).eth.getAccounts();
     WalletFactory.setProvider(provider);
     WalletFactory.defaults({from: accounts[0]});
+    console.log("Relayer=", accounts[0]);
+
     return await WalletFactory.at(FACTORY_ADDRESS);
 }
 
@@ -37,7 +39,7 @@ async function createWallet(config) {
     config.feeReceipient = await getDefaultAccount();
     config.feeAmount = NETWORK_FEE;
     var tx = await factory.createWallet(config);
-    return tx.logs[0].args[0];
+    return {tx: tx.tx, event: tx.logs[0].args[0]};
 }
 
 // returns how much deposits receive
