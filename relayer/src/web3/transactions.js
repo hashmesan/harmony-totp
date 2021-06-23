@@ -1,51 +1,56 @@
 const Web3 = require('web3');
 const Provider = require('@truffle/hdwallet-provider');
-const relayerArtifacts = require('../../../build/contracts/Relayer.json');
+const walletFactoryArtifacts = require('../../../build/contracts/WalletFactory.json');
 const { TruffleProvider } = require('@harmony-js/core')
 const { Account } = require('@harmony-js/account')
 
 var contract = require("@truffle/contract");
-var Relayer = contract(relayerArtifacts)
+var WalletFactory = contract(walletFactoryArtifacts)
 
-const RELAYER_ADDRESS = relayerArtifacts.networks[process.env.NETWORK_ID].address;
-console.log("Deployed relayer=", RELAYER_ADDRESS);
+const FACTORY_ADDRESS = walletFactoryArtifacts.networks[process.env.NETWORK_ID].address;
+const NETWORK_FEE = Web3.utils.toWei("0.00123", "ether");
+
+console.log("Deployed relayer=", FACTORY_ADDRESS);
 
 function getHarmonyProvider() {
-    // const provider = new TruffleProvider('https://api.s0.b.hmny.io', {}, { shardID: 0, chainId: process.env.NETWORK_ID });
-    // provider.addByPrivateKey(process.env.PRIVATE_KEY); 
-    // const account = new Account(process.env.PRIVATE_KEY)
-    // provider.setSigner(account.checksumAddress)
     const provider = new Provider(process.env.PRIVATE_KEY, "https://api.s0.b.hmny.io");
     return provider;
 }
 
-async function getRelayer() {   
+async function getDefaultAccount() {
     const provider = getHarmonyProvider();
     const accounts = await new Web3(provider).eth.getAccounts();
-    Relayer.setProvider(provider);
-    Relayer.defaults({from: accounts[0]});
-    return await Relayer.at(RELAYER_ADDRESS);
+    return accounts[0];
+}
+
+async function getWalletFactory() {   
+    const provider = getHarmonyProvider();
+    const accounts = await new Web3(provider).eth.getAccounts();
+    WalletFactory.setProvider(provider);
+    WalletFactory.defaults({from: accounts[0]});
+    return await WalletFactory.at(FACTORY_ADDRESS);
 }
 
 // submits wallet and receive a forwarder address
-async function submitNewWalletQueue(config, networkFee) {
-    const relayer = await getRelayer();
-    var tx = await relayer.submitNewWalletQueue(config, networkFee, false);
+async function createWallet(config) {
+    const factory = await getWalletFactory();
+    config.feeReceipient = await getDefaultAccount();
+    config.feeAmount = NETWORK_FEE;
+    var tx = await factory.createWallet(config);
     return tx.logs[0].args[0];
 }
 
 // returns how much deposits receive
-async function getStatus(forwarder) {
-    const relayer = await getRelayer();
-    var tx = await relayer.getStatus(forwarder);
-    console.log("getStatus", tx[0].toString());
-    return {deposits: tx[0], isReady: tx[1]};
+async function getBalance(address) {
+    const provider = getHarmonyProvider();
+    const tx = await new Web3(provider).eth.getBalance(address);
+    return {balance: tx}
 }
 
-async function processWallet(forwarder) {
-    const relayer = await getRelayer();
-    var tx = await relayer.processWallet(forwarder);
-    return tx.logs[0].args[0];
+async function getDepositAddress(data) {
+    const factory = await getWalletFactory();
+    var tx = await factory.computeWalletAddress(data.owner, data.salt);
+    return {address: tx, networkFee: NETWORK_FEE};
 }
 
 /*
@@ -75,8 +80,9 @@ async function checkName(name) {
 }
 
 module.exports = {
-    submitNewWalletQueue,
-    getStatus,
-    processWallet,
+    getDefaultAccount,
+    createWallet,
+    getBalance,
+    getDepositAddress,
     checkName
 }
