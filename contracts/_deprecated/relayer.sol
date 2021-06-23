@@ -83,7 +83,7 @@ contract Relayer is Ownable
     }
 
     function getConfigHash(WalletFactory.WalletConfig calldata config) internal view returns(bytes32) {
-        return keccak256(abi.encodePacked(config.owner, config.rootHash, config.merkelHeight, config.drainAddr, config.dailyLimit, config.signature, config.salt));
+        return keccak256(abi.encodePacked(config.owner, config.rootHash, config.merkelHeight, config.drainAddr, config.dailyLimit, config.salt));
     }
 
     // returns deposits, and ready status
