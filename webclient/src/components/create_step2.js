@@ -26,6 +26,7 @@ class ScanQRCode extends Component {
         super(props)
         this.state = {
           otp: '',
+          busy: false
         }
     }
     handleChange(otp) {
@@ -37,15 +38,51 @@ class ScanQRCode extends Component {
     }
     
     // check for valid OTP
+    /* 
+        struct WalletConfig
+    {
+        address   owner;
+        bytes32[] rootHash;
+        uint8 	  merkelHeight;
+        address	  drainAddr;
+        uint 	  dailyLimit;
+        bytes     signature;
+        uint      salt;
+    }
+    */
+
     validate(e) {
         e.preventDefault();
         console.log(this.checkFirstTOTP(this.state.otp));
 
         // submit tx
+        var self = this;
+        this.setState({busy: true});
 
         // wait tx to finish
-
-        this.props.history.push("/create/step3")
+        fetch("http://localhost:8080/", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+              },
+            body: JSON.stringify({
+                operation: "getDepositAddress",
+                data: {
+                    owner: self.props.ownerAddress,
+                    salt: self.props.salt
+                }
+            })
+        })
+        .then(res => res.json())
+        .then((res)=> {
+            self.setState({busy: false});
+            self.props.handleUpdate({walletAddress: res.result.address, networkFee: res.result.networkFee});
+            self.props.history.push("/create/step3");
+        }).catch((ex)=>{
+            console.log("ex=", ex);
+            self.setState({busy: false});
+            self.setState({error: ex});
+        })
     }
 
     render() {
@@ -76,7 +113,8 @@ class ScanQRCode extends Component {
                     separator={<span></span>}
                 />
                 </StyledOTPContainer>
-                <button className="mt-5 btn btn-lg btn-primary" onClick={this.validate.bind(this)}>Confirm</button>                
+                {!this.state.busy && <button className="mt-5 btn btn-lg btn-primary" onClick={this.validate.bind(this)}>Continue</button>}
+                {this.state.busy && <button disabled className="mt-5 btn btn-lg btn-primary" onClick={this.validate.bind(this)}>Continue</button>}
             </React.Fragment>
         );
     }
