@@ -5,7 +5,7 @@ const merkle = require("../lib/merkle.js");
 const commons = require("./commons.js");
 
 contract("Upgrade", accounts => {
-
+	
 	it("should be able to upgrade", async () => {
 		var merkelHeight = 6;
 		var salt = 100;
@@ -13,8 +13,18 @@ contract("Upgrade", accounts => {
 		var walletFactory = await commons.createWalletFactory();
 		var tmpWallet = web3.eth.accounts.create();
 		var {root_arr, leaves_arr} = commons.createHOTP(merkelHeight);
+		var relayerWallet = web3.eth.accounts.create();
+		var feeReceipient = relayerWallet.address;
+		var feeAmount = web3.utils.toWei("0.0012345", "ether");		
+		var sigs = await commons.signCreateTx([tmpWallet], tmpWallet.address, root_arr, merkelHeight, tmpWallet.address, dailyLimit, salt, feeReceipient, feeAmount);
 
-		var sigs = await commons.signCreateTx([tmpWallet], tmpWallet.address, root_arr, merkelHeight, tmpWallet.address, dailyLimit, salt);
+		const walletAddrComputed = await walletFactory.computeWalletAddress(
+			tmpWallet.address,
+			salt
+		  );
+		await web3.eth.sendTransaction({ from: accounts[0], to: walletAddrComputed, value: web3.utils.toWei("1", "ether") , gas: 300000});
+		var newBalance = await web3.eth.getBalance(walletAddrComputed);
+		console.log("WalltComputed", newBalance);		
 
 		var wallet = await walletFactory.createWallet({
 			owner: tmpWallet.address,
@@ -23,19 +33,19 @@ contract("Upgrade", accounts => {
 			drainAddr: tmpWallet.address,
 			dailyLimit: dailyLimit,
 			signature: sigs,
-			salt: salt
+			salt: salt,
+			feeReceipient: feeReceipient,
+			feeAmount: feeAmount
 		});
 
-		const walletAddrComputed = await walletFactory.computeWalletAddress(
-			tmpWallet.address,
-			salt
-		  );
 		console.log(walletAddrComputed);
 		var wallet = await commons.walletWithAddress(walletAddrComputed);
 		var owner = await wallet.getOwner();
 		console.log("owner=", owner);
 		assert.equal(tmpWallet.address, owner, "Expect owner is same");
 
+		var relayerBalance = await web3.eth.getBalance(relayerWallet.address);
+		assert.equal(relayerBalance, feeAmount, "Relayer expected to receive a fee");
 
 		//console.log(wallet);
 		var newVersion = await commons.createNewImplementation();

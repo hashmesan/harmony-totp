@@ -23,13 +23,15 @@ contract WalletFactory
 
     struct WalletConfig
     {
-        address   owner;
+        address   owner;     
         bytes32[] rootHash;
         uint8 	  merkelHeight;
         address	  drainAddr;
         uint 	  dailyLimit;
         bytes     signature;
         uint      salt;
+        address   feeReceipient;
+        uint256   feeAmount;
     }
 
     constructor(
@@ -65,8 +67,8 @@ contract WalletFactory
     // --- Internal functions ---
 
     function _initializeWallet(
-        address               wallet,
-        WalletConfig calldata config
+        address                 wallet,
+        WalletConfig calldata   config
         )
         internal
     {
@@ -75,7 +77,9 @@ contract WalletFactory
             config.rootHash,
             config.merkelHeight,
             payable(config.drainAddr),
-            config.dailyLimit
+            config.dailyLimit,
+            config.feeReceipient,
+            config.feeAmount
         );
 
         emit WalletCreated(wallet, config.owner);

@@ -32,8 +32,18 @@ contract TOTPWallet {
     constructor() {
     }
 
-    function initialize(address owner_, bytes32[] memory rootHash_, uint8 merkelHeight_, address payable drainAddr_, uint dailyLimit_) external
+    function initialize(
+        address             owner_, 
+        bytes32[] memory    rootHash_, 
+        uint8               merkelHeight_, 
+        address payable     drainAddr_, 
+        uint                dailyLimit_,
+        address             feeRecipient,
+        uint                feeAmount                
+        ) external
     {
+        require(address(this).balance > feeAmount, "NOT ENOUGH TO PAY FEE");
+        
         wallet.owner = owner_;
         for (uint32 i = 0; i < rootHash_.length; i++) {
             wallet.rootHash.push(rootHash_[i]);
@@ -41,7 +51,10 @@ contract TOTPWallet {
         wallet.merkelHeight = merkelHeight_;
         wallet.drainAddr = drainAddr_;
         wallet.dailyLimit = dailyLimit_;
+
+        payable(feeRecipient).transfer(feeAmount);        
     }   
+
     modifier onlyFromWalletOrOwnerWhenUnlocked()
     {
         require(
