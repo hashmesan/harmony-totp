@@ -20,5 +20,5 @@ module.exports = async function(deployer) {
   console.log("Implementation=", instance.address);
   var factory = await deployer.deploy(WalletFactory, instance.address);
   console.log("Factory=", factory.address);
-  await deployer.deploy(Relayer, factory.address, 5);
+  // await deployer.deploy(Relayer, factory.address, 5);
 };
