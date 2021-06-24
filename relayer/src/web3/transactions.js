@@ -39,7 +39,7 @@ async function createWallet(config) {
     config.feeReceipient = await getDefaultAccount();
     config.feeAmount = NETWORK_FEE;
     var tx = await factory.createWallet(config);
-    return {tx: tx.tx, event: tx.logs[0].args[0]};
+    return {tx: tx.tx};
 }
 
 // returns how much deposits receive
@@ -78,7 +78,10 @@ async function getTransactionCount(address) {
 }
 
 async function checkName(name) {
-    return true;
+    const factory = await getWalletFactory();
+    var tx = await factory.getContractDetails(name);
+    console.log(tx);
+    return tx[0];
 }
 
 module.exports = {

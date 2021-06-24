@@ -6,18 +6,19 @@ class ChooseName extends Component {
         super(props)
         this.state = {
           name: '',
-          error: null
+          error: null,
+          busy: false
         }
     }
 
     handleChange(event) {
         this.setState({name: event.target.value});
-        this.props.handleUpdate({name: event.target.value});
     }
 
     // check if name is valid
     validate(e) {
         var self = this;
+        self.setState({busy: true});
         fetch("http://localhost:8080/", {
             method: 'POST',
             headers: {
@@ -27,10 +28,20 @@ class ChooseName extends Component {
                 operation: "checkName",
                 name: this.state.name
             })
-        }).then((res)=> {
-            self.props.history.push("/create/step2");
+        })
+        .then(res=>res.json())
+        .then((res)=> {
+            console.log("result=", res);
+            if (res.result == "0x0000000000000000000000000000000000000000") {
+                self.props.handleUpdate({name: self.state.name});
+                self.props.history.push("/create/step2");
+            } else {
+                self.setState({error: "Not found"});
+            }
+            self.setState({busy: false});
         }).catch((ex)=>{
             self.setState({error: ex});
+            self.setState({busy: false});
         })
     }
 
@@ -39,11 +50,11 @@ class ChooseName extends Component {
             <React.Fragment>
                 <h2>Choose a name for your wallet</h2>
                 <h5 className="mt-4">A short, memorable name makes it easy find your wallet, and share with others.</h5>
-                <div className="row justify-content-md-center mt-4">
+                {this.state.error && <div className="row justify-content-md-center mt-4">
                     <div className="alert alert-danger w-50" role="alert">
                         Name is not available!
                     </div>
-                </div>
+                </div>}
                 <div className="row justify-content-md-center">
                     <div className="mt-4 w-50 input-group">
                         <input type="text" className="form-control" value={this.state.name} onChange={this.handleChange.bind(this)}/>
@@ -52,7 +63,8 @@ class ChooseName extends Component {
                         </div>
                     </div>
                 </div>
-                <button className="mt-5 btn btn-lg btn-primary" onClick={this.validate.bind(this)}>Next</button>                
+                {!this.state.busy && <button className="mt-5 btn btn-lg btn-primary" onClick={this.validate.bind(this)}>Next</button>}
+                {this.state.busy && <button disabled className="mt-5 btn btn-lg btn-primary">Checking...</button>}
             </React.Fragment>
         );
     }

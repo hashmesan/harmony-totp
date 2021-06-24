@@ -2,12 +2,13 @@
 pragma solidity ^0.7.6;
 pragma experimental ABIEncoderV2;
 
+import "./name_registry.sol";
 import "./otp_wallet.sol";
 import "./external/walletproxy.sol";
 import "./external/create2.sol";
 import "./external/signatureutil.sol";
 
-contract WalletFactory
+contract WalletFactory is NameRegistry
 {
     event WalletCreated (address wallet, address owner);
     event Debug(bytes32 signHash, address addr);
@@ -17,6 +18,7 @@ contract WalletFactory
 
     struct WalletConfig
     {
+        string    name;
         address   owner;     
         bytes32[] rootHash;
         uint8 	  merkelHeight;
@@ -37,8 +39,15 @@ contract WalletFactory
     function createWallet(WalletConfig calldata config)
         external
         returns (address wallet)
-    {
-        require(computeWalletAddress(config.owner, config.salt).balance >= config.feeAmount, "NOT ENOUGH FOR FEES");
+    {   
+        // address found;
+        // uint16 ver;
+        // (found, ver) =  NameRegistry(this).getContractDetails(config.name);
+        // require(found == address(0x0), "REGISTRY MUST BE AVAILABLE");
+        address addr = computeWalletAddress(config.owner, config.salt);
+        require(addr.balance >= config.feeAmount, "NOT ENOUGH FOR FEES");
+        require(NameRegistry(this).registerName(config.name, addr, 1));
+
         wallet = _deploy(config.owner, config.salt);
         _initializeWallet(wallet, config);
     }

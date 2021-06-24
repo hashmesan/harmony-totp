@@ -50,7 +50,7 @@ class FirstDeposit extends Component {
 
 
     saveWalletToLocalStorage() {
-        localStorage.setState("SMARTVAULT", JSON.stringify(this.props.data));
+        localStorage.setItem("SMARTVAULT", JSON.stringify(this.props.data));
     }
 
     /*
@@ -73,6 +73,7 @@ class FirstDeposit extends Component {
             body: JSON.stringify({
                 operation: "createWallet",
                 config: {
+                    name: this.props.data.name,
                     owner: this.props.data.ownerAddress,
                     rootHash: this.props.data.wallet.root_arr,
                     merkelHeight: this.props.data.merkleHeight,

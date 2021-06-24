@@ -23,6 +23,7 @@ class Create extends Component {
         // Set the initial input values
         this.state = {
           currentStep: 1, // Default is Step 1
+          name: "abc"
         }
         this.worker = new Worker("worker.js");
         this.worker.onmessage = this.receivedWorkerMessage.bind(this);

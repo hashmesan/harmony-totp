@@ -20,10 +20,13 @@ class MainScreen extends Component {
                 <Header/>
                 <Switch>
                     <Route exact path="/">
-                        {localStorage.getItem("SMARTVAULT") ?<Wallet/> : <Redirect to="/create"/>}
+                        {localStorage.getItem("SMARTVAULT") ?<Redirect to="/wallet"/> : <Redirect to="/create"/>}
                     </Route>
                     <Route path="/create">
                         <Create/>
+                    </Route>
+                    <Route path="/wallet">
+                        <Wallet/>
                     </Route>
                 </Switch>
             </Router>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
