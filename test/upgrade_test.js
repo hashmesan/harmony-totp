@@ -49,7 +49,7 @@ contract("Upgrade", accounts => {
 
 		//console.log(wallet);
 		var newVersion = await commons.createNewImplementation();
-        const methodData = wallet.contract.methods.upgradeMasterCopy(newVersion.address).encodeABI();
+        var methodData = wallet.contract.methods.upgradeMasterCopy(newVersion.address).encodeABI();
                 
         const gasLimit = 100000;
         const nonce = await commons.getNonceForRelay();
@@ -71,5 +71,32 @@ contract("Upgrade", accounts => {
 		var owner = await wallet.getOwner();
 		console.log("owner2=", owner);
 		assert.equal(tmpWallet.address, owner, "Expect data not changed, and owner is same");
+
+		var newBalance = await web3.eth.getBalance(wallet.address);
+        console.log("Contract Balance=", newBalance);
+
+		var dest = web3.eth.accounts.create();
+		var feeWallet = web3.eth.accounts.create();
+		methodData = wallet.contract.methods.makeTransfer(dest.address, web3.utils.toWei("0.0012345", "ether")).encodeABI();
+                
+        var sigs = await commons.signOffchain2(
+            [tmpWallet],
+            wallet.address,
+            0,
+            methodData,
+            0,
+            nonce,
+            0,
+            gasLimit,
+            ethers.constants.AddressZero,
+            feeWallet.address
+        );
+
+        await wallet.executeMetaTx(methodData, sigs, nonce, 0, gasLimit, ethers.constants.AddressZero, feeWallet.address);
+		console.log("method=", methodData);
+        newBalance = await web3.eth.getBalance(dest.address);
+        console.log("Balance=", newBalance);
+        assert.equal(newBalance, web3.utils.toWei(".0012345", "ether"), "withdraw amount is correct");
+
 	});
 });

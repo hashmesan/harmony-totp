@@ -1,10 +1,13 @@
 const Web3 = require('web3');
 const Provider = require('@truffle/hdwallet-provider');
+const walletArtifacts = require('../../../build/contracts/TOTPWallet.json');
 const walletFactoryArtifacts = require('../../../build/contracts/WalletFactory.json');
+
 const { TruffleProvider } = require('@harmony-js/core')
 const { Account } = require('@harmony-js/account')
 
 var contract = require("@truffle/contract");
+var Wallet = contract(walletArtifacts)
 var WalletFactory = contract(walletFactoryArtifacts)
 
 const FACTORY_ADDRESS = walletFactoryArtifacts.networks[process.env.NETWORK_ID].address;
@@ -33,11 +36,21 @@ async function getWalletFactory() {
     return await WalletFactory.at(FACTORY_ADDRESS);
 }
 
+async function getWallet(address) {   
+    const provider = getHarmonyProvider();
+    const accounts = await new Web3(provider).eth.getAccounts();
+    Wallet.setProvider(provider);
+    Wallet.defaults({from: accounts[0]});
+
+    return await Wallet.at(address);
+}
+
 // submits wallet and receive a forwarder address
 async function createWallet(config) {
     const factory = await getWalletFactory();
-    config.feeReceipient = await getDefaultAccount();
-    config.feeAmount = NETWORK_FEE;
+    config.feeReceipient = "0x566CeD242B1Ab98Ade3f69c2C623cCA0Df42b382"; //await getDefaultAccount();
+    config.feeAmount = Web3.utils.toWei("0");
+    console.log(config);
     var tx = await factory.createWallet(config);
     return {tx: tx.tx};
 }
@@ -66,8 +79,10 @@ function executeMetaTx(
     address refundAddress my main address         
 ) external 
  */       
-function submitMetaTx(data, signatures, nonce) {
-
+async function submitMetaTx(data) {
+    var wallet = await getWallet(data.from);
+    var tx = await wallet.executeMetaTx(data.data, data.signatures, data.nonce, data.gasPrice, data.gasLimit, data.refundToken, data.refundAddress);
+    return {tx: tx}
 }
 
 // used for nonce
@@ -89,5 +104,6 @@ module.exports = {
     createWallet,
     getBalance,
     getDepositAddress,
-    checkName
+    checkName,
+    submitMetaTx
 }

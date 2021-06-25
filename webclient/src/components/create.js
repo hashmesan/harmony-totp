@@ -20,10 +20,11 @@ import Web3EthAccounts from 'web3-eth-accounts';
 class Create extends Component {
     constructor(props) {
         super(props)
+        var data = JSON.parse(localStorage.getItem("SMARTVAULT")) || {};
         // Set the initial input values
         this.state = {
           currentStep: 1, // Default is Step 1
-          name: "abc"
+          data: data
         }
         this.worker = new Worker("worker.js");
         this.worker.onmessage = this.receivedWorkerMessage.bind(this);
@@ -31,7 +32,10 @@ class Create extends Component {
 
     receivedWorkerMessage(event) {
         console.log(event);
-        this.setState({wallet: event.data.mywallet})
+        const self = this;
+        this.setState(Object.assign(this.state.data,{hashes: event.data.mywallet}), ()=>{
+            localStorage.setItem("SMARTVAULT", JSON.stringify(self.state.data));
+        })
     }
 
     // generate HOTP Secret here
@@ -40,6 +44,7 @@ class Create extends Component {
         const bin = crypto.randomBytes(20);
         const base32 = b32.encode(bin).toString("utf8").replace(/=/g, "");
         const merkleHeight = 12;
+        const self = this;
 
         const secret = base32
           .toLowerCase()
@@ -49,11 +54,16 @@ class Create extends Component {
           .join("")
           .toUpperCase();
         this.worker.postMessage({secret: secret, depth: merkleHeight});
-        this.setState({merkleHeight: merkleHeight, secret: secret, ownerAddress: account.address, ownerSecret: account.privateKey, salt: bin.readUIntLE(0, 6)})
+        const newData = {merkleHeight: merkleHeight, secret: secret, ownerAddress: account.address, ownerSecret: account.privateKey, salt: bin.readUIntLE(0, 6)}
+        this.setState(Object.assign(this.state.data, newData), ()=>{
+            localStorage.setItem("SMARTVAULT", JSON.stringify(self.state.data));
+        })
     }
 
     componentDidMount() {
-        this.createNewWallet();
+        if(!("secret" in this.state.data)) {
+            this.createNewWallet();
+        }
     }
 
     goNext() {
@@ -62,7 +72,11 @@ class Create extends Component {
 
     handleUpdate(data){
         console.log("handleUpdate", this, data);
-        this.setState(data);
+        var self = this;
+
+        this.setState({data: Object.assign(this.state.data, data)}, ()=>{
+            localStorage.setItem("SMARTVAULT", JSON.stringify(self.state.data));
+        });
     }
     handleSubmit(e){
         e && e.preventDefault();
@@ -83,10 +97,10 @@ class Create extends Component {
                             <ChooseName handleUpdate={this.handleUpdate.bind(this)}/>
                         </Route>
                         <Route path="/create/step2">
-                            <ScanQRCode secret={this.state.secret} name={this.state.name} ownerAddress={this.state.ownerAddress} salt={this.state.salt} handleUpdate={this.handleUpdate.bind(this)} />
+                            <ScanQRCode secret={this.state.secret} name={this.state.data.name} ownerAddress={this.state.data.ownerAddress} salt={this.state.data.salt} handleUpdate={this.handleUpdate.bind(this)} />
                         </Route>
                         <Route path="/create/step3">
-                            <FirstDeposit data={this.state}/>
+                            <FirstDeposit data={this.state.data}/>
                         </Route>                                        
                     </Switch>
                 </Router>

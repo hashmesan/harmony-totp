@@ -19,7 +19,7 @@ module.exports = async function(deployer) {
   await deployer.link(MetaTx, TOTPWallet);
   var instance = await deployer.deploy(TOTPWallet);
   console.log("Implementation=", instance.address);
-  var registry = await deployer.deploy(NameRegistry);
+  //var registry = await deployer.deploy(NameRegistry);
 
   var factory = await deployer.deploy(WalletFactory, instance.address);
   console.log("Factory=", factory.address);

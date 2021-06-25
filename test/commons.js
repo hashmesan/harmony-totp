@@ -80,7 +80,7 @@ async function walletWithAddress(address) {
   return await TOTPWallet.at(address);
 }
 
-async function createWallet(owner, depth, drainAddr) {
+async function createWallet(owner, depth, drainAddr, feeAddress, feeAmount) {
     const {root_arr, leaves_arr} = createHOTP(depth);
 
     const guardians = await Guardians.new();
@@ -94,7 +94,8 @@ async function createWallet(owner, depth, drainAddr) {
     await TOTPWallet.link("MetaTx", metatx.address);
 
     var wallet = await TOTPWallet.new();
-    await wallet.initialize(owner, root_arr, depth, drainAddr, web3.utils.toWei("0.01", "ether"));
+    //console.log(root_arr, feeAddress, feeAmount);
+    await wallet.initialize(owner, root_arr, depth, drainAddr, web3.utils.toWei("0.01", "ether"), feeAddress, feeAmount);
 
     return {
         root_arr,

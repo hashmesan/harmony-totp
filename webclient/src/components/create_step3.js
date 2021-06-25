@@ -62,6 +62,8 @@ class FirstDeposit extends Component {
         uint      salt;
     */    
     createWallet(ev) {
+        console.log(this.data);
+        
         var self = this;
         self.setState({busy: true});
         ev.preventDefault();
@@ -75,7 +77,7 @@ class FirstDeposit extends Component {
                 config: {
                     name: this.props.data.name,
                     owner: this.props.data.ownerAddress,
-                    rootHash: this.props.data.wallet.root_arr,
+                    rootHash: this.props.data.hashes.root_arr,
                     merkelHeight: this.props.data.merkleHeight,
                     drainAddr: "0x0000000000000000000000000000000000000000",
                     dailyLimit: web3utils.toWei("1000"),
@@ -88,7 +90,7 @@ class FirstDeposit extends Component {
                 return res.json()
             } else {
                 return res.json().then(e=>{
-                    self.setState({error: e});
+                    throw e;
                 })
             }
         })
@@ -99,7 +101,13 @@ class FirstDeposit extends Component {
             self.props.history.push("/wallet");
         })
         .catch(e=>{
-            self.setState({error: e});
+            console.log(e);
+            if ('reason' in e) {
+                console.log("HERE!!");
+                self.setState({error: "TX: " + e.tx + " (" + e.reason + ")", busy: false});
+            } else {
+                self.setState({error: e, busy: false});
+            }
         })
     }
 
@@ -132,12 +140,12 @@ class FirstDeposit extends Component {
                     {this.state.error &&                
                     <div className="row justify-content-md-center mt-4">
                         <div className="alert alert-danger w-50" role="alert">
-                            {this.state.error && JSON.stringify(this.state.error.message)}
+                            {this.state.error && JSON.stringify(this.state.error)}
                         </div>
                     </div>}
 
                     {(this.state.continue && !this.state.busy)&& <button className="mt-5 btn btn-lg btn-primary" onClick={this.createWallet.bind(this)}>Create Wallet</button>} 
-                    {(this.state.continue && this.state.busy) && <button className="mt-5 btn btn-lg btn-primary" onClick={this.createWallet.bind(this)}>
+                    {(this.state.continue && this.state.busy) && <button className="mt-5 btn btn-lg btn-primary">
                     <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                             Waiting for tx...                            
                         </button>}

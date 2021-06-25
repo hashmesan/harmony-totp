@@ -8,7 +8,7 @@ contract("OTPWallet", accounts => {
 
     it("should transfer with direct signed requests", async () => {
         var tmpWallet = web3.eth.accounts.create();
-        var {root, leaves, wallet} = await commons.createWallet(accounts[0] ,8, tmpWallet.address);
+        var {root, leaves, wallet} = await commons.createWallet(accounts[0] ,8, tmpWallet.address, tmpWallet.address, 0);
         console.log("root="+ root);
 
         await web3.eth.sendTransaction({from: accounts[0], to: wallet.address, value: web3.utils.toWei("1", "ether")});
@@ -32,8 +32,9 @@ contract("OTPWallet", accounts => {
         const gasLimit = 100000;
         const nonce = await commons.getNonceForRelay();
 
+        var feeWallet = web3.eth.accounts.create();
         var tmpWallet = web3.eth.accounts.create();
-        var {root, leaves, wallet} = await commons.createWallet(tmpWallet.address ,8, tmpWallet.address);
+        var {root, leaves, wallet} = await commons.createWallet(tmpWallet.address ,8, tmpWallet.address, tmpWallet.address, 0);
         await web3.eth.sendTransaction({from: accounts[0], to: wallet.address, value: web3.utils.toWei("1", "ether")});
         const methodData = wallet.contract.methods.makeTransfer(tmpWallet.address, web3.utils.toWei("0.0012345", "ether")).encodeABI();
                 
@@ -47,10 +48,10 @@ contract("OTPWallet", accounts => {
             0,
             gasLimit,
             ethers.constants.AddressZero,
-            ethers.constants.AddressZero
+            feeWallet.address
         );
 
-        await wallet.executeMetaTx(methodData, sigs, nonce, 0, gasLimit, ethers.constants.AddressZero, ethers.constants.AddressZero);
+        await wallet.executeMetaTx(methodData, sigs, nonce, 0, gasLimit, ethers.constants.AddressZero, feeWallet.address);
 
         var newBalance = await web3.eth.getBalance(tmpWallet.address);
         console.log("Balance=", newBalance);

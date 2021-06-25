@@ -17,7 +17,7 @@ class MainScreen extends Component {
     render() {
         return (
             <Router>
-                <Header/>
+                <Header showCreate={localStorage.getItem("SMARTVAULT") == null}/>
                 <Switch>
                     <Route exact path="/">
                         {localStorage.getItem("SMARTVAULT") ?<Redirect to="/wallet"/> : <Redirect to="/create"/>}
@@ -33,10 +33,5 @@ class MainScreen extends Component {
         );
     }
 }
-
-function Home() {
-    return <h2>abc</h2>;
-  }
-  
 
 ReactDOM.render(<MainScreen/>, document.getElementById('container'));

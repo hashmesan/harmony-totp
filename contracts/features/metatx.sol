@@ -41,7 +41,7 @@ library MetaTx {
 
         require(validateSignatures(_wallet, ex.signHash, signatures, sigRequirement.ownerSignatureRequirement), "RM: Invalid signatures");
 
-        (ex.success, ex.returnData) = address(this).call(_data);
+        (ex.success, ex.returnData) = address(sw).call(_data);
 
         // refund
     }

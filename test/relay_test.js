@@ -7,6 +7,10 @@ const Relayer = artifacts.require("Relayer");
 
 contract("Relayer", accounts => {
 
+	it("should be able to transfer before create", async () => {
+
+	});
+
 	it("should be able to relay", async () => {
 		var merkelHeight = 6;
 		var salt = 100;

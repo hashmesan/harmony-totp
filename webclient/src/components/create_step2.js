@@ -79,6 +79,7 @@ class ScanQRCode extends Component {
             } else {
                 return res.json().then(e=>{
                     self.setState({error: e});
+                    throw Exception(e);
                 })
             }
         })

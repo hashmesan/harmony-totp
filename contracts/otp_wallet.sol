@@ -3,6 +3,7 @@
 pragma solidity ^0.7.6;
 pragma experimental ABIEncoderV2;
 
+import "openzeppelin-solidity/contracts/utils/Address.sol";
 import "./core/wallet_data.sol";
 import "./features/guardians.sol";
 import "./features/daily_limit.sol";
@@ -11,6 +12,7 @@ import "./features/metatx.sol";
 
 contract TOTPWallet {
 
+    using Address for address payable;
     using Guardians for Core.Wallet;
     using DailyLimit for Core.Wallet;
     using Recovery for Core.Wallet;
@@ -20,39 +22,53 @@ contract TOTPWallet {
 
     address masterCopy;
     Core.Wallet public wallet;
+    bool internal isImplementationContract;
 
     // END OF DATA LAYOUT
 
     event DebugEvent(bytes16 data);
     event DebugEventN(uint32 data);
+    event DebugEvent256(uint256 data);
     event WalletTransfer(address to, uint amount);
     event Deposit(address indexed sender, uint value);
     event WalletUpgraded(address newImpl);
+    event TransactionExecuted(bool indexed success, bytes returnData, bytes32 signedHash);
 
     constructor() {
+        isImplementationContract = true;
+    }
+
+    modifier disableInImplementationContract
+    {
+        require(!isImplementationContract, "DISALLOWED_ON_IMPLEMENTATION_CONTRACT");
+        _;
     }
 
     function initialize(
         address             owner_, 
-        bytes32[] memory    rootHash_, 
+        bytes32[] calldata    rootHash_, 
         uint8               merkelHeight_, 
         address payable     drainAddr_, 
         uint                dailyLimit_,
         address             feeRecipient,
         uint                feeAmount                
-        ) external
+        ) external disableInImplementationContract()
     {
-        require(address(this).balance > feeAmount, "NOT ENOUGH TO PAY FEE");
-        
+        //emit DebugEvent256(address(this).balance);
+        require(wallet.owner == address(0), "INITIALIZED_ALREADY");
+        require(address(this).balance >= feeAmount, "NOT ENOUGH TO PAY FEE");
+
         wallet.owner = owner_;
         for (uint32 i = 0; i < rootHash_.length; i++) {
-            wallet.rootHash.push(rootHash_[i]);
+             wallet.rootHash.push(rootHash_[i]);
         }        
         wallet.merkelHeight = merkelHeight_;
         wallet.drainAddr = drainAddr_;
         wallet.dailyLimit = dailyLimit_;
 
-        payable(feeRecipient).transfer(feeAmount);        
+        if (feeRecipient != address(0)) {
+            payable(feeRecipient).sendValue(feeAmount);
+        }        
     }   
 
     modifier onlyFromWalletOrOwnerWhenUnlocked()
@@ -119,7 +135,7 @@ contract TOTPWallet {
 
     function executeMetaTx(
             bytes   calldata data,
-            bytes   calldata signatures,
+            bytes   calldata signatures, 
             uint256 nonce,
             uint256 gasPrice,
             uint256 gasLimit,
@@ -131,7 +147,11 @@ contract TOTPWallet {
         Core.SignatureRequirement memory sigRequirement;        
         (sigRequirement.requiredSignatures, sigRequirement.ownerSignatureRequirement) = getRequiredSignatures(data);        
 
-        MetaTx.executeMetaTx(wallet, address(this), data, signatures, nonce, gasPrice, gasLimit, refundAddress, sigRequirement);
+        //MetaTx.executeMetaTx(wallet, refundAddress, data, signatures, nonce, gasPrice, gasLimit, refundAddress, sigRequirement);
+        bool success;
+        bytes memory returnData;
+        (success, returnData) = address(this).call(data);
+        emit TransactionExecuted(success, returnData, 0x0);        
     }
 
     function makeTransfer(address payable to, uint amount) external onlyFromWalletOrOwnerWhenUnlocked() 

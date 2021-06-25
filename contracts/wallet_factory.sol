@@ -46,10 +46,11 @@ contract WalletFactory is NameRegistry
         // require(found == address(0x0), "REGISTRY MUST BE AVAILABLE");
         address addr = computeWalletAddress(config.owner, config.salt);
         require(addr.balance >= config.feeAmount, "NOT ENOUGH FOR FEES");
-        require(NameRegistry(this).registerName(config.name, addr, 1));
+        // require(NameRegistry(this).registerName(config.name, addr, 1));
 
         wallet = _deploy(config.owner, config.salt);
         _initializeWallet(wallet, config);
+        emit WalletCreated(address(wallet), config.owner);
     }
 
     function computeWalletAddress(
@@ -83,8 +84,6 @@ contract WalletFactory is NameRegistry
             config.feeReceipient,
             config.feeAmount
         );
-
-        emit WalletCreated(wallet, config.owner);
     }
 
     function _deploy(
