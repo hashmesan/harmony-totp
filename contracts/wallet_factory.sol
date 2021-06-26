@@ -18,7 +18,8 @@ contract WalletFactory is NameRegistry
 
     struct WalletConfig
     {
-        string    name;
+        address resolver;
+        string[2]    domain;
         address   owner;     
         bytes32[] rootHash;
         uint8 	  merkelHeight;
@@ -76,6 +77,8 @@ contract WalletFactory is NameRegistry
         internal
     {
         TOTPWallet(payable(wallet)).initialize(
+            config.resolver,
+            config.domain,
             config.owner,
             config.rootHash,
             config.merkelHeight,
@@ -84,6 +87,8 @@ contract WalletFactory is NameRegistry
             config.feeReceipient,
             config.feeAmount
         );
+
+        //TOTPWallet(payable(wallet)).registerENS(config.subdomain, config.domain, config.duration);
     }
 
     function _deploy(

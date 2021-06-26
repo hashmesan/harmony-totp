@@ -51,5 +51,9 @@ library Core {
         // recovery
         RecoveryInfo pendingRecovery;
         mapping(bytes32 => bool) commitHash;
+
+        //
+        address resolver;
+        
     }
 }

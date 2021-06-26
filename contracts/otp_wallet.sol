@@ -9,6 +9,9 @@ import "./features/guardians.sol";
 import "./features/daily_limit.sol";
 import "./features/recovery.sol";
 import "./features/metatx.sol";
+import "./features/name_service.sol";
+import "./ens/ens_resolver.sol";
+import "./ens/registrar_interface.sol";
 
 contract TOTPWallet {
 
@@ -17,6 +20,7 @@ contract TOTPWallet {
     using DailyLimit for Core.Wallet;
     using Recovery for Core.Wallet;
     using MetaTx for Core.Wallet;
+    using NameService for Core.Wallet;
 
     // DATA LAYOUT - ALWAYS ADD NEW VAR TO LAST
 
@@ -24,12 +28,18 @@ contract TOTPWallet {
     Core.Wallet public wallet;
     bool internal isImplementationContract;
 
+    // namehash('one')
+    bytes32 constant public TLD_NODE = 0x30f9ae3b1c4766476d11e2bacd21f9dff2c59670d8b8a74a88ebc22aec7020b9;
+
     // END OF DATA LAYOUT
 
     event DebugEvent(bytes16 data);
+    event DebugEvent32(bytes32 data);
     event DebugEventN(uint32 data);
+    event DebugEventA(address data);    
     event DebugEvent256(uint256 data);
     event WalletTransfer(address to, uint amount);
+    event NameRegistered(string subdomain, string domain, uint cost);
     event Deposit(address indexed sender, uint value);
     event WalletUpgraded(address newImpl);
     event TransactionExecuted(bool indexed success, bytes returnData, bytes32 signedHash);
@@ -44,7 +54,10 @@ contract TOTPWallet {
         _;
     }
 
+    // keep methods <= 8 parameters of get stack to deep
     function initialize(
+        address              resolver_,
+        string[2]   calldata domain_, // empty means no registration
         address             owner_, 
         bytes32[] calldata    rootHash_, 
         uint8               merkelHeight_, 
@@ -52,8 +65,11 @@ contract TOTPWallet {
         uint                dailyLimit_,
         address             feeRecipient,
         uint                feeAmount                
-        ) external disableInImplementationContract()
+        ) external 
+        // disableInImplementationContract()
     {
+        wallet.resolver = resolver_;
+
         //emit DebugEvent256(address(this).balance);
         require(wallet.owner == address(0), "INITIALIZED_ALREADY");
         require(address(this).balance >= feeAmount, "NOT ENOUGH TO PAY FEE");
@@ -66,10 +82,27 @@ contract TOTPWallet {
         wallet.drainAddr = drainAddr_;
         wallet.dailyLimit = dailyLimit_;
 
+        // STACK TOO DEEP
+        if(bytes(domain_[0]).length > 0) {
+            this.registerENS(domain_[0], domain_[1], 60 * 60 * 24 * 365);
+        }
+
         if (feeRecipient != address(0)) {
             payable(feeRecipient).sendValue(feeAmount);
         }        
     }   
+
+    function registerENS(string calldata subdomain, string calldata domain, uint duration) external onlyFromWalletOrOwnerWhenUnlocked() {
+        bytes32 label = keccak256(bytes(domain));
+        bytes32 node = keccak256(abi.encodePacked(TLD_NODE, label));    
+        address resolved = Resolver(wallet.resolver).addr(node);
+        emit DebugEventA(address(resolved));
+        RegistrarInterface subdomainRegistrar = RegistrarInterface(resolved);
+        uint rentPriceSub = subdomainRegistrar.rentPrice(subdomain, duration);
+        require(address(this).balance >= rentPriceSub, "NOT ENOUGH TO REGISTER NAME");
+        subdomainRegistrar.register{value:rentPriceSub}(label, subdomain, address(this), duration, '', wallet.resolver);
+        emit NameRegistered(subdomain, domain, rentPriceSub);
+    }
 
     modifier onlyFromWalletOrOwnerWhenUnlocked()
     {

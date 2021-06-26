@@ -3,14 +3,19 @@ const truffleAssert = require("truffle-assertions");
 const ethers = require("ethers");
 const merkle = require("../lib/merkle.js");
 const commons = require("./commons.js");
+const EnsResolver = artifacts.require("EnsResolver");
+const namehash = require('eth-ens-namehash');
 
 contract("Upgrade", accounts => {
 	
 	it("should be able to upgrade", async () => {
+		const blockNumber = await web3.eth.getBlockNumber();
+		const resolverAddr = "0xd09fD54DD8A3A7d02676a1813CDf0d720E6Dbe89";
+
 		var merkelHeight = 6;
 		var salt = 100;
 		var dailyLimit = web3.utils.toWei("0.01", "ether");
-		var walletFactory = await commons.createWalletFactory();
+		var walletFactory = await commons.createWalletFactory(resolverAddr);
 		var tmpWallet = web3.eth.accounts.create();
 		var {root_arr, leaves_arr} = commons.createHOTP(merkelHeight);
 		var relayerWallet = web3.eth.accounts.create();
@@ -22,12 +27,14 @@ contract("Upgrade", accounts => {
 			tmpWallet.address,
 			salt
 		  );
-		await web3.eth.sendTransaction({ from: accounts[0], to: walletAddrComputed, value: web3.utils.toWei("1", "ether") , gas: 300000});
+		await web3.eth.sendTransaction({ from: accounts[0], to: walletAddrComputed, value: web3.utils.toWei("2", "ether") , gas: 300000});
 		var newBalance = await web3.eth.getBalance(walletAddrComputed);
 		console.log("WalltComputed", newBalance);		
 
+		var subdomain = "superlongcrazynameverycheap000001" + blockNumber;
 		var wallet = await walletFactory.createWallet({
-			name: web3.utils.utf8ToHex("testname"),
+			resolver: resolverAddr,
+			domain: [subdomain, "crazy"],
 			owner: tmpWallet.address,
 			rootHash: root_arr,
 			merkelHeight: merkelHeight,
@@ -37,6 +44,9 @@ contract("Upgrade", accounts => {
 			feeReceipient: feeReceipient,
 			feeAmount: feeAmount
 		});
+	
+		const resolver = await EnsResolver.at(resolverAddr);
+		console.log("RESOLVED!", await resolver.addr(namehash.hash(subdomain + '.crazy.one')), walletAddrComputed);
 
 		console.log(walletAddrComputed);
 		var wallet = await commons.walletWithAddress(walletAddrComputed);
@@ -48,7 +58,7 @@ contract("Upgrade", accounts => {
 		assert.equal(relayerBalance, feeAmount, "Relayer expected to receive a fee");
 
 		//console.log(wallet);
-		var newVersion = await commons.createNewImplementation();
+		var newVersion = await commons.createNewImplementation(resolverAddr);
         var methodData = wallet.contract.methods.upgradeMasterCopy(newVersion.address).encodeABI();
                 
         const gasLimit = 100000;
