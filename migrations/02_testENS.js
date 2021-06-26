@@ -67,6 +67,6 @@ module.exports = async function(deployer, network, accounts) {
     });
 
     console.log(wallet.tx);
-    console.log("RESOLVED?", await resolver.addr(namehash.hash(subdomain + '.crazy.one')), accounts[0]);
+    console.log("RESOLVED?", await resolver.addr(namehash.hash(subdomain + '.crazy.one')), smartWallet);
     console.log("BALANCE (AFTER)=", smartWallet, await web3.eth.getBalance(smartWallet));
 };

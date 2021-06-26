@@ -6,17 +6,21 @@ const MetaTx = artifacts.require("MetaTx");
 const WalletFactory = artifacts.require("WalletFactory");
 const Relayer = artifacts.require("Relayer");
 const NameRegistry = artifacts.require("NameRegistry");
+const NameService = artifacts.require("NameService");
 
 module.exports = async function(deployer) {
-  await Promise.all([deployer.deploy(Guardians), 
-                     deployer.deploy(DailyLimit),
-                     deployer.deploy(Recovery),
-                     deployer.deploy(MetaTx)]);
+  await Promise.all([deployer.deploy(Guardians, {overwrite: false}), 
+                     deployer.deploy(DailyLimit, {overwrite: false}),
+                     deployer.deploy(Recovery, {overwrite: false}),
+                     deployer.deploy(MetaTx, {overwrite: false}),
+                     deployer.deploy(NameService, {overwrite: false})]);
 
   await deployer.link(Guardians, TOTPWallet);
   await deployer.link(DailyLimit, TOTPWallet);
   await deployer.link(Recovery, TOTPWallet);
   await deployer.link(MetaTx, TOTPWallet);
+  await deployer.link(NameService, TOTPWallet);
+
   var instance = await deployer.deploy(TOTPWallet);
   console.log("Implementation=", instance.address);
   //var registry = await deployer.deploy(NameRegistry);
