@@ -2,6 +2,10 @@ const Web3 = require('web3');
 const Provider = require('@truffle/hdwallet-provider');
 const walletArtifacts = require('../../../build/contracts/TOTPWallet.json');
 const walletFactoryArtifacts = require('../../../build/contracts/WalletFactory.json');
+const resolverArtifacts = require('../../../build/contracts/EnsResolver.json');
+const registrarArtifacts = require('../../../build/contracts/RegistrarInterface.json');
+const namehash = require('eth-ens-namehash');
+const ethers = require("ethers");
 
 const { TruffleProvider } = require('@harmony-js/core')
 const { Account } = require('@harmony-js/account')
@@ -9,61 +13,83 @@ const { Account } = require('@harmony-js/account')
 var contract = require("@truffle/contract");
 var Wallet = contract(walletArtifacts)
 var WalletFactory = contract(walletFactoryArtifacts)
+var Resolver = contract(resolverArtifacts);
+var RegistrarInterface = contract(registrarArtifacts);
 
-const FACTORY_ADDRESS = walletFactoryArtifacts.networks[process.env.NETWORK_ID].address;
 const NETWORK_FEE = Web3.utils.toWei("0.00123", "ether");
+const duration = 60 * 60 * 24 * 365; // 1 year
 
-console.log("Deployed WALLET FACTORY=", FACTORY_ADDRESS);
-
-function getHarmonyProvider() {
-    const provider = new Provider(process.env.PRIVATE_KEY, "https://api.s0.b.hmny.io");
-    return provider;
+const CONFIG = {
+    development: {
+        resolver: "0xd09fD54DD8A3A7d02676a1813CDf0d720E6Dbe89",
+        provider: "http://localhost:8545"
+    },
+    testnet: {
+        network_id: 1666700003,
+        resolver: "0xEc6b22dd28c1F1FC1f63bAb2f5CE153Ae494Aa36",
+        provider: "https://api.s3.b.hmny.io"
+    },
+    mainnet: {
+        
+    }
 }
 
-async function getDefaultAccount() {
-    const provider = getHarmonyProvider();
-    const accounts = await new Web3(provider).eth.getAccounts();
+
+// should support multiple env, between testnet & mainnet & multiple shards
+function Transactions(env) {
+    this.env = env;
+    this.config = CONFIG[env];
+    console.log("Loaded ENV=" + env + " provider=" + this.config.provider);
+    this.provider = new Provider(process.env.PRIVATE_KEY, this.config.provider);
+}
+
+Transactions.prototype.getDefaultAccount = async function() {
+    const accounts = await new Web3(this.provider).eth.getAccounts();
     return accounts[0];
 }
 
-async function getWalletFactory() {   
-    const provider = getHarmonyProvider();
-    const accounts = await new Web3(provider).eth.getAccounts();
-    WalletFactory.setProvider(provider);
-    WalletFactory.defaults({from: accounts[0]});
-    console.log("Relayer=", accounts[0]);
-
-    return await WalletFactory.at(FACTORY_ADDRESS);
+Transactions.prototype.getResolver = async function() {
+    const accounts = await new Web3(this.provider).eth.getAccounts();
+    Resolver.setProvider(this.provider);
+    Resolver.defaults({ from: accounts[0] });
+    return await Resolver.at(this.config.resolver);
 }
 
-async function getWallet(address) {   
-    const provider = getHarmonyProvider();
-    const accounts = await new Web3(provider).eth.getAccounts();
-    Wallet.setProvider(provider);
-    Wallet.defaults({from: accounts[0]});
+Transactions.prototype.getWalletFactory = async function() {   
+    const accounts = await new Web3(this.provider).eth.getAccounts();
+    WalletFactory.setProvider(this.provider);
+    WalletFactory.defaults({from: accounts[0]});
+    const address = walletFactoryArtifacts.networks[this.config.network_id].address;
+    console.log("walletfactory=", address);
+    return await WalletFactory.at(address);
+}
 
+Transactions.prototype.getWallet = async function(address) {   
+    const accounts = await new Web3(this.provider).eth.getAccounts();
+    Wallet.setProvider(this.provider);
+    Wallet.defaults({from: accounts[0]});
     return await Wallet.at(address);
 }
 
 // submits wallet and receive a forwarder address
-async function createWallet(config) {
-    const factory = await getWalletFactory();
-    config.feeReceipient = "0x566CeD242B1Ab98Ade3f69c2C623cCA0Df42b382"; //await getDefaultAccount();
+Transactions.prototype.createWallet = async function(config) {
+    const factory = await this.getWalletFactory();
+    config.feeReceipient = await this.getDefaultAccount();
     config.feeAmount = Web3.utils.toWei("0");
-    console.log(config);
+    config.resolver = this.config.resolver;
+    console.log("sent=", config);
     var tx = await factory.createWallet(config);
     return {tx: tx.tx};
 }
 
 // returns how much deposits receive
-async function getBalance(address) {
-    const provider = getHarmonyProvider();
-    const tx = await new Web3(provider).eth.getBalance(address);
+Transactions.prototype.getBalance = async function(address) {
+    const tx = await new Web3(this.provider).eth.getBalance(address);
     return {balance: tx}
 }
 
-async function getDepositAddress(data) {
-    const factory = await getWalletFactory();
+Transactions.prototype.getDepositAddress = async function(data) {
+    const factory = await this.getWalletFactory();
     var tx = await factory.computeWalletAddress(data.owner, data.salt);
     return {address: tx, networkFee: NETWORK_FEE};
 }
@@ -79,31 +105,37 @@ function executeMetaTx(
     address refundAddress my main address         
 ) external 
  */       
-async function submitMetaTx(data) {
-    var wallet = await getWallet(data.from);
+Transactions.prototype.submitMetaTx = async function(data) {
+    var wallet = await this.getWallet(data.from);
     var tx = await wallet.executeMetaTx(data.data, data.signatures, data.nonce, data.gasPrice, data.gasLimit, data.refundToken, data.refundAddress);
     return {tx: tx}
 }
 
 // used for nonce
-async function getTransactionCount(address) {
-    const provider = getHarmonyProvider();
-    const tx = await new Web3(provider).eth.getTransactionCount(address);
+Transactions.prototype.getTransactionCount = async function(address) {
+    const tx = await new Web3(this.provider).eth.getTransactionCount(address);
     return {result: tx}
 }
 
-async function checkName(name) {
-    const factory = await getWalletFactory();
-    var tx = await factory.getContractDetails(name);
-    console.log(tx);
-    return tx[0];
+Transactions.prototype.checkName = async function(name) {
+    const resolver = await this.getResolver();
+    const tx = await resolver.addr(namehash.hash(name));
+    //console.log("TX=", tx);
+    if (tx == ethers.constants.AddressZero) {
+        var domain = name.split(".").splice(1).join(".");
+        var subdomain = name.split(".")[0];
+        var subdomainAddr = await resolver.addr(namehash.hash(domain));
+        console.log("subdomainRegistrar=", subdomainAddr);
+        
+        RegistrarInterface.setProvider(this.provider);
+        const subdomainRegistrar = await RegistrarInterface.at(subdomainAddr);
+        const rentPriceSub = await subdomainRegistrar.rentPrice(subdomain, duration);
+        console.log("tx?", rentPriceSub)
+
+        return { address: tx, cost: rentPriceSub.toString()};
+    } else {
+        return { address: tx, cost: 0 };
+    }
 }
 
-module.exports = {
-    getDefaultAccount,
-    createWallet,
-    getBalance,
-    getDepositAddress,
-    checkName,
-    submitMetaTx
-}
+module.exports = Transactions

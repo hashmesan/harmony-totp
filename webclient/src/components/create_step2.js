@@ -34,7 +34,8 @@ class ScanQRCode extends Component {
     }
 
     checkFirstTOTP(input) {
-        return getTOTP(this.props.secret, 0) == input;
+        console.log(this.props);
+        return getTOTP(this.props.data.secret, 0) == input;
     }
     
     // check for valid OTP
@@ -68,8 +69,8 @@ class ScanQRCode extends Component {
             body: JSON.stringify({
                 operation: "getDepositAddress",
                 data: {
-                    owner: self.props.ownerAddress,
-                    salt: self.props.salt
+                    owner: self.props.data.ownerAddress,
+                    salt: self.props.data.salt
                 }
             })
         })
@@ -95,9 +96,9 @@ class ScanQRCode extends Component {
     }
 
     render() {
-        const query = `?counter=0&secret=${this.props.secret}&issuer=smartvault.one`
+        const query = `?counter=0&secret=${this.props.data.secret}&issuer=smartvault.one`
         const encodedQuery = query.replace('?', '%3F').replace('&', '%26')
-        const uri = `otpauth://hotp/${this.props.name}${encodedQuery}`
+        const uri = `otpauth://hotp/${this.props.data.name}${encodedQuery}`
         const qr_fixed = `https://chart.googleapis.com/chart?chs=200x200&chld=L|0&cht=qr&chl=${uri}`;
 
         return (

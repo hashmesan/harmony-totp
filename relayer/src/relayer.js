@@ -1,11 +1,9 @@
 require('dotenv').config()
-var transactions = require("./web3/transactions");
-console.log("NETWORK_ID=", process.env.NETWORK_ID);
+var Transactions = require("./web3/transactions");
 
 // accepts createwallet, then forwards to our own relayer
 const createWallet = (input, callback) => {
-  console.log("CONFIG=", input.config);
-  transactions.createWallet(input.config).then(fd=>{
+  new Transactions(input.env || "testnet").createWallet(input.config).then(fd=>{
     callback(200, {result: "Success", tx: fd})
   }).catch(ex=>{
     console.log(ex)
@@ -14,7 +12,7 @@ const createWallet = (input, callback) => {
 }
 
 const getBalance = (input, callback) => {
-  transactions.getBalance(input.address).then(res => {
+  new Transactions(input.env || "testnet").getBalance(input.address).then(res => {
     callback(200, {result: res});
   }).catch(ex=>{
     console.log(ex)
@@ -23,7 +21,7 @@ const getBalance = (input, callback) => {
 };
 
 const getTransactionCount = (input, callback) => {
-  transactions.getTransactionCount(input.address).then(res => {
+  new Transactions(input.env || "testnet").getTransactionCount(input.address).then(res => {
     callback(200, {result: res});
   }).catch(ex=>{
     console.log(ex)
@@ -32,7 +30,7 @@ const getTransactionCount = (input, callback) => {
 };
 
 const checkName = (input, callback) => {
-  transactions.checkName(input.name).then(res => {
+  new Transactions(input.env || "testnet").checkName(input.name).then(res => {
     callback(200, {result: res});
   }).catch(ex=>{
     console.log(ex)
@@ -41,7 +39,7 @@ const checkName = (input, callback) => {
 };
 
 const getDepositAddress = (input, callback) => {
-  transactions.getDepositAddress(input.data).then(res => {
+  new Transactions(input.env || "testnet").getDepositAddress(input.data).then(res => {
     callback(200, {result: res});
   }).catch(ex=>{
     console.log(ex)
@@ -55,7 +53,7 @@ const getRefundInfo = (input, callback) => {
 };
 
 const submitMetaTx = (input, callback) => {
-  transactions.submitMetaTx(input.data).then(res=>{
+  new Transactions(input.env || "testnet").submitMetaTx(input.data).then(res=>{
     callback(200, {result: res});
   }).catch(ex=>{
     console.log(ex)

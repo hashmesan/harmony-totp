@@ -2,13 +2,12 @@
 pragma solidity ^0.7.6;
 pragma experimental ABIEncoderV2;
 
-import "./name_registry.sol";
 import "./otp_wallet.sol";
 import "./external/walletproxy.sol";
 import "./external/create2.sol";
 import "./external/signatureutil.sol";
 
-contract WalletFactory is NameRegistry
+contract WalletFactory
 {
     event WalletCreated (address wallet, address owner);
     event Debug(bytes32 signHash, address addr);
