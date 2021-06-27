@@ -13,7 +13,7 @@ module.exports = async function(deployer) {
                      deployer.deploy(DailyLimit, {overwrite: false}),
                      deployer.deploy(Recovery, {overwrite: false}),
                      deployer.deploy(MetaTx, {overwrite: false}),
-                     deployer.deploy(NameService, {overwrite: false})]);
+                     deployer.deploy(NameService)]);
 
   await deployer.link(Guardians, TOTPWallet);
   await deployer.link(DailyLimit, TOTPWallet);

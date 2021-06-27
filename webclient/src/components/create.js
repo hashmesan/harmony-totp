@@ -97,7 +97,7 @@ class Create extends Component {
                             <ChooseName handleUpdate={this.handleUpdate.bind(this)}/>
                         </Route>
                         <Route path="/create/step2">
-                            <ScanQRCode secret={this.state.secret} name={this.state.data.name} ownerAddress={this.state.data.ownerAddress} salt={this.state.data.salt} handleUpdate={this.handleUpdate.bind(this)} />
+                            <ScanQRCode data={this.state.data} handleUpdate={this.handleUpdate.bind(this)} />
                         </Route>
                         <Route path="/create/step3">
                             <FirstDeposit data={this.state.data}/>

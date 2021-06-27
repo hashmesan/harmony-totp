@@ -53,7 +53,7 @@ class ChooseName extends Component {
 
     continue(ev) {
         ev.preventDefault();
-        this.props.handleUpdate({name: this.state.name, cost: this.state.cost});
+        this.props.handleUpdate({name: this.state.name + ".crazy.one", cost: this.state.cost});
         this.props.history.push("/create/step2");
     }
     render() {

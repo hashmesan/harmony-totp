@@ -78,7 +78,7 @@ class Wallet extends Component {
             <div className="container pt-5 justify-content-md-center" style={{maxWidth: 960}}>
                 <div className="row">
                     <div className="col-9">
-                        <h3>{this.wallet.name}.smartvault.one</h3>
+                        <h3>{this.wallet.name}</h3>
                         {this.wallet.walletAddress} [copy]<br/>
                         {toBech32(this.wallet.walletAddress)}                        
                     </div>

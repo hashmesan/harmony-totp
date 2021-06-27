@@ -5,6 +5,7 @@ const Recovery = artifacts.require("Recovery");
 const MetaTx = artifacts.require("MetaTx");
 const WalletFactory = artifacts.require("WalletFactory");
 const NameRegistry = artifacts.require("NameRegistry");
+const NameService = artifacts.require("NameService");
 
 const totp = require("../lib/totp.js");
 const merkle = require("../lib/merkle.js");
@@ -32,35 +33,38 @@ function getLeavesAndRoot(offset, depth) {
     return {leaves, root};
 }
 
-async function createWalletFactory() {
+async function createWalletFactory(resolver) {
   const guardians = await Guardians.new();
   const dailyLimit = await DailyLimit.new();
   const recovery = await Recovery.new();
   const metatx = await MetaTx.new();
-  const registry = await NameRegistry.new();
+  const nameservice = await NameService.new();
 
   await TOTPWallet.link("Guardians", guardians.address);
   await TOTPWallet.link("DailyLimit", dailyLimit.address);
   await TOTPWallet.link("Recovery", recovery.address);
   await TOTPWallet.link("MetaTx", metatx.address);
+  await TOTPWallet.link("NameService", nameservice.address);
 
   var wallet = await TOTPWallet.new();
 
-  WalletFactory.link("NameRegistry", registry.address);
+  // WalletFactory.link("NameRegistry", registry.address);
   var walletFactory = await WalletFactory.new(wallet.address);
   return walletFactory;
 }
 
-async function createNewImplementation() {
+async function createNewImplementation(resolver) {
   const guardians = await Guardians.new();
   const dailyLimit = await DailyLimit.new();
   const recovery = await Recovery.new();
   const metatx = await MetaTx.new();
+  const nameservice = await NameService.new();
 
   await TOTPWallet.link("Guardians", guardians.address);
   await TOTPWallet.link("DailyLimit", dailyLimit.address);
   await TOTPWallet.link("Recovery", recovery.address);
   await TOTPWallet.link("MetaTx", metatx.address);
+  await TOTPWallet.link("NameService", nameservice.address);
 
   var wallet = await TOTPWallet.new();
   return wallet;
@@ -80,22 +84,24 @@ async function walletWithAddress(address) {
   return await TOTPWallet.at(address);
 }
 
-async function createWallet(owner, depth, drainAddr, feeAddress, feeAmount) {
+async function createWallet(domain,owner, depth, drainAddr, feeAddress, feeAmount) {
     const {root_arr, leaves_arr} = createHOTP(depth);
 
     const guardians = await Guardians.new();
     const dailyLimit = await DailyLimit.new();
     const recovery = await Recovery.new();
     const metatx = await MetaTx.new();
+    const nameservice = await NameService.new();
 
     await TOTPWallet.link("Guardians", guardians.address);
     await TOTPWallet.link("DailyLimit", dailyLimit.address);
     await TOTPWallet.link("Recovery", recovery.address);
     await TOTPWallet.link("MetaTx", metatx.address);
+    await TOTPWallet.link("NameService", nameservice.address);
 
     var wallet = await TOTPWallet.new();
     //console.log(root_arr, feeAddress, feeAmount);
-    await wallet.initialize(owner, root_arr, depth, drainAddr, web3.utils.toWei("0.01", "ether"), feeAddress, feeAmount);
+    await wallet.initialize(domain, owner, root_arr, depth, drainAddr, web3.utils.toWei("0.01", "ether"), feeAddress, feeAmount);
 
     return {
         root_arr,

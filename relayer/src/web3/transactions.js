@@ -26,7 +26,7 @@ const CONFIG = {
     },
     testnet: {
         network_id: 1666700003,
-        resolver: "0xEc6b22dd28c1F1FC1f63bAb2f5CE153Ae494Aa36",
+        resolver: "0x335b5b3b0Acdf3aFabA00F71a3c7090e73990818",
         provider: "https://api.s3.b.hmny.io"
     },
     mainnet: {
@@ -78,7 +78,7 @@ Transactions.prototype.createWallet = async function(config) {
     config.feeAmount = Web3.utils.toWei("0");
     config.resolver = this.config.resolver;
     console.log("sent=", config);
-    var tx = await factory.createWallet(config);
+    var tx = await factory.createWallet(config,{gas: 712388});
     return {tx: tx.tx};
 }
 

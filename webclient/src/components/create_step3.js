@@ -13,8 +13,9 @@ class FirstDeposit extends Component {
           balance: 0,
           continue: false,
           showQR: false,
-          busy: false
-        }
+          busy: false,
+          totalFee: new web3utils.BN(this.props.data.cost).add(new web3utils.BN(this.props.data.networkFee))
+        }        
     }
     checkBalance() {
         var self = this;
@@ -33,7 +34,7 @@ class FirstDeposit extends Component {
             if(res.result.balance == '0') {
                 setTimeout(self.checkBalance.bind(self), 3000);
             }
-            if(new web3utils.BN(res.result.balance).gte(new web3utils.BN(self.props.data.networkFee))) {
+            if(new web3utils.BN(res.result.balance).gte(self.state.totalFee)) {
                 self.setState({deposits: res.result.balance, continue: true});
             }
         })
@@ -75,7 +76,7 @@ class FirstDeposit extends Component {
             body: JSON.stringify({
                 operation: "createWallet",
                 config: {
-                    name: this.props.data.name,
+                    domain: [this.props.data.name.split(".")[0], this.props.data.name.split(".")[1]],
                     owner: this.props.data.ownerAddress,
                     rootHash: this.props.data.hashes.root_arr,
                     merkelHeight: this.props.data.merkleHeight,
@@ -124,7 +125,11 @@ class FirstDeposit extends Component {
                         <a href="#" className="btn btn-link" onClick={this.toggleQR.bind(this)}>{this.state.showQR ? "Hide QR Code": "Show QR Code"}</a>
                         {this.state.showQR && <div><img src={"https://chart.googleapis.com/chart?chs=200x200&chld=L|0&cht=qr&chl=" + this.props.data.walletAddress} width="200" height="200"/></div>}
                     </p>
-                    <p><b>Network Fee:</b> {this.props.data.networkFee && web3utils.fromWei(this.props.data.networkFee)} ONE</p>
+                    <p>
+                        <b>Name Service Fee:</b> {this.props.data.cost && web3utils.fromWei(this.props.data.cost).split(".")[0]} ONE<br/>
+                        <b>Network Fee:</b> {this.props.data.networkFee && web3utils.fromWei(this.props.data.networkFee)} ONE<br/>
+                        <b>TOTAL FEE:</b> {web3utils.fromWei(this.state.totalFee)}
+                    </p>
                     
                     {!this.state.continue ? 
                     <div className="text-center">
