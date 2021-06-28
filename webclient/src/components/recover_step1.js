@@ -55,7 +55,7 @@ class ChooseName extends Component {
     continue(ev) {
         ev.preventDefault();
         this.props.handleUpdate({name: this.state.name + ".crazy.one", address: this.state.address});
-        this.props.history.push("/recover/step2/" + this.state.address);
+        this.props.history.push("/recover/step2/" + this.state.name + ".crazy.one");
     }
     render() {
         return (

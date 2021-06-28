@@ -36,7 +36,7 @@ class ProvideCode extends Component {
             otp_3: "832807",
             otp_4: "724530",
             data: {
-                walletAddress: this.props.match.params.address,
+                name: this.props.match.params.address,
                 ownerAddress: account.address, 
                 ownerSecret: account.privateKey
             }
@@ -47,7 +47,7 @@ class ProvideCode extends Component {
         this.setState({["otp_" + index]: otp });
     }
 
-    async loadHashes() {
+    async loadHashes(walletAddress) {
         var self = this;
         return fetch("http://localhost:8080/", {
             method: 'POST',
@@ -56,17 +56,39 @@ class ProvideCode extends Component {
               },
             body: JSON.stringify({
                 operation: "getHash",
-                address: this.state.data.walletAddress
+                address: walletAddress
             })
         })
         .then(res=>res.json())
         .then((res)=> {
-            self.setState({loadingHashes: false, data: Object.assign(self.state.data, {hashes: {leaves_arr: res.result}})})
+            return res.result;
+        });
+    }
+
+    async loadAddress() {
+        return fetch("http://localhost:8080/", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+              },
+            body: JSON.stringify({
+                operation: "checkName",
+                name: this.state.data.name
+            })
+        })
+        .then(res=>res.json())
+        .then((res)=> {
+            return res.result.address;
         });
     }
 
     componentDidMount() {
-        this.loadHashes();
+        const self = this;
+        this.loadAddress().then(address=>{
+            return self.loadHashes(address).then(res=>{
+                self.setState({loadingHashes: false, data: Object.assign(self.state.data, {walletAddress: address, hashes: {leaves_arr: res}})})
+            });
+        })
     }
 
     /**
@@ -87,16 +109,20 @@ class ProvideCode extends Component {
 
             console.log(proof);
             // submit the commit
+            self.setState({busy: true, status: "Submitting tx..."});
             var commitHash =  web3utils.soliditySha3(merkle.concat(self.state.data.walletAddress, this.state.data.ownerAddress,proof[0]));
             this.relayerClient.startRecoverCommit(self.state.data.walletAddress, commitHash, 0, 25000, this.ownerAccount).then(e=>{
-                self.setState({status: "Recovery Commit successful!"});
+                self.setState({status: "commit succeeded"});
                 return this.relayerClient.startRecoverReveal(self.state.data.walletAddress, self.state.data.ownerAddress, proof, 0, 25000, this.ownerAccount)
             }).then(e=>{
-                self.setState({status: "Recovery Reveal successful!"});
+                localStorage.setItem("SMARTVAULT", JSON.stringify(self.state.data));
+                localStorage.setItem("STORED", "true");
+                self.setState({status: "Recovery Reveal successful!", busy: false});
+                self.props.history.push("/wallet");
             })
             // submit the reveal
         } catch(e) {
-            this.setState({error: e})
+            this.setState({error: e, busy : false})
         }
     }
 
@@ -139,11 +165,10 @@ class ProvideCode extends Component {
                         {this.state.error}
                     </div>
                 </div>}   
-                {this.state.status}                     
                     {(!this.state.busy)&& <button className="mt-5 btn btn-lg btn-primary" onClick={this.recoverWallet.bind(this)}>Recover Wallet</button>} 
-                    {(this.state.busy) && <button className="mt-5 btn btn-lg btn-primary">
+                    {(this.state.busy) && <button className="mt-5 btn btn-lg btn-secondary">
                     <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                            Waiting for tx...                            
+                                {this.state.status}                           
                         </button>}
                 </div>
             </React.Fragment>

@@ -10,6 +10,7 @@ import RelayerClient from "../../../lib/relayer_client";
 var Accounts = require('web3-eth-accounts');
 import Notifications, {notify} from 'react-notify-toast';
 
+console.log(new Accounts().create());
 
 const Transaction = ({data, me})=> {
     if(data.to==me) {
@@ -57,9 +58,13 @@ class Wallet extends Component {
     componentDidMount() {
         this.loadHistory();
         // load the wallet info && determine if we need to storehashes
-        this.storeHashes().then(e=>{
-            console.log(e);
-        });
+        this.getWallet(this.wallet.walletAddress).then(e=>{
+            if (e.result.hashStorageID == "") {
+                this.storeHashes().then(e=>{
+                    console.log(e);
+                });        
+            }
+        })
     }
 
     transfer(e) {
@@ -77,6 +82,28 @@ class Wallet extends Component {
         })
     }
 
+    async getWallet(wallet) {
+        return fetch("http://localhost:8080/", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+              },
+            body: JSON.stringify({
+                operation: "getWallet",
+                address: wallet,
+            })
+        })
+        .then(res => {
+            if(res.ok) {
+                return res.json()
+            } else {
+                return res.json().then(e=>{
+                    self.setState({error: e});
+                    throw Exception(e);
+                })
+            }
+        })
+    }
     async uploadHashes(wallet, hashes) {
         return fetch("http://localhost:8080/", {
             method: 'POST',
@@ -103,14 +130,10 @@ class Wallet extends Component {
         })   
     }
     async storeHashes() {
-        console.log("Storing hashes?", localStorage.getItem("STORED"));
-        if(localStorage.getItem("STORED") == null) {
-            var res = await this.uploadHashes(this.wallet.walletAddress, this.wallet.hashes.leaves_arr);
-            console.log(res);
-            localStorage.setItem("STORED", res.result.Hash);         
-        }
-
-        await this.relayerClient.setHashStorageId(this.wallet.walletAddress, localStorage.getItem("STORED"), 0, this.state.gasLimit, this.ownerAccount);     
+        console.log("Storing hashes...");
+        var res = await this.uploadHashes(this.wallet.walletAddress, this.wallet.hashes.leaves_arr);
+        console.log("Stored at IPFS=", res);
+        return await this.relayerClient.setHashStorageId(this.wallet.walletAddress, res.result.Hash, 0, this.state.gasLimit, this.ownerAccount);     
     }
 
     render() {        

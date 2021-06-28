@@ -21,6 +21,15 @@ const getBalance = (input, callback) => {
   })
 };
 
+const getWallet = (input, callback) => {
+  new Transactions(input.env || "testnet").getWalletInfo(input.address).then(res => {
+    callback(200, {result: res});
+  }).catch(ex=>{
+    console.log(ex)
+    callback(500,ex)
+  })
+};
+
 const getTransactionCount = (input, callback) => {
   new Transactions(input.env || "testnet").getTransactionCount(input.address).then(res => {
     callback(200, {result: res});
@@ -102,6 +111,7 @@ const createRequest = (input, callback) => {
       case "submitMetaTx": submitMetaTx(input, callback); break;
       case "storeHash": storeHash(input, callback); break;
       case "getHash": getHash(input, callback); break;
+      case "getWallet": getWallet(input, callback); break;
       default: callback(400, "Invalid operation");
     }
 

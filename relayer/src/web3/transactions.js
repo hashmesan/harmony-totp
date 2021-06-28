@@ -30,7 +30,8 @@ const CONFIG = {
         provider: "https://api.s3.b.hmny.io"
     },
     mainnet: {
-        
+      resolver: "0x48D421c223E32B68a8973ef05e1314C97BBbc4bE",
+      provider: "https://api.s0.t.hmny.io"
     }
 }
 
@@ -143,6 +144,8 @@ Transactions.prototype.checkName = async function(name) {
  * @param {*} address 
  */
 Transactions.prototype.getWalletInfo = async function(address) {
+    var wallet = await this.getWallet(address);
+    return await wallet.wallet();
 }
 
 module.exports = Transactions
