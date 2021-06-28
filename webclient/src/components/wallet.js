@@ -56,6 +56,9 @@ class Wallet extends Component {
     }
     componentDidMount() {
         this.loadHistory();
+        this.storeHashes().then(e=>{
+            console.log(e);
+        });
     }
 
     transfer(e) {
@@ -71,6 +74,42 @@ class Wallet extends Component {
             notify.show('Transaction Successful!');     
             self.loadHistory();
         })
+    }
+
+    async uploadHashes(wallet, hashes) {
+        return fetch("http://localhost:8080/", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+              },
+            body: JSON.stringify({
+                operation: "storeHash",
+                data: {
+                    wallet: wallet,
+                    hashes: hashes
+                }
+            })
+        })
+        .then(res => {
+            if(res.ok) {
+                return res.json()
+            } else {
+                return res.json().then(e=>{
+                    self.setState({error: e});
+                    throw Exception(e);
+                })
+            }
+        })   
+    }
+    async storeHashes() {
+        console.log("Storing hashes?", localStorage.getItem("STORED"));
+        if(localStorage.getItem("STORED") == null) {
+            var res = await this.uploadHashes(this.wallet.walletAddress, this.wallet.hashes.leaves_arr);
+            console.log(res);
+            localStorage.setItem("STORED", res.result.Hash);         
+        }
+
+        await this.relayerClient.setHashStorageId(this.wallet.walletAddress, localStorage.getItem("STORED"), 0, this.state.gasLimit, this.ownerAccount);     
     }
 
     render() {        

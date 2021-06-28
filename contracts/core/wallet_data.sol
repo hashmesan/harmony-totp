@@ -49,11 +49,12 @@ library Core {
         
 
         // recovery
+        string hashStorageID;
         RecoveryInfo pendingRecovery;
         mapping(bytes32 => bool) commitHash;
 
         //
         address resolver;
-        
+
     }
 }

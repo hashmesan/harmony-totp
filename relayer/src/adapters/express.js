@@ -8,7 +8,8 @@ app.use(cors());
 
 function init (createRequest) {
   return () => {
-    app.use(bodyParser.json())
+    app.use(bodyParser.json({ limit: '20mb' }))
+    app.use(bodyParser.text({ limit: '20mb' }));
 
     app.post('/', (req, res) => {
       //console.log('POST Data: ', req.body)

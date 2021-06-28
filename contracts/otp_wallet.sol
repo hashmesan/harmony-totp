@@ -129,7 +129,8 @@ contract TOTPWallet {
         if(methodId == TOTPWallet.makeTransfer.selector ||
             methodId == TOTPWallet.addGuardian.selector ||
             methodId == TOTPWallet.revokeGuardian.selector||
-            methodId == TOTPWallet.upgradeMasterCopy.selector) {
+            methodId == TOTPWallet.upgradeMasterCopy.selector ||
+            methodId == TOTPWallet.setHashStorageId.selector) {
             return (1, Core.OwnerSignature.Required);
         }
 
@@ -198,6 +199,21 @@ contract TOTPWallet {
         return wallet.counter;
     }
 
+    function setHashStorageId(string calldata id) external  onlyFromWalletOrOwnerWhenUnlocked()  {
+        wallet.hashStorageID = id;
+    }
+
+    function getHashStorageId() public view  returns (string memory){
+        return wallet.hashStorageID;
+    }
+    
+    function getRootHashes()
+         public
+         view
+         returns (bytes32[] memory )
+     {
+         return wallet.rootHash;
+     }
     //TODO: Drain ERC20 tokens too
     // function drain() external onlyFromWalletOrOwnerWhenUnlocked()  {
     //     wallet.drainAddr.transfer(address(this).balance);            
