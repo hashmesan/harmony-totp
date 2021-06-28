@@ -7,6 +7,9 @@ import merkle from '../../../lib/merkle';
 import {getProofWithOTP} from '../../../lib/wallet';
 import RelayerClient from "../../../lib/relayer_client";
 const web3utils = require("web3-utils");
+import { connect } from "redux-zero/react";
+import actions from "../redux/actions";
+import {getApiUrl, getStorageKey, getLocalWallet, setLocalWallet} from "../config";
 
 var StyledOTPContainer = styled.div`
     .inputStyle {
@@ -24,7 +27,7 @@ class ProvideCode extends Component {
         super(props)
 
         const account = new Web3EthAccounts().create();
-        this.relayerClient = new RelayerClient("http://localhost:8080");
+        this.relayerClient = new RelayerClient(getApiUrl(this.props.environment));
         this.ownerAccount = new Web3EthAccounts().privateKeyToAccount(account.privateKey);
 
         this.state = {
@@ -49,7 +52,7 @@ class ProvideCode extends Component {
 
     async loadHashes(walletAddress) {
         var self = this;
-        return fetch("http://localhost:8080/", {
+        return fetch(getApiUrl(this.props.environment), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -66,7 +69,7 @@ class ProvideCode extends Component {
     }
 
     async loadAddress() {
-        return fetch("http://localhost:8080/", {
+        return fetch(getApiUrl(this.props.environment), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -115,7 +118,7 @@ class ProvideCode extends Component {
                 self.setState({status: "commit succeeded"});
                 return this.relayerClient.startRecoverReveal(self.state.data.walletAddress, self.state.data.ownerAddress, proof, 0, 25000, this.ownerAccount)
             }).then(e=>{
-                localStorage.setItem("SMARTVAULT", JSON.stringify(self.state.data));
+                setLocalWallet(self.props.environment, JSON.stringify(self.state.data));
                 localStorage.setItem("STORED", "true");
                 self.setState({status: "Recovery Reveal successful!", busy: false});
                 self.props.history.push("/wallet");
@@ -176,4 +179,5 @@ class ProvideCode extends Component {
     }
 }
 
-export default withRouter(ProvideCode);
+const mapToProps = ({ environment }) => ({ environment });
+export default connect(mapToProps, actions)(withRouter(ProvideCode));

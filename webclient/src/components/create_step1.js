@@ -3,6 +3,11 @@ import { withRouter } from 'react-router-dom';
 const ethers = require("ethers");
 const web3utils = require("web3-utils");
 
+import { connect } from "redux-zero/react";
+import actions from "../redux/actions";
+
+import {getApiUrl} from "../config";
+
 class ChooseName extends Component {
     constructor(props) {
         super(props)
@@ -22,7 +27,7 @@ class ChooseName extends Component {
     validate(e) {
         var self = this;
         self.setState({busy: true});
-        fetch("http://localhost:8080/", {
+        fetch(getApiUrl(this.props.environment), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -99,4 +104,5 @@ class ChooseName extends Component {
     }
 }
 
-export default withRouter(ChooseName);
+const mapToProps = ({ environment }) => ({ environment });
+export default connect(mapToProps, actions)(withRouter(ChooseName));

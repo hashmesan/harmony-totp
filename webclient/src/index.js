@@ -9,6 +9,10 @@ import {
     Link
   } from "react-router-dom";
 
+import createStore from "redux-zero";
+import { Provider, connect } from "redux-zero/react";
+
+import store from './redux/store';
 import Header from './components/header';
 import Create from './components/create';
 import Wallet from './components/wallet';
@@ -18,21 +22,23 @@ class MainScreen extends Component {
     render() {
         return (
             <Router>
-                <Header showCreate={localStorage.getItem("SMARTVAULT") == null}/>
-                <Switch>
-                    <Route exact path="/">
-                        {localStorage.getItem("SMARTVAULT") ?<Redirect to="/wallet"/> : <Redirect to="/create"/>}
-                    </Route>
-                    <Route path="/create">
-                        <Create/>
-                    </Route>
-                    <Route path="/wallet">
-                        <Wallet/>
-                    </Route>
-                    <Route path="/recover">
-                        <Recover/>
-                    </Route>
-                </Switch>
+                <Provider store={store}>
+                    <Header/>
+                    <Switch>
+                        <Route exact path="/">
+                            {localStorage.getItem("SMARTVAULT") ?<Redirect to="/wallet"/> : <Redirect to="/create"/>}
+                        </Route>
+                        <Route path="/create">
+                            <Create/>
+                        </Route>
+                        <Route path="/wallet">
+                            <Wallet/>
+                        </Route>
+                        <Route path="/recover">
+                            <Recover/>
+                        </Route>
+                    </Switch>
+                </Provider>
             </Router>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
         );
     }

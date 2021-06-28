@@ -9,6 +9,9 @@ import wallet from "../../../lib/wallet";
 import RelayerClient from "../../../lib/relayer_client";
 var Accounts = require('web3-eth-accounts');
 import Notifications, {notify} from 'react-notify-toast';
+import { connect } from "redux-zero/react";
+import actions from "../redux/actions";
+import {getStorageKey, getLocalWallet, getApiUrl} from "../config";
 
 const Transaction = ({data, me})=> {
     if(data.to==me) {
@@ -40,9 +43,9 @@ class Wallet extends Component {
             gasLimit: 25000
         }
 
-        this.wallet = JSON.parse(window.localStorage.getItem("SMARTVAULT"))
+        this.wallet = JSON.parse(getLocalWallet(this.props.environment))
         this.ownerAccount = new Accounts().privateKeyToAccount(this.wallet.ownerSecret);
-        this.relayerClient = new RelayerClient("http://localhost:8080");
+        this.relayerClient = new RelayerClient(getApiUrl(this.props.environment));
     }
 
     loadHistory() {
@@ -206,4 +209,5 @@ class Wallet extends Component {
 /*
  curl -H "Content-Type:application/json" -X GET "https://api.s0.t.hmny.io/address?id=one1mcjmmtystwsr0xtglzhl4vyarsfrdvdn2ecx75&tx_view=ALL"
 */
-export default Wallet;
+const mapToProps = ({ environment }) => ({ environment });
+export default connect(mapToProps, actions)(Wallet);

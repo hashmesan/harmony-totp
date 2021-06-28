@@ -6,6 +6,10 @@ const {
     fromBech32,
   } = require('@harmony-js/crypto');
 
+import { connect } from "redux-zero/react";
+import actions from "../redux/actions";
+import {getApiUrl, getStorageKey} from "../config";
+    
 class FirstDeposit extends Component {
     constructor(props) {
         super(props)
@@ -51,7 +55,7 @@ class FirstDeposit extends Component {
 
 
     saveWalletToLocalStorage() {
-        localStorage.setItem("SMARTVAULT", JSON.stringify(this.props.data));
+        localStorage.setItem(getStorageKey(this.props.environment), JSON.stringify(this.props.data));
     }
 
     /*
@@ -68,7 +72,7 @@ class FirstDeposit extends Component {
         var self = this;
         self.setState({busy: true});
         ev.preventDefault();
-        fetch("http://localhost:8080/", {
+        fetch(getApiUrl(this.props.environment), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -160,4 +164,5 @@ class FirstDeposit extends Component {
     }
 }
 
-export default withRouter(FirstDeposit);
+const mapToProps = ({ environment }) => ({ environment });
+export default connect(mapToProps, actions)(withRouter(FirstDeposit));

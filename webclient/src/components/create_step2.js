@@ -11,6 +11,10 @@ import {
 import { withRouter } from 'react-router-dom';
 import { getTOTP } from '../../../lib/wallet';
 
+import { connect } from "redux-zero/react";
+import actions from "../redux/actions";
+import {getApiUrl} from "../config";
+
 var StyledOTPContainer = styled.div`
     .inputStyle {
         width: 3rem !important;
@@ -61,7 +65,7 @@ class ScanQRCode extends Component {
         self.setState({busy: true});
 
         // wait tx to finish
-        fetch("http://localhost:8080/", {
+        fetch(getApiUrl(this.props.environment), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -140,4 +144,5 @@ class ScanQRCode extends Component {
     }
 }
 
-export default withRouter(ScanQRCode);
+const mapToProps = ({ environment }) => ({ environment });
+export default connect(mapToProps, actions)(withRouter(ScanQRCode));

@@ -5,15 +5,24 @@ import {
     Route,
     Link
   } from "react-router-dom";
+import { connect } from "redux-zero/react";
+import actions from "../redux/actions";
+import {getLocalWallet} from "../config";
 
 class Header extends Component {
+    handleChange(e) {
+        e.preventDefault();
+        this.props.setEnvironment(e.target.value);
+    }
+
     render() {
         console.log(this.props);
-        
+        const showCreate = getLocalWallet(this.props.environment)
+
         return (
             <div className="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
                 <div className="my-0 mr-md-auto font-weight-normal"><a href="/"><img src="/logo_smartvault.png" height="50"/></a></div>
-                {this.props.showCreate? 
+                {showCreate? 
                 <nav className="my-2 my-md-0 mr-md-3">
                 <Link className="p-2 text-dark"  to="/create">Create Wallet</Link>
                 <Link className="p-2 text-dark"  to="/restore">Restore Wallet</Link>                  
@@ -21,10 +30,17 @@ class Header extends Component {
                 :
                 <nav className="my-2 my-md-0 mr-md-3">
                     <Link className="p-2 text-dark"  to="/wallet">My Wallet</Link>                    
+                    <Link className="p-2 text-dark"  to="/settings">Settings</Link>                    
                 </nav>}
+                <select className="" value={this.props.environment} onChange={this.handleChange.bind(this)} >
+                    <option value="mainnet0">Mainnet(Shard 0)</option>
+                    <option value="testnet0">Testnet(Shard 0)</option>
+                    <option value="testnet3">Testnet(Shard 3)</option>
+                </select>
             </div>        
         );
     }
 }
 
-export default Header;
+const mapToProps = ({ environment }) => ({ environment });
+export default connect(mapToProps, actions)(Header);

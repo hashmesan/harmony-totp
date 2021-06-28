@@ -16,11 +16,14 @@ import ScanQRCode from './create_step2';
 import FirstDeposit from './create_step3';
 import {createHOTP} from '../../../lib/wallet';
 import Web3EthAccounts from 'web3-eth-accounts';
+import { connect } from "redux-zero/react";
+import actions from "../redux/actions";
+import {getStorageKey, getLocalWallet, setLocalWallet} from "../config";
 
 class Create extends Component {
     constructor(props) {
         super(props)
-        var data = JSON.parse(localStorage.getItem("SMARTVAULT")) || {};
+        var data = JSON.parse(getLocalWallet(this.props.environment)) || {};
         // Set the initial input values
         this.state = {
           currentStep: 1, // Default is Step 1
@@ -34,7 +37,7 @@ class Create extends Component {
         console.log(event);
         const self = this;
         this.setState(Object.assign(this.state.data,{hashes: event.data.mywallet}), ()=>{
-            localStorage.setItem("SMARTVAULT", JSON.stringify(self.state.data));
+            setLocalWallet(self.props.environment, JSON.stringify(self.state.data));
         })
     }
 
@@ -56,7 +59,7 @@ class Create extends Component {
         this.worker.postMessage({secret: secret, depth: merkleHeight});
         const newData = {merkleHeight: merkleHeight, secret: secret, ownerAddress: account.address, ownerSecret: account.privateKey, salt: bin.readUIntLE(0, 6)}
         this.setState(Object.assign(this.state.data, newData), ()=>{
-            localStorage.setItem("SMARTVAULT", JSON.stringify(self.state.data));
+            setLocalWallet(self.props.environment, JSON.stringify(self.state.data));
         })
     }
 
@@ -75,7 +78,7 @@ class Create extends Component {
         var self = this;
 
         this.setState({data: Object.assign(this.state.data, data)}, ()=>{
-            localStorage.setItem("SMARTVAULT", JSON.stringify(self.state.data));
+            setLocalWallet(self.props.environment, JSON.stringify(self.state.data));
         });
     }
     handleSubmit(e){
@@ -124,4 +127,5 @@ class Start extends Component {
     }
 }
 
-export default Create;
+const mapToProps = ({ environment }) => ({ environment });
+export default connect(mapToProps, actions)(Create);
