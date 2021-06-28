@@ -115,7 +115,10 @@ class Start extends Component {
             <React.Fragment>
                 <h2>Create your New Wallet</h2>
                 <h5 className="mt-4">SmartVault is a unique smart contract wallet protected by 2FA HOTP (Google Authenticator), guardians, and spending limits.</h5>
-                <Link className="mt-5 btn btn-lg btn-primary" to="/create/step1">Start</Link>                
+                <Link className="mt-5 btn btn-lg btn-primary" to="/create/step1">Start</Link>             
+                <div className="mt-4">
+                    or <Link to="/recover">Recover Wallet</Link>             
+                </div>   
             </React.Fragment>
         );
     }

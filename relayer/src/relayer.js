@@ -80,6 +80,8 @@ const createRequest = (input, callback) => {
       case "checkName": checkName(input, callback); break;
       case "getRefundInfo": getRefundInfo(input, callback); break;
       case "submitMetaTx": submitMetaTx(input, callback); break;
+      case "storeHash": submitMetaTx(input, callback); break;
+      case "saveHash": submitMetaTx(input, callback); break;
       default: callback(400, "Invalid operation");
     }
 

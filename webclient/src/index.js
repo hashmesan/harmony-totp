@@ -12,6 +12,7 @@ import {
 import Header from './components/header';
 import Create from './components/create';
 import Wallet from './components/wallet';
+import Recover from './components/recover';
 
 class MainScreen extends Component {
     render() {
@@ -27,6 +28,9 @@ class MainScreen extends Component {
                     </Route>
                     <Route path="/wallet">
                         <Wallet/>
+                    </Route>
+                    <Route path="/recover">
+                        <Recover/>
                     </Route>
                 </Switch>
             </Router>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
