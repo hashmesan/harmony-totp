@@ -2,6 +2,11 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import OtpInput from 'react-otp-input';
 import styled from '@emotion/styled'
+import Web3EthAccounts from 'web3-eth-accounts';
+import merkle from '../../../lib/merkle';
+import {getProofWithOTP} from '../../../lib/wallet';
+import RelayerClient from "../../../lib/relayer_client";
+const web3utils = require("web3-utils");
 
 var StyledOTPContainer = styled.div`
     .inputStyle {
@@ -17,39 +22,124 @@ var StyledOTPContainer = styled.div`
 class ProvideCode extends Component {
     constructor(props) {
         super(props)
+
+        const account = new Web3EthAccounts().create();
+        this.relayerClient = new RelayerClient("http://localhost:8080");
+        this.ownerAccount = new Web3EthAccounts().privateKeyToAccount(account.privateKey);
+
         this.state = {
+            error: null,
+            loadingHashes: true,
+            otp_0: "302869",
+            otp_1: "659474",
+            otp_2: "121801",
+            otp_3: "832807",
+            otp_4: "724530",
+            data: {
+                walletAddress: this.props.match.params.address,
+                ownerAddress: account.address, 
+                ownerSecret: account.privateKey
+            }
         }
     }
 
-    handleChange(otp) {
-        this.setState({ otp });
+    handleChange(index, otp) {
+        this.setState({["otp_" + index]: otp });
     }
 
-    recoverWallet() {
+    async loadHashes() {
+        var self = this;
+        return fetch("http://localhost:8080/", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+              },
+            body: JSON.stringify({
+                operation: "getHash",
+                address: this.state.data.walletAddress
+            })
+        })
+        .then(res=>res.json())
+        .then((res)=> {
+            self.setState({loadingHashes: false, data: Object.assign(self.state.data, {hashes: {leaves_arr: res.result}})})
+        });
+    }
 
+    componentDidMount() {
+        this.loadHashes();
+    }
+
+    /**
+     * recovery requires
+     *  - new owner key
+     *  - the hashes download
+     *  - 5-HOTP tokens
+     *  - reverse lookup (for local only)
+     */
+    recoverWallet() {
+        try {
+            var self = this;
+            var {token, proof} = getProofWithOTP([this.state.otp_0, 
+                            this.state.otp_1, 
+                            this.state.otp_2, 
+                            this.state.otp_3,
+                            this.state.otp_4], this.state.data.hashes.leaves_arr);
+
+            console.log(proof);
+            // submit the commit
+            var commitHash =  web3utils.soliditySha3(merkle.concat(self.state.data.walletAddress, this.state.data.ownerAddress,proof[0]));
+            this.relayerClient.startRecoverCommit(self.state.data.walletAddress, commitHash, 0, 25000, this.ownerAccount).then(e=>{
+                self.setState({status: "Recovery Commit successful!"});
+                return this.relayerClient.startRecoverReveal(self.state.data.walletAddress, self.state.data.ownerAddress, proof, 0, 25000, this.ownerAccount)
+            }).then(e=>{
+                self.setState({status: "Recovery Reveal successful!"});
+            })
+            // submit the reveal
+        } catch(e) {
+            this.setState({error: e})
+        }
     }
 
     render() {
+        console.log(this.state);
+
+        if (this.state.loadingHashes) {
+            return (
+                <React.Fragment>
+                    <h2>Provide 5-OTP Recovery Codes</h2>
+                    <div className="mt-4">
+                        <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        Loading merkle hashes from IPFS...
+                    </div>
+                </React.Fragment>
+            )
+        }
         console.log(this.props);
         return (
             <React.Fragment>
                 <h2>Provide 5-OTP Recovery Codes</h2>
-                <h5 className="mt-4">Open your Google Authenticator, find the {} code. Type in code you see then click refresh to get a new code. Repeat until you completed 5 codes.</h5>
+                <h5 className="mt-4">Open your Google Authenticator. Type in code you see then click refresh to get a new code. Repeat until you completed 5 codes.</h5>
                 <div className="justify-content-md-center">
                     <div className="mb-5">Address: {this.props.match.params.address}</div>
 
-                        {[0,1,2,3,4,5].map((e)=> { return (<StyledOTPContainer className="row bg-white justify-content-md-center mb-4">
+                        {[0,1,2,3,4].map((e)=> { return (<StyledOTPContainer className="row bg-white justify-content-md-center mb-4">
                             <h5 className="mt-3">OTP [{e+1}]</h5>
                             <OtpInput
                                 inputStyle="inputStyle"
-                                value={this.state.otp}
-                                onChange={this.handleChange.bind(this)}
+                                value={this.state["otp_" + e]}
+                                onChange={this.handleChange.bind(this, e)}
                                 numInputs={6}
                                 isInputNum={true}
                                 shouldAutoFocus
                                 separator={<span></span>}
                             /></StyledOTPContainer>)})}
-                        
+
+                {this.state.error && <div className="row justify-content-md-center mt-4">
+                    <div className="alert alert-danger w-50" role="alert">
+                        {this.state.error}
+                    </div>
+                </div>}   
+                {this.state.status}                     
                     {(!this.state.busy)&& <button className="mt-5 btn btn-lg btn-primary" onClick={this.recoverWallet.bind(this)}>Recover Wallet</button>} 
                     {(this.state.busy) && <button className="mt-5 btn btn-lg btn-primary">
                     <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>

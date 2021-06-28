@@ -34,7 +34,7 @@ async function add(value) {
 
 async function cat(id) {
     const url = IPFS_URL + "/cat?arg=" + id;
-    console.log(url);
+    //console.log(url);
     var res = await request.post({url: url, json: true, auth: AUTH});     
     return res;
 }
@@ -67,9 +67,17 @@ async function storeHash(env, wallet, hashes) {
     // store it in the smart contract 
 }
 
+async function getHash(env, walletAddress) {
+    // get the root hash
+    var wallet = await new Transactions(env || "testnet").getWallet(walletAddress);
+    var hashId = await wallet.getHashStorageId();
+    return await cat(hashId);
+}
+
 module.exports = {
     add,
     cat,
+    getHash,
     storeHash,
     isValidHashes
 }

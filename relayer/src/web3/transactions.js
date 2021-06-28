@@ -138,4 +138,11 @@ Transactions.prototype.checkName = async function(name) {
     }
 }
 
+/**
+ * Get wallet contract information, including optional reverse lookup, and root hashes
+ * @param {*} address 
+ */
+Transactions.prototype.getWalletInfo = async function(address) {
+}
+
 module.exports = Transactions

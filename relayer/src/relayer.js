@@ -71,6 +71,14 @@ const storeHash = (input, callback) => {
   })
 };
 
+const getHash = (input, callback) => {
+  ipfs.getHash(input.env, input.address).then(res=>{
+    callback(200, {result: res});
+  }).catch(ex=>{
+    console.log(ex)
+    callback(500,{})
+  })
+};
 
 /* 
 
@@ -93,7 +101,7 @@ const createRequest = (input, callback) => {
       case "getRefundInfo": getRefundInfo(input, callback); break;
       case "submitMetaTx": submitMetaTx(input, callback); break;
       case "storeHash": storeHash(input, callback); break;
-      case "getHash": submitMetaTx(input, callback); break;
+      case "getHash": getHash(input, callback); break;
       default: callback(400, "Invalid operation");
     }
 

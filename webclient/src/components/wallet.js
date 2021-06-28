@@ -56,6 +56,7 @@ class Wallet extends Component {
     }
     componentDidMount() {
         this.loadHistory();
+        // load the wallet info && determine if we need to storehashes
         this.storeHashes().then(e=>{
             console.log(e);
         });
