@@ -30,11 +30,11 @@ class ProvideCode extends Component {
         this.state = {
             error: null,
             loadingHashes: true,
-            otp_0: "302869",
-            otp_1: "659474",
-            otp_2: "121801",
-            otp_3: "832807",
-            otp_4: "724530",
+            otp_0: "",
+            otp_1: "",
+            otp_2: "",
+            otp_3: "",
+            otp_4: "",
             data: {
                 name: this.props.match.params.address,
                 ownerAddress: account.address, 

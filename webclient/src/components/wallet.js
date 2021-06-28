@@ -10,8 +10,6 @@ import RelayerClient from "../../../lib/relayer_client";
 var Accounts = require('web3-eth-accounts');
 import Notifications, {notify} from 'react-notify-toast';
 
-console.log(new Accounts().create());
-
 const Transaction = ({data, me})=> {
     if(data.to==me) {
         return (<div className="row mt-3 mb-3">
@@ -41,6 +39,7 @@ class Wallet extends Component {
         this.state = {
             gasLimit: 25000
         }
+
         this.wallet = JSON.parse(window.localStorage.getItem("SMARTVAULT"))
         this.ownerAccount = new Accounts().privateKeyToAccount(this.wallet.ownerSecret);
         this.relayerClient = new RelayerClient("http://localhost:8080");
@@ -55,7 +54,7 @@ class Wallet extends Component {
             self.setState({accountData: res});
         })
     }
-    componentDidMount() {
+    componentDidMount() {        
         this.loadHistory();
         // load the wallet info && determine if we need to storehashes
         this.getWallet(this.wallet.walletAddress).then(e=>{
