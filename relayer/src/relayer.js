@@ -95,7 +95,7 @@ curl -X POST -H 'Content-Type: application/json' -d '{"id": "", "operation": "cr
 curl -X POST -H 'Content-Type: application/json' -d '{"id": "", "operation": "getBalance", "address": "0x57aAd250cF0b02010EcD772a835Ca5FD173158e1"}'  "http://localhost:8080/"
 curl -X POST -H 'Content-Type: application/json' -d '{"id": "", "operation": "getDepositAddress", "data": { "owner": "0x57aAd250cF0b02010EcD772a835Ca5FD173158e1", "salt": 123}}'  "http://localhost:8080/"
 curl -X POST -H 'Content-Type: application/json' -d '{"id": "", "operation": "checkName","name": "blahblah.crazy.one"}' "http://localhost:8080/"
-
+curl -X POST -H 'Content-Type: application/json' -d '{"id": "", "operation": "checkName","name": "blahblah.crazy.one"}' https://l6oobwso1l.execute-api.us-east-1.amazonaws.com/default/smartvault_relayer
 */
 
 const createRequest = (input, callback) => {
