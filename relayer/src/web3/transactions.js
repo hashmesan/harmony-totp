@@ -40,26 +40,19 @@ const CONFIG = {
 function Transactions(env) {
     this.env = env;
     this.config = CONFIG[env];
-    console.log("Loaded ENV=" + env + " provider=" + this.config.provider);
     this.provider = new Provider(process.env.PRIVATE_KEY, this.config.provider);
-}
-
-Transactions.prototype.getDefaultAccount = async function() {
-    const accounts = await new Web3(this.provider).eth.getAccounts();
-    return accounts[0];
+    this.defaultAddress = this.provider.getAddress(0);
+    console.log("Loaded ENV=" + env + " provider=" + this.config.provider, "defaultAddress=", this.defaultAddress);
 }
 
 Transactions.prototype.getResolver = async function() {
-    const accounts = await new Web3(this.provider).eth.getAccounts();
     Resolver.setProvider(this.provider);
-    Resolver.defaults({ from: accounts[0] });
     return await Resolver.at(this.config.resolver);
 }
 
 Transactions.prototype.getWalletFactory = async function() {   
     const accounts = await new Web3(this.provider).eth.getAccounts();
     WalletFactory.setProvider(this.provider);
-    WalletFactory.defaults({from: accounts[0]});
     const address = walletFactoryArtifacts.networks[this.config.network_id].address;
     console.log("walletfactory=", address);
     return await WalletFactory.at(address);
@@ -68,14 +61,13 @@ Transactions.prototype.getWalletFactory = async function() {
 Transactions.prototype.getWallet = async function(address) {   
     const accounts = await new Web3(this.provider).eth.getAccounts();
     Wallet.setProvider(this.provider);
-    Wallet.defaults({from: accounts[0]});
     return await Wallet.at(address);
 }
 
 // submits wallet and receive a forwarder address
 Transactions.prototype.createWallet = async function(config) {
     const factory = await this.getWalletFactory();
-    config.feeReceipient = await this.getDefaultAccount();
+    config.feeReceipient = this.defaultAddress;
     config.feeAmount = Web3.utils.toWei("0");
     config.resolver = this.config.resolver;
     console.log("sent=", config);

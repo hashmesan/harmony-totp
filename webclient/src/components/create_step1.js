@@ -5,7 +5,6 @@ const web3utils = require("web3-utils");
 
 import { connect } from "redux-zero/react";
 import actions from "../redux/actions";
-
 import {getApiUrl} from "../config";
 
 class ChooseName extends Component {
@@ -75,7 +74,7 @@ class ChooseName extends Component {
                                     <span className="input-group-text" id="basic-addon2">.crazy.one</span>
                                 </div>
                             </div>
-                            {!this.state.busy && <button className="btn btn-secondary" onClick={this.validate.bind(this)}>Search</button>}
+                            {!this.state.busy && <button className="btn btn-success" onClick={this.validate.bind(this)}>Search</button>}
                             {this.state.busy && <button disabled className="btn btn-secondary">Checking...</button>}
                         </form>
                     </div>

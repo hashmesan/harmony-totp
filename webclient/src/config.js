@@ -1,12 +1,15 @@
 const CONFIG = {
     "mainnet0" : {
-        API_URL: "http://localhost:8080/"
+        API_URL: "http://localhost:8080/",
+        gasPrice: 1000000000 // 1 Gwei
     },
     "testnet0" : {
-        API_URL: "http://localhost:8080/"
+        API_URL: "http://localhost:8080/",
+        gasPrice: 1000000000
     },
     "testnet3" : {
-        API_URL: "http://localhost:8080/"
+        API_URL: "http://localhost:8080/",
+        gasPrice: 1000000000
     }
 };
 
