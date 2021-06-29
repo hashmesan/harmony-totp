@@ -31,12 +31,19 @@ const App = connect(mapToProps)(({environment}) => (
                 <Create/>
             </Route>
             <Route path="/wallet">
-                {"walletAddress" in JSON.parse(getLocalWallet(environment)) ? <Wallet/> : <Redirect to="/create"/>}
+                {getLocalWallet(environment) && "walletAddress" in JSON.parse(getLocalWallet(environment)) ? <Wallet/> : <Redirect to="/create"/>}
             </Route>
             <Route path="/recover">
                 <Recover/>
             </Route>
         </Switch>
+        <footer className="my-5 pt-5 text-muted text-center text-small">
+            <p className="mb-1">Smartvault (beta) powered by Harmony Blockchain | Opensource (GPL)</p>
+            <ul className="list-inline">
+            <li className="list-inline-item"><a href="https://github.com/hashmesan/harmony-totp">Github</a></li>
+            <li className="list-inline-item"><a href="https://github.com/hashmesan/harmony-totp/issues">Report issues</a></li>
+            </ul>
+        </footer>
     </Router>    
 ))
 

@@ -42,6 +42,7 @@ module.exports = {
             { from: './src/index.html', to: "index.html" },
             { from: './js', to: "./js" },
             { from: './css', to: "./css" },
-        ])
+            { from: './public', to: "./public" },
+          ])
     ]
 };
