@@ -118,7 +118,7 @@ class ProvideCode extends Component {
                 self.setState({status: "commit succeeded"});
                 return this.relayerClient.startRecoverReveal(self.state.data.walletAddress, self.state.data.ownerAddress, proof, 0, 25000, this.ownerAccount)
             }).then(e=>{
-                setLocalWallet(self.props.environment, JSON.stringify(self.state.data));
+                setLocalWallet(self.props.environment, JSON.stringify(Object.assign(self.state.data, {active: true})));
                 localStorage.setItem("STORED", "true");
                 self.setState({status: "Recovery Reveal successful!", busy: false});
                 self.props.history.push("/wallet");

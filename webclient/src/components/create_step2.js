@@ -58,7 +58,11 @@ class ScanQRCode extends Component {
 
     validate(e) {
         e.preventDefault();
-        console.log(this.checkFirstTOTP(this.state.otp));
+        var match = this.checkFirstTOTP(this.state.otp);
+        if (!match) {
+            this.setState({error: "OTP does not match"});
+            return;
+        }
 
         // submit tx
         var self = this;

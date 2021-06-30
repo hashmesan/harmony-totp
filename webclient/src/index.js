@@ -31,7 +31,7 @@ const App = connect(mapToProps)(({environment}) => (
                 <Create/>
             </Route>
             <Route path="/wallet">
-                {getLocalWallet(environment) && "walletAddress" in JSON.parse(getLocalWallet(environment)) ? <Wallet/> : <Redirect to="/create"/>}
+                {getLocalWallet(environment) && JSON.parse(getLocalWallet(environment))["active"] == true ? <Wallet/> : <Redirect to="/create"/>}
             </Route>
             <Route path="/recover">
                 <Recover/>

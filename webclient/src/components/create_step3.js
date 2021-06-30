@@ -55,7 +55,7 @@ class FirstDeposit extends Component {
 
 
     saveWalletToLocalStorage() {
-        localStorage.setItem(getStorageKey(this.props.environment), JSON.stringify(this.props.data));
+        localStorage.setItem(getStorageKey(this.props.environment), JSON.stringify(Object.assign(this.props.data, {active: true})));
     }
 
     /*
