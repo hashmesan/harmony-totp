@@ -11,7 +11,7 @@ var Accounts = require('web3-eth-accounts');
 import Notifications, {notify} from 'react-notify-toast';
 import { connect } from "redux-zero/react";
 import actions from "../redux/actions";
-import {getStorageKey, getLocalWallet, getApiUrl} from "../config";
+import {getStorageKey, getLocalWallet, getApiUrl, getExplorerUrl} from "../config";
 
 const Transaction = ({data, me})=> {
     if(data.to==me) {
@@ -40,17 +40,17 @@ class Wallet extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            gasLimit: 25000
+            gasLimit: 200000
         }
 
         this.wallet = JSON.parse(getLocalWallet(this.props.environment))
         this.ownerAccount = new Accounts().privateKeyToAccount(this.wallet.ownerSecret);
-        this.relayerClient = new RelayerClient(getApiUrl(this.props.environment));
+        this.relayerClient = new RelayerClient(getApiUrl(this.props.environment), this.props.environment);
     }
 
     loadHistory() {
         var self = this;
-        fetch("https://explorer.pops.one:8888/address?id="+toBech32(this.wallet.walletAddress)+"&pageIndex=0&pageSize=20")
+        fetch(getExplorerUrl(this.props.environment) + "/address?id="+toBech32(this.wallet.walletAddress)+"&pageIndex=0&pageSize=20")
         .then(res=>res.json())
         .then(res=>{
             console.log(res);
@@ -61,7 +61,9 @@ class Wallet extends Component {
         this.loadHistory();
         // load the wallet info && determine if we need to storehashes
         this.getWallet(this.wallet.walletAddress).then(e=>{
-            if (e.result.hashStorageID == "") {
+            console.log("Found hashStorageID=", e.result.hashStorageID)
+            if (e.result.hashStorageID == "") 
+            {
                 this.storeHashes().then(e=>{
                     console.log(e);
                 });        
@@ -85,13 +87,14 @@ class Wallet extends Component {
     }
 
     async getWallet(wallet) {
-        return fetch("http://localhost:8080/", {
+        return fetch(getApiUrl(this.props.environment), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
               },
             body: JSON.stringify({
                 operation: "getWallet",
+                env: this.props.environment,
                 address: wallet,
             })
         })
@@ -107,13 +110,14 @@ class Wallet extends Component {
         })
     }
     async uploadHashes(wallet, hashes) {
-        return fetch("http://localhost:8080/", {
+        return fetch(getApiUrl(this.props.environment), {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
               },
             body: JSON.stringify({
                 operation: "storeHash",
+                env: this.props.environment,
                 data: {
                     wallet: wallet,
                     hashes: hashes

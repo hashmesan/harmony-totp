@@ -8,6 +8,8 @@ const DURATION = 300;
 const time = Math.floor((Date.now() / 1000));
 const timeOffset = time - (time% 300);        
 
+
+// TODO: update with meta tx
 contract("Guardians", accounts => {
 
     it("should add guardian", async () => {

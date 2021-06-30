@@ -35,7 +35,7 @@ contract("Upgrade", accounts => {
 		console.log("WalltComputed", newBalance);		
 
 		var subdomain = "superlongcrazynameverycheap000001" + blockNumber;
-		var wallet = await walletFactory.createWallet({
+		var smartWallet = await walletFactory.createWallet({
 			resolver: resolverAddr,
 			domain: [subdomain, "crazy"],
 			owner: tmpWallet.address,
@@ -114,5 +114,7 @@ contract("Upgrade", accounts => {
 		newBalance = await web3.eth.getBalance(feeWallet.address);
 		console.log("Fee Balance=", newBalance, "Actual cost=", tx.receipt.gasUsed);
 		assert.isTrue(newBalance > tx.receipt.gasUsed);
+
+		console.log(await walletFactory.getCreated());
 	});
 });

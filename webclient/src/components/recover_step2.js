@@ -21,13 +21,13 @@ var StyledOTPContainer = styled.div`
         border: 1px solid rgba(0, 0, 0, 0.3);
     }
 `;
-
+// 271
 class ProvideCode extends Component {
     constructor(props) {
         super(props)
 
         const account = new Web3EthAccounts().create();
-        this.relayerClient = new RelayerClient(getApiUrl(this.props.environment));
+        this.relayerClient = new RelayerClient(getApiUrl(this.props.environment), this.props.environment);
         this.ownerAccount = new Web3EthAccounts().privateKeyToAccount(account.privateKey);
 
         this.state = {
@@ -38,6 +38,7 @@ class ProvideCode extends Component {
             otp_2: "",
             otp_3: "",
             otp_4: "",
+            gasLimit: 250000,
             data: {
                 name: this.props.match.params.address,
                 ownerAddress: account.address, 
@@ -59,6 +60,7 @@ class ProvideCode extends Component {
               },
             body: JSON.stringify({
                 operation: "getHash",
+                env: this.props.environment,
                 address: walletAddress
             })
         })
@@ -76,6 +78,7 @@ class ProvideCode extends Component {
               },
             body: JSON.stringify({
                 operation: "checkName",
+                env: this.props.environment,
                 name: this.state.data.name
             })
         })
@@ -114,12 +117,11 @@ class ProvideCode extends Component {
             // submit the commit
             self.setState({busy: true, status: "Submitting tx..."});
             var commitHash =  web3utils.soliditySha3(merkle.concat(self.state.data.walletAddress, this.state.data.ownerAddress,proof[0]));
-            this.relayerClient.startRecoverCommit(self.state.data.walletAddress, commitHash, 0, 25000, this.ownerAccount).then(e=>{
+            this.relayerClient.startRecoverCommit(self.state.data.walletAddress, commitHash, 0, self.state.gasLimit, this.ownerAccount).then(e=>{
                 self.setState({status: "commit succeeded"});
-                return this.relayerClient.startRecoverReveal(self.state.data.walletAddress, self.state.data.ownerAddress, proof, 0, 25000, this.ownerAccount)
+                return this.relayerClient.startRecoverReveal(self.state.data.walletAddress, self.state.data.ownerAddress, proof, 0, self.state.gasLimit, this.ownerAccount)
             }).then(e=>{
                 setLocalWallet(self.props.environment, JSON.stringify(Object.assign(self.state.data, {active: true})));
-                localStorage.setItem("STORED", "true");
                 self.setState({status: "Recovery Reveal successful!", busy: false});
                 self.props.history.push("/wallet");
             })

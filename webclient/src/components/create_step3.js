@@ -23,13 +23,14 @@ class FirstDeposit extends Component {
     }
     checkBalance() {
         var self = this;
-        fetch("http://localhost:8080/", {
+        fetch(getApiUrl(this.props.environment), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
               },
             body: JSON.stringify({
                 operation: "getBalance",
+                env: this.props.environment,
                 address: this.props.data.walletAddress
             })
         })
@@ -79,6 +80,7 @@ class FirstDeposit extends Component {
               },
             body: JSON.stringify({
                 operation: "createWallet",
+                env: this.props.environment,
                 config: {
                     domain: [this.props.data.name.split(".")[0], this.props.data.name.split(".")[1]],
                     owner: this.props.data.ownerAddress,
@@ -127,7 +129,7 @@ class FirstDeposit extends Component {
                     <p>
                         <b>Wallet Address:</b> {toBech32(this.props.data.walletAddress)} {this.props.data.walletAddress}
                         <a href="#" className="btn btn-link" onClick={this.toggleQR.bind(this)}>{this.state.showQR ? "Hide QR Code": "Show QR Code"}</a>
-                        {this.state.showQR && <div><img src={"https://chart.googleapis.com/chart?chs=200x200&chld=L|0&cht=qr&chl=" + this.props.data.walletAddress} width="200" height="200"/></div>}
+                        {this.state.showQR && <div><img src={"https://chart.googleapis.com/chart?chs=200x200&chld=L|0&cht=qr&chl=" + toBech32(this.props.data.walletAddress)} width="200" height="200"/></div>}
                     </p>
                     <p>
                         <b>Name Service Fee:</b> {this.props.data.cost && web3utils.fromWei(this.props.data.cost).split(".")[0]} ONE<br/>

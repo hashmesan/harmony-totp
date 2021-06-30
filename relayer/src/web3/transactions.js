@@ -24,12 +24,13 @@ const CONFIG = {
         resolver: "0xd09fD54DD8A3A7d02676a1813CDf0d720E6Dbe89",
         provider: "http://localhost:8545"
     },
-    testnet: {
+    testnet0: {
         network_id: 1666700003,
         resolver: "0x335b5b3b0Acdf3aFabA00F71a3c7090e73990818",
         provider: "https://api.s3.b.hmny.io"
     },
-    mainnet: {
+    mainnet0: {
+      network_id: 1666600000,
       resolver: "0x48D421c223E32B68a8973ef05e1314C97BBbc4bE",
       provider: "https://api.s0.t.hmny.io"
     }
@@ -51,7 +52,6 @@ Transactions.prototype.getResolver = async function() {
 }
 
 Transactions.prototype.getWalletFactory = async function() {   
-    const accounts = await new Web3(this.provider).eth.getAccounts();
     WalletFactory.setProvider(this.provider);
     const address = walletFactoryArtifacts.networks[this.config.network_id].address;
     console.log("walletfactory=", address);
@@ -59,7 +59,6 @@ Transactions.prototype.getWalletFactory = async function() {
 }
 
 Transactions.prototype.getWallet = async function(address) {   
-    const accounts = await new Web3(this.provider).eth.getAccounts();
     Wallet.setProvider(this.provider);
     return await Wallet.at(address);
 }
@@ -71,7 +70,7 @@ Transactions.prototype.createWallet = async function(config) {
     config.feeAmount = Web3.utils.toWei("0");
     config.resolver = this.config.resolver;
     console.log("sent=", config);
-    var tx = await factory.createWallet(config,{gas: 712388});
+    var tx = await factory.createWallet(config,{ from: this.defaultAddress, gas: 712388});
     return {tx: tx.tx};
 }
 
@@ -100,7 +99,7 @@ function executeMetaTx(
  */       
 Transactions.prototype.submitMetaTx = async function(data) {
     var wallet = await this.getWallet(data.from);
-    var tx = await wallet.executeMetaTx(data.data, data.signatures, data.nonce, data.gasPrice, data.gasLimit, data.refundToken, data.refundAddress);
+    var tx = await wallet.executeMetaTx(data.data, data.signatures, data.nonce, data.gasPrice, data.gasLimit, data.refundToken, data.refundAddress, { from: this.defaultAddress, gasLimit: data.gasLimit});
     return {tx: tx}
 }
 

@@ -33,6 +33,7 @@ class ChooseName extends Component {
               },
             body: JSON.stringify({
                 operation: "checkName",
+                env: this.props.environment,
                 name: this.state.name + ".crazy.one"
             })
         })
