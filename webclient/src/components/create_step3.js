@@ -105,7 +105,7 @@ class FirstDeposit extends Component {
             self.setState({busy: false});
             console.log("Wallet created! ", res);
             self.saveWalletToLocalStorage();
-            self.props.history.push("/wallet");
+             self.props.history.push("/wallet");
         })
         .catch(e=>{
             console.log(e);

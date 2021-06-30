@@ -4,7 +4,13 @@ const {
     fromBech32,
   } = require('@harmony-js/crypto');
   const web3utils = require("web3-utils");
-
+  import {
+    HashRouter as Router,
+    Switch,
+    Route,
+    Link,
+    Redirect
+  } from "react-router-dom";
 import wallet from "../../../lib/wallet";
 import RelayerClient from "../../../lib/relayer_client";
 var Accounts = require('web3-eth-accounts');
@@ -44,18 +50,22 @@ class Wallet extends Component {
         }
 
         this.wallet = JSON.parse(getLocalWallet(this.props.environment))
-        this.ownerAccount = new Accounts().privateKeyToAccount(this.wallet.ownerSecret);
-        this.relayerClient = new RelayerClient(getApiUrl(this.props.environment), this.props.environment);
+        if (this.wallet != null) {
+            this.ownerAccount = new Accounts().privateKeyToAccount(this.wallet.ownerSecret);
+            this.relayerClient = new RelayerClient(getApiUrl(this.props.environment), this.props.environment);    
+        }
     }
 
     loadHistory() {
         var self = this;
-        fetch(getExplorerUrl(this.props.environment) + "/address?id="+toBech32(this.wallet.walletAddress)+"&pageIndex=0&pageSize=20")
-        .then(res=>res.json())
-        .then(res=>{
-            console.log(res);
-            self.setState({accountData: res});
-        })
+        if(this.wallet && this.wallet.walletAddress) {
+            fetch(getExplorerUrl(this.props.environment) + "/address?id="+toBech32(this.wallet.walletAddress)+"&pageIndex=0&pageSize=20")
+            .then(res=>res.json())
+            .then(res=>{
+                console.log(res);
+                self.setState({accountData: res});
+            })    
+        }
     }
     componentDidMount() {        
         this.loadHistory();
@@ -142,7 +152,11 @@ class Wallet extends Component {
         return await this.relayerClient.setHashStorageId(this.wallet.walletAddress, res.result.Hash, 0, this.state.gasLimit, this.ownerAccount);     
     }
 
-    render() {        
+    render() {
+        console.log("Wallet=", this.wallet);
+        if (this.wallet == null || this.wallet.active != true) {
+            return <Redirect to="/create"/>
+        }
         return (
             <div className="container pt-5 justify-content-md-center" style={{maxWidth: 960}}>
                 <div className="row">

@@ -33,7 +33,9 @@ export function getExplorerUrl(env) {
 }
 
 export function setLocalWallet(env, data) {
-    return localStorage.setItem(getStorageKey(env), data)
+    var wallet = localStorage.setItem(getStorageKey(env), data)
+    console.log(wallet);
+    return wallet;
 }
 
 export default CONFIG;
