@@ -84,7 +84,7 @@ async function walletWithAddress(address) {
   return await TOTPWallet.at(address);
 }
 
-async function createWallet(domain,owner, depth, drainAddr, feeAddress, feeAmount) {
+async function createWallet(resolver, domain,owner, depth, spendingLimit, drainAddr, feeAddress, feeAmount) {
     const {root_arr, leaves_arr} = createHOTP(depth);
 
     const guardians = await Guardians.new();
@@ -99,9 +99,35 @@ async function createWallet(domain,owner, depth, drainAddr, feeAddress, feeAmoun
     await TOTPWallet.link("MetaTx", metatx.address);
     await TOTPWallet.link("NameService", nameservice.address);
 
+    /*
+        function initialize(
+        address              resolver_,
+        string[2]   calldata domain_, // empty means no registration
+        address             owner_, 
+        bytes32[] calldata    rootHash_, 
+        uint8               merkelHeight_, 
+        address payable     drainAddr_, 
+        uint                dailyLimit_,
+        address             feeRecipient,
+        uint                feeAmount                
+        ) external 
+    */
+
+   const encodedRequest = ethAbi.encodeParameters(
+    ["address", "string[2]", "address", "bytes32[]", "uint8","address", "uint", "address", "uint"],
+    [resolver, ["quoc", "supercrazy"], owner, root_arr, depth, drainAddr, spendingLimit, feeAddress, feeAmount]
+  );
     var wallet = await TOTPWallet.new();
-    //console.log(root_arr, feeAddress, feeAmount);
-    await wallet.initialize(domain, owner, root_arr, depth, drainAddr, web3.utils.toWei("0.01", "ether"), feeAddress, feeAmount);
+    console.log(resolver, domain, owner, root_arr, depth, drainAddr, spendingLimit, feeAddress, feeAmount);
+    await wallet.initialize(resolver, 
+                            domain, 
+                            owner,
+                            root_arr,
+                            depth,
+                            drainAddr,
+                            spendingLimit,
+                            feeAddress,
+                            feeAmount);
 
     return {
         root_arr,

@@ -9,7 +9,15 @@ contract("OTPWallet", accounts => {
     it("should transfer with direct signed requests", async () => {
         const blockNumber = await web3.eth.getBlockNumber();
         var tmpWallet = web3.eth.accounts.create();
-        var {root, leaves, wallet} = await commons.createWallet(["supercheaplong0000123123123123"+blockNumber,"crazy"],accounts[0] ,8, tmpWallet.address, tmpWallet.address, 0);
+        var {root, leaves, wallet} = await commons.createWallet(
+            ethers.constants.AddressZero,
+            ["",""],
+            accounts[0] ,
+            8, 
+            web3.utils.toWei("100", "ether"),
+            tmpWallet.address, 
+            tmpWallet.address, 
+            0);
         console.log("root="+ root);
 
         await web3.eth.sendTransaction({from: accounts[0], to: wallet.address, value: web3.utils.toWei("2", "ether")});
@@ -36,7 +44,16 @@ contract("OTPWallet", accounts => {
 
         var feeWallet = web3.eth.accounts.create();
         var tmpWallet = web3.eth.accounts.create();
-        var {root, leaves, wallet} = await commons.createWallet(["supercheaplong0000123123123123" + blockNumber,"crazy"], tmpWallet.address ,8, tmpWallet.address, tmpWallet.address, 0);
+        var {root, leaves, wallet} = await commons.createWallet(
+            ethers.constants.AddressZero,
+            ["",""],
+             tmpWallet.address ,
+             8, 
+             web3.utils.toWei("100", "ether"),
+             tmpWallet.address, 
+             tmpWallet.address, 
+             0);
+
         await web3.eth.sendTransaction({from: accounts[0], to: wallet.address, value: web3.utils.toWei("2", "ether")});
         const methodData = wallet.contract.methods.makeTransfer(tmpWallet.address, web3.utils.toWei("0.0012345", "ether")).encodeABI();
                 
