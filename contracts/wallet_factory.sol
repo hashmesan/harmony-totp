@@ -15,6 +15,13 @@ contract WalletFactory
     address public immutable walletImplementation;
     string  public constant WALLET_CREATION = "WALLET_CREATION";
 
+    struct CreateRecord {
+        address wallet;
+        string[2] domain;
+    }
+
+    CreateRecord[] public created;
+
     struct WalletConfig
     {
         address resolver;
@@ -50,6 +57,8 @@ contract WalletFactory
 
         wallet = _deploy(config.owner, config.salt);
         _initializeWallet(wallet, config);
+
+        created.push(CreateRecord(address(wallet), config.domain));
         emit WalletCreated(address(wallet), config.owner);
     }
 
@@ -67,6 +76,9 @@ contract WalletFactory
         );
     }
 
+    function getCreated() public view returns (CreateRecord[] memory ) {
+        return created;
+    }
     // --- Internal functions ---
 
     function _initializeWallet(
