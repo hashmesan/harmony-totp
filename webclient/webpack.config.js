@@ -43,6 +43,7 @@ module.exports = {
             { from: './js', to: "./js" },
             { from: './css', to: "./css" },
             { from: './public', to: "./public" },
+            { from: './CNAME', to: "./" },  // to prevent github resetting our domain 
           ])
     ]
 };

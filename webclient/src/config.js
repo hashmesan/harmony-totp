@@ -1,6 +1,6 @@
 const CONFIG = {
     "mainnet0" : {
-        API_URL: "http://localhost:8080",
+        API_URL: "https://api.smartvault.one:8443/",
         EXPLORER_URL: "https://explorer.hmny.io:8888",
         gasPrice: 1000000000 // 1 Gwei
     },

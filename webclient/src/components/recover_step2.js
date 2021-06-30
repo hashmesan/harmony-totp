@@ -123,7 +123,9 @@ class ProvideCode extends Component {
             }).then(e=>{
                 setLocalWallet(self.props.environment, JSON.stringify(Object.assign(self.state.data, {active: true})));
                 self.setState({status: "Recovery Reveal successful!", busy: false});
-                self.props.history.push("/wallet");
+                setTimeout(()=>{
+                    self.props.history.push("/wallet");
+                }, 2000);
             })
             // submit the reveal
         } catch(e) {
