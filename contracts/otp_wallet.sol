@@ -161,9 +161,10 @@ contract TOTPWallet {
             uint256 gasPrice,
             uint256 gasLimit,
             address refundToken,
-            address refundAddress            
+            address payable refundAddress            
         ) external 
     {
+        uint gasLeft = gasleft();        
         uint8 requiredSignatures;
         Core.SignatureRequirement memory sigRequirement;        
         (sigRequirement.requiredSignatures, sigRequirement.ownerSignatureRequirement) = getRequiredSignatures(data);        
@@ -172,6 +173,11 @@ contract TOTPWallet {
         bool success;
         bytes memory returnData;
         (success, returnData) = address(this).call(data);
+
+        if(gasPrice > 0 && success && refundAddress != address(0x0)) {
+            uint gasUsed = gasLeft - gasleft() + 70000; //35k overhead
+            refundAddress.transfer(gasUsed);
+        }
         emit TransactionExecuted(success, returnData, 0x0);        
     }
 
