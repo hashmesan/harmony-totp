@@ -1,15 +1,15 @@
 
 <p align="center">
   <img src="./webclient/public/logo_smartvault.png"" height ="55" alt="" align="middle" />
-</p>
+<br/>
 
 [**Smartvault.one**](https://smartvault.one) | 
 [**Demo Videos**](#demo-videos) |
-[**Security & Usability**](#demo-videos) |
+[**Security & Usability**](#security--usabilities) |
 [**Smart Contracts**](#smart-contracts) |
 [**Relayer**](#relayer) |
 [**Web client**](#Webclient)
-
+</p>
 
 SmartVault is a smart contract wallet designed with worry-free recovery using your Google Authenticator (no worry about key phrases, passwords, device loss, email phishing, sms hijacking), and with many advanced wallet features.
 
@@ -19,7 +19,7 @@ SmartVault is a smart contract wallet designed with worry-free recovery using yo
 * **Social Guardians**: Take your wallet security to next level by requiring multiple devices you own or friends & family to authorize over spending limits, and recovery. 
 * **Smart contract without the hassle**: You don't need native wallet (like metamask or CLI) to sign transactions to use it. We designed *meta transactions* which can be relayed, and deduct fees from your wallet when it is successful.
 * **Activate your wallet with a simple deposit**: Using counter-factual wallet [EIP 1014](https://eips.ethereum.org/EIPS/eip-1014), we can generate your "future" wallet before it is created, and safely deposit into the address any amount, from anywhere (even exchanges like Binance, Coinbase, etc), to activate your smart wallet contract (aka Smartvault).
-* **Fully Upgradeable**: Your wallet has built-in upgrade functions. As we add more features like staking, DEX, simply upgrade with all the new features without moving your assets, and still keep the same address.
+* **Fully Upgradeable**: Smartvault has built-in upgrade functions. As there are more features like staking, DEX added, simply upgrade with all the new features without moving your assets, and still keep the same address.
 
 ### Demo Videos
 #### New Wallet Demo
