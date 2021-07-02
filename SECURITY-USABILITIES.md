@@ -2,6 +2,8 @@
 
 ### Motivation
 
+A new type wallet is possible without worrying about losing key phrases, passwords, device loss, email phishing, sms hijacking. 
+
 ### Background
 
 [Contract accounts](https://ethdocs.org/en/latest/contracts-and-transactions/account-types-gas-and-transactions.html) provide multiple owners (such as [Gnosis multisig wallet](https://github.com/gnosis/MultiSigWallet)) to manage the wallets, and other safeguard measures. These type of wallets have been widely used in companies, and exchanges to secure large amount of funds.  For the retail user, there are many challenges with coordinating with other signers and usability with handling contract signings. 
@@ -95,3 +97,6 @@ function upgradeMasterCopy(address newMasterCopy) external onlySelf() {
 ```
 
 #### Citations
+
+* Research paper: Ivan Homoliak & et al. https://arxiv.org/pdf/1812.03598.pdf
+* https://github.com/ivan-homoliak-sutd/SmartOTPs

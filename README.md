@@ -26,7 +26,7 @@ SmartVault is a smart contract wallet designed with worry-free recovery using yo
 ![Demo Video- Create](designs/create.gif)
 
 #### Recover Demo
-![Demo Video- Recover](designs/create.gif)
+![Demo Video- Recover](designs/recover.gif)
 
 ## Security & Usabilities
 
