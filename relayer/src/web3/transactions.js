@@ -25,6 +25,11 @@ const CONFIG = {
         provider: "http://localhost:8545"
     },
     testnet0: {
+        network_id: 1666700000,
+        resolver: "0x335b5b3b0Acdf3aFabA00F71a3c7090e73990818",
+        provider: "https://api.s0.b.hmny.io"
+    },
+    testnet3: {
         network_id: 1666700003,
         resolver: "0x335b5b3b0Acdf3aFabA00F71a3c7090e73990818",
         provider: "https://api.s3.b.hmny.io"

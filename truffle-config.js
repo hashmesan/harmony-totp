@@ -24,21 +24,22 @@
 // const fs = require('fs');
 // const mnemonic = fs.readFileSync(".secret").toString().trim();
 
-const WalletProvider = require("truffle-wallet-provider");
+//const WalletProvider = require("truffle-wallet-provider");
+const WalletProvider = require("@truffle/hdwallet-provider");
 const Wallet = require('ethereumjs-wallet');
 
 let secrets = require('./secrets');
-let rinkebyPrivateKey = new Buffer(secrets.rinkeby, "hex");
-let rinkebyWallet = Wallet.fromPrivateKey(rinkebyPrivateKey);
-let rinkebyProvider = new WalletProvider(rinkebyWallet,  "https://rinkeby.infura.io/v3/e97751423883454abdbc93474d5e4ca7");
 
-let harmonyTestNetProvider = new WalletProvider(
-              Wallet.fromPrivateKey(new Buffer(secrets.harmonytestnet, "hex")),  
-                "https://api.s0.b.hmny.io");
+let rinkebyProvider = new WalletProvider(secrets.rinkeby,  "https://rinkeby.infura.io/v3/e97751423883454abdbc93474d5e4ca7");
 
-let harmonyMainNetProvider = new WalletProvider(
-              Wallet.fromPrivateKey(new Buffer(secrets.harmonymainnet, "hex")),  
-                "https://api.harmony.one");
+let harmonyTestNetProvider0 = new WalletProvider(secrets.harmonytestnet,  
+  "https://api.s0.b.hmny.io");
+
+let harmonyTestNetProvider = new WalletProvider(secrets.harmonytestnet,  
+                "https://api.s3.b.hmny.io");
+
+let harmonyMainNetProvider = new WalletProvider(secrets.harmonymainnet,  
+                "https://api.s0.t.hmny.io");
 
 module.exports = {
     /**
@@ -54,9 +55,9 @@ module.exports = {
     networks: {
       development: {
         host: "127.0.0.1",
-        port: 9545, // port: 7545 for Ganashe
+        port: 8545, // port: 7545 for Ganashe
         network_id: "*", // Match any network id
-        gas: 201000000,
+        gas: 3510000,
       },
       advanced: {
         port: 8777,             // Custom port
@@ -110,9 +111,14 @@ module.exports = {
       },
       harmonytestnet: {
         provider: harmonyTestNetProvider,
-        network_id: "1666700000",
-        gas: 10000000
+        network_id: "1666700003",
+        gas: 30000000
       },
+      harmonytestnet0: {
+        provider: harmonyTestNetProvider0,
+        network_id: "1666700000",
+        gas: 30000000
+      },      
       harmonymainnet: {
         provider: harmonyMainNetProvider,
         network_id: "1666600000",
@@ -130,13 +136,13 @@ module.exports = {
       solc: {
         version: "0.7.6",    // Fetch exact version from solc-bin (default: truffle's version)
         // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
-        // settings: {          // See the solidity docs for advice about optimization and evmVersion
-        //  optimizer: {
-        //    enabled: false,
-        //    runs: 200
-        //  },
-        //  evmVersion: "byzantium"
-        // }
+        settings: {          // See the solidity docs for advice about optimization and evmVersion
+         optimizer: {
+           enabled: false,
+           runs: 200
+         },
+         //evmVersion: "byzantium"
+        }
       },
     },
   };
