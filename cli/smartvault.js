@@ -76,8 +76,13 @@ async function main() {
     program
         .command("recover <name> <code1> <code2> <code3> <code4> <code5>")
         .description("recover wallet")
-        .action((options)=>{        
-
+        .action(async (name, code1, code2, code3, code4, code5)=>{        
+            var client = new SmartVault(config.CONFIG[program._optionValues.env]);
+            var codes = [code1, code2, code3, code4, code5];
+            var success = await client.recoverWallet(name, codes, status=>{
+                console.log("STATUS: ", status)})
+            
+            success && client.saveWalletLocal();
         });
 
     program
