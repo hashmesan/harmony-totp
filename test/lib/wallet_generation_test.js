@@ -25,11 +25,11 @@ describe("Library test", (accounts) => {
     assert.strictEqual(wallet.byteArrayIsSame(a, a), true);
 
     console.log("Tokens=", tokens, tokens.join(""))
-    var {token, proof} = wallet.getProofWithOTP(tokens, leaves_arr);
+    var {token, proof, counter, index} = wallet.getProofWithOTP(tokens, leaves_arr);
     console.log(token, proof);
 
     assert.strictEqual(wallet.verifyProof(proof, root_arr), true);
-
+    
     return true;
   });
 });

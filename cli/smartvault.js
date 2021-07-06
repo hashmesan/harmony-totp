@@ -72,11 +72,26 @@ async function main() {
             console.log("Wallet created!");
         });
 
+
+    program
+        .command("recover <name> <code1> <code2> <code3> <code4> <code5>")
+        .description("recover wallet")
+        .action((options)=>{        
+
+        });
+
     program
         .command("list")
         .description("list all wallets")
         .action((options)=>{
+            var client = new SmartVault(config.CONFIG[program._optionValues.env]);
+            var {matches, addresses, names} = client.listWallets();
 
+            console.log("List Wallets");
+            console.log("------------");
+            matches.forEach((e, index)=>{
+                console.log(names[index] + "  " + addresses[index])
+            })
         });
 
     await program.parse(process.argv);

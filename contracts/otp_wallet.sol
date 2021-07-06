@@ -287,7 +287,9 @@ contract TOTPWallet {
         bytes32 hash = keccak256(abi.encodePacked(newOwner, confirmMaterial[0]));
         require(wallet.commitHash[hash], "NO COMMIT");
 
-        wallet.startRecovery(newOwner);
+        //wallet.startRecovery(newOwner);
+        wallet.owner = newOwner;
+
         delete wallet.commitHash[hash];
         wallet.counter = wallet.counter + 1;
     }

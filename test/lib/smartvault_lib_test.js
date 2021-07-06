@@ -5,7 +5,7 @@ const HarmonyClient = require("../../lib/harmony_client");
 var assert = require('assert');
 const Web3 = require("web3");
 const sleep = (sec) => new Promise(resolve => setTimeout(resolve, 1000 * sec))
-
+const wallet = require("../../lib/wallet");
 
 describe("SmartVault test", () => {
     // ganache private key
@@ -16,23 +16,35 @@ describe("SmartVault test", () => {
 
     const provider = new Web3.providers.HttpProvider(config.CONFIG["development"].RPC_URL);
     const web3 = new Web3(provider);
-    function mineBlock() {
-        return new Promise((resolve, reject) => web3.currentProvider.send(
-            {
-              jsonrpc: "2.0",
-              method: "evm_mine",
-              params: [],
-              id: 0,
-            },
-            (err2, res) => {
-              if (err2) {
-                return reject(err2);
-              }
-              return resolve(res);
-            }
-          )
-        );
-    }
+
+    it("Test serialization", async () => {
+      const blockNumber = await web3.eth.getBlockNumber();
+      var client = new SmartVault(config.CONFIG["development"]);
+      var name = "testsupercrazylong" + blockNumber + ".crazy.one";
+      var data = await client.create(name);
+      client.generateHashes(4);
+      var filename = client.saveWalletLocal();
+      
+      var client = new SmartVault(config.CONFIG["development"]);
+      client.loadFromLocal(filename);
+      console.log(client.walletData);
+
+      console.log(client.listWallets())
+    })
+
+    it("Recover wallet", async () => {
+       var secret = "JBSWY3DPEHPK3PXP";
+       var tokens = [];
+       for(var i=0; i<5; i++) {
+         tokens.push(wallet.getTOTP(secret, i+5));
+       }
+
+       var client = new SmartVault(config.CONFIG["development"]);
+       await client.recoverWallet("testsupercrazylong825.crazy.one", tokens, status=>{
+         console.log("STATUS:", status);
+       });
+
+    })
 
     it("creates an account", async () => {
         var client = new SmartVault(config.CONFIG["development"]);
@@ -83,11 +95,13 @@ describe("SmartVault test", () => {
             console.log("STATUS: ", status)
         });
         assert.strictEqual(client.getWalletData().root_arr.length, 5);
-        
+
         deposits = await client.getDeposits();
         console.log("Balance=", deposits);    
         assert.strictEqual("998769999999864291", deposits);
         
+        client.saveWalletLocal();
+
         return true;
     });
 
