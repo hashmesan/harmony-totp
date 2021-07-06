@@ -52,11 +52,11 @@ async function main() {
             }            
 
             const depositInfo = client.getDepositInfo();
+            console.log("Make your first deposit. Fees will be deducted from your deposits");
             console.log("Your wallet address is:", depositInfo.walletAddress);
             console.log("Registration Fee:", depositInfo.rentPrice);
             console.log("Network Fee:", depositInfo.createFee);
             console.log("Total Fee:", depositInfo.totalFee)
-            console.log("Make your first deposit. Fees will be deducted from your deposits");
 
             var deposit = new web3utils.BN(0);
             
