@@ -1,6 +1,8 @@
 require('dotenv').config()
 var Transactions = require("./web3/transactions");
 var ipfs = require("./ipfs");
+const web3utils = require("web3-utils");
+const CREATE_FEE = web3utils.toWei("0.00123", "ether");
 
 // accepts createwallet, then forwards to our own relayer
 const createWallet = (input, callback) => {
@@ -59,15 +61,15 @@ const getDepositAddress = (input, callback) => {
 
 // be sure not to use the same calling address, circular loop!!!!
 const getRefundInfo = (input, callback) => {
-  callback(200, {result: {refundAddress: "one12ekw6fptr2uc4h3ld8pvvg7v5r059vuzvumukc"}});
+  callback(200, {result: {createFee: CREATE_FEE, refundAddress: "one12ekw6fptr2uc4h3ld8pvvg7v5r059vuzvumukc"}});
 };
 
 const submitMetaTx = (input, callback) => {
   new Transactions(input.env || "testnet").submitMetaTx(input.data).then(res=>{
     callback(200, {result: res});
   }).catch(ex=>{
-    console.log(ex)
-    callback(500,{})
+    console.error(ex);
+    callback(500,ex)
   })
 };
 
@@ -75,8 +77,8 @@ const storeHash = (input, callback) => {
   ipfs.storeHash(input.env, input.data.wallet, input.data.hashes).then(res=>{
     callback(200, {result: res});
   }).catch(ex=>{
-    console.log(ex)
-    callback(500,{})
+    console.log(ex);
+    callback(500,ex)
   })
 };
 
@@ -84,8 +86,7 @@ const getHash = (input, callback) => {
   ipfs.getHash(input.env, input.address).then(res=>{
     callback(200, {result: res});
   }).catch(ex=>{
-    console.log(ex)
-    callback(500,{})
+    callback(500,ex)
   })
 };
 
@@ -96,10 +97,13 @@ curl -X POST -H 'Content-Type: application/json' -d '{"id": "", "operation": "ge
 curl -X POST -H 'Content-Type: application/json' -d '{"id": "", "operation": "getDepositAddress", "data": { "owner": "0x57aAd250cF0b02010EcD772a835Ca5FD173158e1", "salt": 123}}'  "http://localhost:8080/"
 curl -X POST -H 'Content-Type: application/json' -d '{"id": "", "operation": "checkName","name": "blahblah.crazy.one"}' "http://localhost:8080/"
 curl -X POST -H 'Content-Type: application/json' -d '{"id": "", "operation": "checkName","name": "blahblah.crazy.one"}' https://l6oobwso1l.execute-api.us-east-1.amazonaws.com/default/smartvault_relayer
+
+curl -X POST -H 'Content-Type: application/json' -d '{"id": "", "operation": "getHash","address": "0xeAaf2E780CE6A161AD5F22f51cB06060236f1Dc8", "env": "development"}' "http://localhost:8080/"
+
 */
 
 const createRequest = (input, callback) => {
-    console.log(input)
+    //console.log(input)
     const operation = input.operation
     switch(operation) {
       case "createWallet": createWallet(input, callback); break;

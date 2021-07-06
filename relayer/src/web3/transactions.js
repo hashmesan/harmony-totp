@@ -21,7 +21,8 @@ const duration = 60 * 60 * 24 * 365; // 1 year
 
 const CONFIG = {
     development: {
-        resolver: "0xd09fD54DD8A3A7d02676a1813CDf0d720E6Dbe89",
+        network_id: 1000,
+        resolver: "0x9590030b26dE3A037Cd679b33A177A645BFaC114",
         provider: "http://localhost:8545"
     },
     testnet0: {
@@ -48,7 +49,7 @@ function Transactions(env) {
     this.config = CONFIG[env];
     this.provider = new Provider(process.env.PRIVATE_KEY, this.config.provider);
     this.defaultAddress = this.provider.getAddress(0);
-    console.log("Loaded ENV=" + env + " provider=" + this.config.provider, "defaultAddress=", this.defaultAddress);
+    // console.log("Loaded ENV=" + env + " provider=" + this.config.provider, "defaultAddress=", this.defaultAddress);
 }
 
 Transactions.prototype.getResolver = async function() {
@@ -59,7 +60,7 @@ Transactions.prototype.getResolver = async function() {
 Transactions.prototype.getWalletFactory = async function() {   
     WalletFactory.setProvider(this.provider);
     const address = walletFactoryArtifacts.networks[this.config.network_id].address;
-    console.log("walletfactory=", address);
+    // console.log("walletfactory=", address);
     return await WalletFactory.at(address);
 }
 
@@ -71,10 +72,8 @@ Transactions.prototype.getWallet = async function(address) {
 // submits wallet and receive a forwarder address
 Transactions.prototype.createWallet = async function(config) {
     const factory = await this.getWalletFactory();
-    config.feeReceipient = this.defaultAddress;
-    config.feeAmount = Web3.utils.toWei("0");
     config.resolver = this.config.resolver;
-    console.log("sent=", config);
+    //console.log("sent=", config);
     var tx = await factory.createWallet(config,{ from: this.defaultAddress, gas: 712388});
     return {tx: tx.tx};
 }
@@ -88,7 +87,7 @@ Transactions.prototype.getBalance = async function(address) {
 Transactions.prototype.getDepositAddress = async function(data) {
     const factory = await this.getWalletFactory();
     var tx = await factory.computeWalletAddress(data.owner, data.salt);
-    return {address: tx, networkFee: NETWORK_FEE};
+    return {address: tx};
 }
 
 /*
@@ -103,6 +102,7 @@ function executeMetaTx(
 ) external 
  */       
 Transactions.prototype.submitMetaTx = async function(data) {
+    // console.log(data);
     var wallet = await this.getWallet(data.from);
     var tx = await wallet.executeMetaTx(data.data, data.signatures, data.nonce, data.gasPrice, data.gasLimit, data.refundToken, data.refundAddress, { from: this.defaultAddress, gasLimit: data.gasLimit});
     return {tx: tx}
