@@ -9,10 +9,10 @@ const NameRegistry = artifacts.require("NameRegistry");
 const NameService = artifacts.require("NameService");
 
 module.exports = async function(deployer) {
-  await Promise.all([deployer.deploy(Guardians, {overwrite: true}), 
-                     deployer.deploy(DailyLimit, {overwrite: true}),
-                     deployer.deploy(Recovery, {overwrite: true}),
-                     deployer.deploy(MetaTx, {overwrite: true}),
+  await Promise.all([deployer.deploy(Guardians), 
+                     deployer.deploy(DailyLimit),
+                     deployer.deploy(Recovery),
+                     deployer.deploy(MetaTx),
                      deployer.deploy(NameService)]);
 
   await deployer.link(Guardians, TOTPWallet);
