@@ -1,7 +1,6 @@
 
 const truffleAssert = require("truffle-assertions");
 const ethers = require("ethers");
-const merkle = require("../lib/merkle.js");
 const commons = require("./commons.js");
 const Relayer = artifacts.require("Relayer");
 

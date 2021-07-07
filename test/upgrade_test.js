@@ -1,7 +1,6 @@
 
 const truffleAssert = require("truffle-assertions");
 const ethers = require("ethers");
-const merkle = require("../lib/merkle.js");
 const commons = require("./commons.js");
 const EnsResolver = artifacts.require("EnsResolver");
 const namehash = require('eth-ens-namehash');
@@ -13,7 +12,7 @@ contract("Upgrade", accounts => {
 	it("should be able to upgrade", async () => {
 		
 		const blockNumber = await web3.eth.getBlockNumber();
-		const resolverAddr = "0xd09fD54DD8A3A7d02676a1813CDf0d720E6Dbe89";
+		const resolverAddr = "0x9590030b26dE3A037Cd679b33A177A645BFaC114";
 
 		var merkelHeight = 6;
 		var salt = 100;

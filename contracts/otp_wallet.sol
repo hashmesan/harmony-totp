@@ -187,7 +187,9 @@ contract TOTPWallet {
         require(address(this).balance >= amount, "not enough balance");  
 
         wallet.spentToday += amount;
-        to.transfer(amount);
+        //to.transfer(amount);
+        to.call{value: amount, gas: 100000}("");
+
         emit WalletTransfer(to, amount);             
     }
 
