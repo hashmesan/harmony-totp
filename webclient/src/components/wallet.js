@@ -11,13 +11,11 @@ const {
     Link,
     Redirect
   } from "react-router-dom";
-import wallet from "../../../lib/wallet";
-import RelayerClient from "../../../lib/relayer_client";
-var Accounts = require('web3-eth-accounts');
 import Notifications, {notify} from 'react-notify-toast';
 import { connect } from "redux-zero/react";
 import actions from "../redux/actions";
-import {getStorageKey, getLocalWallet, getApiUrl, getExplorerUrl} from "../config";
+import {getStorageKey, getLocalWallet, getApiUrl, getExplorerUrl, CONFIG} from "../config";
+import SmartVault from '../../../lib/smartvault_lib';
 
 const Transaction = ({data, me})=> {
     if(data.to==me) {
@@ -49,36 +47,30 @@ class Wallet extends Component {
             gasLimit: 200000
         }
 
-        this.wallet = JSON.parse(getLocalWallet(this.props.environment))
-        if (this.wallet != null) {
-            this.ownerAccount = new Accounts().privateKeyToAccount(this.wallet.ownerSecret);
-            this.relayerClient = new RelayerClient(getApiUrl(this.props.environment), this.props.environment);    
-        }
+        var walletData = JSON.parse(getLocalWallet(this.props.environment, false))
+        this.smartvault = new SmartVault(CONFIG[this.props.environment])
+        this.smartvault.loadFromWalletData(walletData);
     }
 
     loadHistory() {
         var self = this;
-        if(this.wallet && this.wallet.walletAddress) {
-            fetch(getExplorerUrl(this.props.environment) + "/address?id="+toBech32(this.wallet.walletAddress)+"&pageIndex=0&pageSize=20")
-            .then(res=>res.json())
-            .then(res=>{
-                console.log(res);
-                self.setState({accountData: res});
-            })    
-        }
+        this.smartvault.getDeposits().then(balance=>{
+            self.setState({balance: balance})
+        })
+
+        // var self = this;
+        // if(this.smartvault.walletData && this.smartvault.smartvault.walletAddress) {
+        //     fetch(getExplorerUrl(this.props.environment) + "/address?id="+toBech32(this.smartvault.smartvault.walletAddress)+"&pageIndex=0&pageSize=20")
+        //     .then(res=>res.json())
+        //     .then(res=>{
+        //         console.log(res);
+        //         self.setState({accountData: res});
+        //     })    
+        // }
     }
     componentDidMount() {        
         this.loadHistory();
-        // load the wallet info && determine if we need to storehashes
-        this.getWallet(this.wallet.walletAddress).then(e=>{
-            console.log("Found hashStorageID=", e.result.hashStorageID)
-            if (e.result.hashStorageID == "") 
-            {
-                this.storeHashes().then(e=>{
-                    console.log(e);
-                });        
-            }
-        })
+        var self = this;
     }
 
     transfer(e) {
@@ -86,88 +78,41 @@ class Wallet extends Component {
         var self = this;
         self.setState({submitting: true});
 
-        //(from, destination, amount, gasPrice, gasLimit, ownerAccount)
-        this.relayerClient.transferTX(this.wallet.walletAddress, fromBech32(this.state.destination), web3utils.toWei(this.state.sendAmount), 0, this.state.gasLimit, this.ownerAccount).then(e=>{
-            console.log("sigs", e);
-            self.setState({submitting: false, destination: "", sendAmount: ""});
-
-            notify.show('Transaction Successful!');     
-            self.loadHistory();
-        })
-    }
-
-    async getWallet(wallet) {
-        return fetch(getApiUrl(this.props.environment), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-              },
-            body: JSON.stringify({
-                operation: "getWallet",
-                env: this.props.environment,
-                address: wallet,
+        try {            
+            this.smartvault.relayClient.transferTX(this.smartvault.walletData.walletAddress, fromBech32(this.state.destination), web3utils.toWei(this.state.sendAmount), 0, this.state.gasLimit, this.smartvault.ownerAccount).then(e=>{
+                console.log("sigs", e);
+                setTimeout(()=>{
+                    self.setState({submitting: false, destination: "", sendAmount: ""});
+                    notify.show('Transaction Successful!');         
+                    self.loadHistory();
+                }, 3000);
+                
+            }).catch(e=>{
+                console.error(e);
+                self.setState({submitting: false, error: e});
             })
-        })
-        .then(res => {
-            if(res.ok) {
-                return res.json()
-            } else {
-                return res.json().then(e=>{
-                    self.setState({error: e});
-                    throw Exception(e);
-                })
-            }
-        })
-    }
-    async uploadHashes(wallet, hashes) {
-        return fetch(getApiUrl(this.props.environment), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-              },
-            body: JSON.stringify({
-                operation: "storeHash",
-                env: this.props.environment,
-                data: {
-                    wallet: wallet,
-                    hashes: hashes
-                }
-            })
-        })
-        .then(res => {
-            if(res.ok) {
-                return res.json()
-            } else {
-                return res.json().then(e=>{
-                    self.setState({error: e});
-                    throw Exception(e);
-                })
-            }
-        })   
-    }
-    async storeHashes() {
-        console.log("Storing hashes...");
-        var res = await this.uploadHashes(this.wallet.walletAddress, this.wallet.hashes.leaves_arr);
-        console.log("Stored at IPFS=", res);
-        return await this.relayerClient.setHashStorageId(this.wallet.walletAddress, res.result.Hash, 0, this.state.gasLimit, this.ownerAccount);     
+        }catch(e){
+            console.error(e);
+            self.setState({submitting: false, error: e.message});            
+        }
     }
 
     render() {
-        console.log("Wallet=", this.wallet);
-        if (this.wallet == null || this.wallet.active != true) {
+        var walletData = this.smartvault.walletData;
+        if (walletData == null || walletData.created != true) {
             return <Redirect to="/create"/>
         }
         return (
             <div className="container pt-5 justify-content-md-center" style={{maxWidth: 960}}>
                 <div className="row">
                     <div className="col-9">
-                        <h3>{this.wallet.name}</h3>
-                        {this.wallet.walletAddress} [copy]<br/>
-                        {toBech32(this.wallet.walletAddress)}                        
+                        <h3>{walletData.name}</h3>
+                        {walletData.walletAddress} [copy]<br/>
+                        {toBech32(walletData.walletAddress)}                        
                     </div>
                     <div className="col-3 text-right">
                         <div className="lead">
-                            {this.state.accountData && web3utils.fromWei(this.state.accountData.address.balance+"")} ONE
+                            {this.state.balance && web3utils.fromWei(this.state.balance+"")} ONE
                         </div>
                     </div>
                 </div>
@@ -202,6 +147,12 @@ class Wallet extends Component {
                                     <input type="number" className="form-control" id="inputEmail3" value={this.state.gasLimit} disabled onChange={(e)=>this.setState({gasLimit: e.target.value})}/>
                                 </div>
                             </div>
+                            {this.state.error &&                
+                            <div className="row justify-content-md-center mt-4">
+                                <div className="alert alert-danger w-50" role="alert">
+                                    {this.state.error && JSON.stringify(this.state.error)}
+                                </div>
+                            </div>}
                             <div className="form-group row mt-4">
                                 <label htmlFor="inputEmail3" className="col-sm-4 col-form-label"></label>
                                 <div className="col-sm-8">
