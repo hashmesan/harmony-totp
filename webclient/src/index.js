@@ -25,7 +25,7 @@ const App = connect(mapToProps)(({environment}) => (
         <Header/>
         <Switch>
             <Route exact path="/">
-                {getLocalWallet(environment) ?<Redirect to="/wallet"/> : <Redirect to="/create"/>}
+                {getLocalWallet(environment, false) ?<Redirect to="/wallet"/> : <Redirect to="/create"/>}
             </Route>
             <Route path="/create">
                 <Create/>

@@ -2,14 +2,12 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import OtpInput from 'react-otp-input';
 import styled from '@emotion/styled'
-import Web3EthAccounts from 'web3-eth-accounts';
-import merkle from '../../../lib/merkle';
-import {getProofWithOTP} from '../../../lib/wallet';
-import RelayerClient from "../../../lib/relayer_client";
 const web3utils = require("web3-utils");
 import { connect } from "redux-zero/react";
 import actions from "../redux/actions";
 import {getApiUrl, getStorageKey, getLocalWallet, setLocalWallet} from "../config";
+import {SmartVaultContext, SmartVaultConsumer} from "./smartvault_provider";
+const ethers = require("ethers");
 
 var StyledOTPContainer = styled.div`
     .inputStyle {
@@ -21,29 +19,23 @@ var StyledOTPContainer = styled.div`
         border: 1px solid rgba(0, 0, 0, 0.3);
     }
 `;
-// 271
+
 class ProvideCode extends Component {
     constructor(props) {
         super(props)
 
-        const account = new Web3EthAccounts().create();
-        this.relayerClient = new RelayerClient(getApiUrl(this.props.environment), this.props.environment);
-        this.ownerAccount = new Web3EthAccounts().privateKeyToAccount(account.privateKey);
-
         this.state = {
             error: null,
-            loadingHashes: true,
+            loadingHashes: false,
             otp_0: "",
             otp_1: "",
             otp_2: "",
             otp_3: "",
             otp_4: "",
             gasLimit: 250000,
-            data: {
-                name: this.props.match.params.address,
-                ownerAddress: account.address, 
-                ownerSecret: account.privateKey
-            }
+            name: this.props.match.params.address,
+            status: "",
+            found: false,
         }
     }
 
@@ -51,50 +43,19 @@ class ProvideCode extends Component {
         this.setState({["otp_" + index]: otp });
     }
 
-    async loadHashes(walletAddress) {
-        var self = this;
-        return fetch(getApiUrl(this.props.environment), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-              },
-            body: JSON.stringify({
-                operation: "getHash",
-                env: this.props.environment,
-                address: walletAddress
-            })
-        })
-        .then(res=>res.json())
-        .then((res)=> {
-            return res.result;
-        });
-    }
-
-    async loadAddress() {
-        return fetch(getApiUrl(this.props.environment), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-              },
-            body: JSON.stringify({
-                operation: "checkName",
-                env: this.props.environment,
-                name: this.state.data.name
-            })
-        })
-        .then(res=>res.json())
-        .then((res)=> {
-            return res.result.address;
-        });
-    }
-
     componentDidMount() {
         const self = this;
-        this.loadAddress().then(address=>{
-            return self.loadHashes(address).then(res=>{
-                self.setState({loadingHashes: false, data: Object.assign(self.state.data, {walletAddress: address, hashes: {leaves_arr: res}})})
-            });
-        })
+
+        console.log("looking up", this.state.name)
+        this.setState({busy: true});
+        this.context.smartvault.harmonyClient.isNameAvailable(this.state.name, 31536000).then(available=>{
+            if(available.address == ethers.constants.AddressZero) {
+                self.setState({error: "No address at this name"});
+            } else {
+                self.setState({found: true})
+            }
+            self.setState({busy: false});
+        });
     }
 
     /**
@@ -105,35 +66,30 @@ class ProvideCode extends Component {
      *  - reverse lookup (for local only)
      */
     recoverWallet() {
-        try {
-            var self = this;
-            var {token, proof} = getProofWithOTP([this.state.otp_0, 
-                            this.state.otp_1, 
-                            this.state.otp_2, 
-                            this.state.otp_3,
-                            this.state.otp_4], this.state.data.hashes.leaves_arr);
+        var self = this;
+        var codes = [this.state.otp_0, 
+            this.state.otp_1, 
+            this.state.otp_2, 
+            this.state.otp_3,
+            this.state.otp_4];
 
-            console.log(proof);
-            // submit the commit
-            self.setState({busy: true, status: "Submitting tx..."});
-            var commitHash =  web3utils.soliditySha3(merkle.concat(self.state.data.walletAddress, this.state.data.ownerAddress,proof[0]));
-            this.relayerClient.startRecoverCommit(self.state.data.walletAddress, commitHash, 0, self.state.gasLimit, this.ownerAccount).then(e=>{
-                self.setState({status: "commit succeeded"});
-                return this.relayerClient.startRecoverReveal(self.state.data.walletAddress, self.state.data.ownerAddress, proof, 0, self.state.gasLimit, this.ownerAccount)
-            }).then(e=>{
-                setLocalWallet(self.props.environment, JSON.stringify(Object.assign(self.state.data, {active: true})));
-                self.setState({status: "Recovery Reveal successful!", busy: false});
+        this.setState({busy: true});
+        this.context.smartvault.recoverWallet(this.state.name, codes, status=>{
+            self.setState({status: this.state.status + "\n" + status})
+        })
+        .then(e =>{
+            var storeData = self.context.smartvault.walletData;
+            delete storeData["leaves_arr"]
+            setLocalWallet(self.props.environment, JSON.stringify(storeData), false);
+            setTimeout(()=>{
                 self.props.history.push("/wallet");
-            })
-            // submit the reveal
-        } catch(e) {
-            this.setState({error: e, busy : false})
-        }
+            }, 5000);
+        }).catch(e => {
+            self.setState({error: e, busy : false});
+        })
     }
 
     render() {
-        console.log(this.state);
-
         if (this.state.loadingHashes) {
             return (
                 <React.Fragment>
@@ -146,7 +102,16 @@ class ProvideCode extends Component {
             )
         }
         console.log(this.props);
+        if(!this.state.found) {
+            if(this.state.busy) {
+                return <p>Checking address...{this.state.name}</p>
+            } else {
+                return <h3>Address not found</h3>
+            }
+        }
         return (
+            <SmartVaultConsumer>
+            {({smartvault}) => (
             <React.Fragment>
                 <h2>Provide 5-OTP Recovery Codes</h2>
                 <h5 className="mt-4">Open your Google Authenticator. Type in code you see then click refresh to get a new code. Repeat until you completed 5 codes.</h5>
@@ -165,6 +130,11 @@ class ProvideCode extends Component {
                                 separator={<span></span>}
                             /></StyledOTPContainer>)})}
 
+                <div className="row justify-content-md-center mt-4">
+                        <pre>
+                            {this.state.status}
+                        </pre>
+                    </div>
                 {this.state.error && <div className="row justify-content-md-center mt-4">
                     <div className="alert alert-danger w-50" role="alert">
                         {this.state.error}
@@ -172,14 +142,16 @@ class ProvideCode extends Component {
                 </div>}   
                     {(!this.state.busy)&& <button className="mt-5 btn btn-lg btn-primary" onClick={this.recoverWallet.bind(this)}>Recover Wallet</button>} 
                     {(this.state.busy) && <button className="mt-5 btn btn-lg btn-secondary">
-                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                {this.state.status}                           
+                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>                                                        
                         </button>}
                 </div>
-            </React.Fragment>
+                    </React.Fragment>
+                )}
+                </SmartVaultConsumer>            
         );
     }
 }
+ProvideCode.contextType = SmartVaultContext;
 
 const mapToProps = ({ environment }) => ({ environment });
 export default connect(mapToProps, actions)(withRouter(ProvideCode));

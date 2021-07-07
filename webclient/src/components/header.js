@@ -25,7 +25,7 @@ class Header extends Component {
                 {!hasWallet? 
                 <nav className="my-2 my-md-0 mr-md-3">
                 <Link className="p-2 text-dark"  to="/create">Create Wallet</Link>
-                <Link className="p-2 text-dark"  to="/restore">Restore Wallet</Link>                  
+                <Link className="p-2 text-dark"  to="/recover">Restore Wallet</Link>                  
                 </nav>
                 :
                 <nav className="my-2 my-md-0 mr-md-3">
