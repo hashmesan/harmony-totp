@@ -41,7 +41,7 @@ class ScanQRCode extends Component {
     }
 
     render() {
-        const uri = this.context.smartvault.getOTPScanUrl();
+        const uri = this.context.smartvault.getOTPScanUrl().replace('?', '%3F').replace('&', '%26');
         const qr_fixed = `https://chart.googleapis.com/chart?chs=200x200&chld=L|0&cht=qr&chl=${uri}`;
 
         return (
