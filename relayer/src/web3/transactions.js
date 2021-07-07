@@ -73,7 +73,7 @@ Transactions.prototype.getWallet = async function(address) {
 Transactions.prototype.createWallet = async function(config) {
     const factory = await this.getWalletFactory();
     config.resolver = this.config.resolver;
-    //console.log("sent=", config);
+    console.log("sent=", config);
     var tx = await factory.createWallet(config,{ from: this.defaultAddress, gas: 712388});
     return {tx: tx.tx};
 }
