@@ -35,6 +35,7 @@ class Header extends Component {
                 <select className="" value={this.props.environment} onChange={this.handleChange.bind(this)} >
                     <option value="mainnet0">Mainnet(Shard 0)</option>
                     <option value="testnet3">Testnet(Shard 3)</option>
+                    <option value="development">Development</option>
                 </select>
             </div>        
         );

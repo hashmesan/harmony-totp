@@ -1,19 +1,10 @@
 import React, { Component } from 'react';
-import { css, jsx } from '@emotion/react'
 import OtpInput from 'react-otp-input';
 import styled from '@emotion/styled'
-import {
-    HashRouter as Router,
-    Switch,
-    Route,
-    Link
-  } from "react-router-dom";
 import { withRouter } from 'react-router-dom';
-import { getTOTP } from '../../../lib/wallet';
-
 import { connect } from "redux-zero/react";
 import actions from "../redux/actions";
-import {getApiUrl} from "../config";
+import {SmartVaultContext, SmartVaultConsumer} from "./smartvault_provider";
 
 var StyledOTPContainer = styled.div`
     .inputStyle {
@@ -37,80 +28,25 @@ class ScanQRCode extends Component {
         this.setState({ otp });
     }
 
-    checkFirstTOTP(input) {
-        console.log(this.props);
-        return getTOTP(this.props.data.secret, 2) == input;
-    }
-    
-    // check for valid OTP
-    /* 
-        struct WalletConfig
-    {
-        address   owner;
-        bytes32[] rootHash;
-        uint8 	  merkelHeight;
-        address	  drainAddr;
-        uint 	  dailyLimit;
-        bytes     signature;
-        uint      salt;
-    }
-    */
 
     validate(e) {
         e.preventDefault();
-        var match = this.checkFirstTOTP(this.state.otp);
+        var match = this.context.smartvault.validateOTP(this.state.otp);
         if (!match) {
             this.setState({error: "OTP does not match"});
             return;
         }
 
-        // submit tx
-        var self = this;
-        self.setState({busy: true});
-
-        // wait tx to finish
-        fetch(getApiUrl(this.props.environment), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-              },
-            body: JSON.stringify({
-                operation: "getDepositAddress",
-                env: this.props.environment,
-                data: {
-                    owner: self.props.data.ownerAddress,
-                    salt: self.props.data.salt
-                }
-            })
-        })
-        .then(res => {
-            if(res.ok) {
-                return res.json()
-            } else {
-                return res.json().then(e=>{
-                    self.setState({error: e});
-                    throw e;
-                })
-            }
-        })
-        .then((res)=> {
-            self.setState({busy: false});
-            self.props.handleUpdate({walletAddress: res.result.address, networkFee: res.result.networkFee});
-            self.props.history.push("/create/step3");
-        }).catch((ex)=>{
-            console.log("ex=", ex);
-            self.setState({busy: false});
-            self.setState({error: ex});
-        })
+        this.props.history.push("/create/step3");
     }
 
     render() {
-        const query = `?counter=1&secret=${this.props.data.secret}&issuer=smartvault.one`
-        const encodedQuery = query.replace('?', '%3F').replace('&', '%26')
-        const uri = `otpauth://hotp/${this.props.data.name}${encodedQuery}`
+        const uri = this.context.smartvault.getOTPScanUrl();
         const qr_fixed = `https://chart.googleapis.com/chart?chs=200x200&chld=L|0&cht=qr&chl=${uri}`;
 
         return (
+            <SmartVaultConsumer>
+            {({smartvault}) => (
             <React.Fragment>
                 <h2>Scan your HOTP Secret</h2>
                 <h5 className="mt-4 mb-4">Scan this QR code with your Google Authenticator.<br/>This code is used to authorize higher transfers, and recover your wallet.</h5>
@@ -145,9 +81,12 @@ class ScanQRCode extends Component {
                             Loading...
                     </button>}
             </React.Fragment>
+            )}
+            </SmartVaultConsumer>
         );
     }
 }
+ScanQRCode.contextType = SmartVaultContext;
 
 const mapToProps = ({ environment }) => ({ environment });
 export default connect(mapToProps, actions)(withRouter(ScanQRCode));
