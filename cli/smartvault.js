@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const { Command } = require('commander');
 const commander = require('commander');
 const SmartVault = require("../lib/smartvault_lib");
@@ -7,6 +9,7 @@ const program = new Command();
 const qrcode = require('qrcode-terminal');
 const prompt = require('prompt-sync')({sigint: true});
 const web3utils = require("web3-utils");
+const { toBech32, fromBech32 } = require('@harmony-js/crypto');
 const sleep = (sec) => new Promise(resolve => setTimeout(resolve, 1000 * sec))
 
 program
@@ -98,6 +101,39 @@ async function main() {
                 console.log(names[index] + "  " + addresses[index])
             })
         });
+
+    program
+    .command("balance <address>")
+    .description("get balance")
+    .action( async (address)=>{
+        var client = new SmartVault(config.CONFIG[program._optionValues.env]);
+        var balance = await client.harmonyClient.getBalance(fromBech32(address))
+        console.log(`Balance: ${web3utils.fromWei(balance)} ONE`)
+    });        
+    program
+        .command("transfer [to] [amount]")
+        .description("Transfer funds")
+        .requiredOption('-f, --from <from>', 'Send from address')
+        .action(async (to, amount, {from}) => {
+            console.log(from, to, amount)
+            var envConfig = config.CONFIG[program._optionValues.env];
+            var client = new SmartVault(envConfig);
+            var {matches, addresses, names} = client.listWallets();
+
+            var index1 = addresses.indexOf(from)
+            var index2 = names.indexOf(from)
+            var index = index1 == -1 ? index2 : index1;
+
+            if(index == -1) {
+                console.error("Cannot find wallet")
+            }
+            try {
+                client.loadFromLocal(matches[index])
+                await client.relayClient.transferTX(client.walletData.walletAddress, fromBech32(to), web3utils.toWei(amount), envConfig.gasPrice, envConfig.gasLimit, client.ownerAccount);    
+            }catch(e) {
+                console.error(e);
+            }
+        })
 
     await program.parse(process.argv);
 }

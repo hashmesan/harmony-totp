@@ -41,15 +41,6 @@ const getTransactionCount = (input, callback) => {
   })
 };
 
-const checkName = (input, callback) => {
-  new Transactions(input.env || "testnet").checkName(input.name).then(res => {
-    callback(200, {result: res});
-  }).catch(ex=>{
-    console.log(ex)
-    callback(500,{})
-  })
-};
-
 const getDepositAddress = (input, callback) => {
   new Transactions(input.env || "testnet").getDepositAddress(input.data).then(res => {
     callback(200, {result: res});
@@ -110,7 +101,6 @@ const createRequest = (input, callback) => {
       case "getBalance": getBalance(input, callback); break;
       case "getTransactionCount": getTransactionCount(input, callback); break;
       case "getDepositAddress": getDepositAddress(input, callback); break;
-      case "checkName": checkName(input, callback); break;
       case "getRefundInfo": getRefundInfo(input, callback); break;
       case "submitMetaTx": submitMetaTx(input, callback); break;
       case "storeHash": storeHash(input, callback); break;
