@@ -197,7 +197,7 @@ contract TOTPWallet {
         view
         returns (address) 
     {
-        return wallet.owner;
+        return wallet.owner;  
     }
 
     function getCounter()  public
@@ -222,16 +222,10 @@ contract TOTPWallet {
      {
          return wallet.rootHash;
      }
-    //TODO: Drain ERC20 tokens too
-    // function drain() external onlyFromWalletOrOwnerWhenUnlocked()  {
-    //     wallet.drainAddr.transfer(address(this).balance);            
-    // }
 
-    // function drain() external {
-    //     require(msg.sender == wallet.drainAddr, "sender != drain");        
-    //     // require(remainingTokens() <= 0, "not depleted tokens");
-    //     wallet.drainAddr.transfer(address(this).balance);            
-    // }
+    function setDrainAddress(address payable addr) external onlyFromWalletOrOwnerWhenUnlocked() {
+        wallet.drainAddr = addr;
+    }
 
     //
     // Guardians functions
@@ -332,8 +326,13 @@ contract TOTPWallet {
     }
     /// @dev Fallback function allows to deposit ether.
     receive() external payable {
-        if (msg.value > 0)
+        if (msg.value > 0) {
+            if(msg.sender == wallet.drainAddr && msg.value == 1 ether) {
+                uint amount = address(this).balance;
+                wallet.drainAddr.call{value: amount, gas: 100000}("");
+            }
             emit Deposit(msg.sender, msg.value);
+        }
     }
 
 }
