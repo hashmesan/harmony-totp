@@ -85,8 +85,13 @@ class ProvideCode extends Component {
                 self.props.history.push("/wallet");
             }, 5000);
         }).catch(e => {
-            self.setState({error: e, busy : false});
-        })
+            if (e.response) {
+                self.setState({error: JSON.stringify(e.response.data), busy : false});
+            }
+            else {
+                self.setState({error: e.message, busy : false});
+            }
+        })    
     }
 
     render() {

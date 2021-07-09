@@ -76,6 +76,9 @@ async function getHash(env, walletAddress) {
     // get the root hash
     var wallet = await new Transactions(env || "testnet").getWallet(walletAddress);
     var hashId = await wallet.getHashStorageId();
+    if (hashId=="") {
+        throw Error("Contract does not have storageId")
+    }
     return base64.encode(await cat(hashId));
 }
 

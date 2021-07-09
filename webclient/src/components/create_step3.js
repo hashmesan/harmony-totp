@@ -77,8 +77,12 @@ class FirstDeposit extends Component {
             console.log(e);
             if ('reason' in e) {
                 self.setState({error: "TX: " + e.tx + " (" + e.reason + ")", busy: false});
-            } else {
-                self.setState({error: e, busy: false});
+            }
+            if (e.response) {
+                self.setState({error: JSON.stringify(e.response.data), busy : false});
+            }
+            else {
+                self.setState({error: e.message, busy : false});
             }
         })
     }
