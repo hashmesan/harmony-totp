@@ -2,9 +2,6 @@ const Web3 = require('web3');
 const Provider = require('@truffle/hdwallet-provider');
 const walletArtifacts = require('../../../build/contracts/TOTPWallet.json');
 const walletFactoryArtifacts = require('../../../build/contracts/WalletFactory.json');
-const resolverArtifacts = require('../../../build/contracts/EnsResolver.json');
-const registrarArtifacts = require('../../../build/contracts/RegistrarInterface.json');
-const namehash = require('eth-ens-namehash');
 const ethers = require("ethers");
 
 const { TruffleProvider } = require('@harmony-js/core')
@@ -13,8 +10,6 @@ const { Account } = require('@harmony-js/account')
 var contract = require("@truffle/contract");
 var Wallet = contract(walletArtifacts)
 var WalletFactory = contract(walletFactoryArtifacts)
-var Resolver = contract(resolverArtifacts);
-var RegistrarInterface = contract(registrarArtifacts);
 
 const NETWORK_FEE = Web3.utils.toWei("0.00123", "ether");
 const duration = 60 * 60 * 24 * 365; // 1 year
@@ -22,23 +17,20 @@ const duration = 60 * 60 * 24 * 365; // 1 year
 const CONFIG = {
     development: {
         network_id: 1000,
-        resolver: "0x9590030b26dE3A037Cd679b33A177A645BFaC114",
-        provider: "http://localhost:8545"
+        provider: "http://localhost:8545",
     },
     testnet0: {
         network_id: 1666700000,
-        resolver: "0x335b5b3b0Acdf3aFabA00F71a3c7090e73990818",
         provider: "https://api.s0.b.hmny.io"
     },
     testnet3: {
         network_id: 1666700003,
-        resolver: "0x335b5b3b0Acdf3aFabA00F71a3c7090e73990818",
         provider: "https://api.s3.b.hmny.io"
     },
     mainnet0: {
       network_id: 1666600000,
-      resolver: "0x48D421c223E32B68a8973ef05e1314C97BBbc4bE",
-      provider: "https://api.s0.t.hmny.io"
+      provider: "https://api.s0.t.hmny.io",
+      archiveFactories: ["0xf05C50D0C89E77ce49Da9D223f371fad475fa3fF"]
     }
 }
 
@@ -49,12 +41,7 @@ function Transactions(env) {
     this.config = CONFIG[env];
     this.provider = new Provider(process.env.PRIVATE_KEY, this.config.provider);
     this.defaultAddress = this.provider.getAddress(0);
-    // console.log("Loaded ENV=" + env + " provider=" + this.config.provider, "defaultAddress=", this.defaultAddress);
-}
-
-Transactions.prototype.getResolver = async function() {
-    Resolver.setProvider(this.provider);
-    return await Resolver.at(this.config.resolver);
+    console.log("Loaded ENV=" + env + " provider=" + this.config.provider, "defaultAddress=", this.defaultAddress);
 }
 
 Transactions.prototype.getWalletFactory = async function() {   
@@ -72,10 +59,19 @@ Transactions.prototype.getWallet = async function(address) {
 // submits wallet and receive a forwarder address
 Transactions.prototype.createWallet = async function(config) {
     const factory = await this.getWalletFactory();
-    config.resolver = this.config.resolver;
     console.log("sent=", config);
     var tx = await factory.createWallet(config,{ from: this.defaultAddress, gas: 712388});
     return {tx: tx.tx};
+}
+
+Transactions.prototype.getFactoryInfo = async function() {
+    const factory = await this.getWalletFactory();
+
+    return {
+        address: factory.address,
+        implementation: await factory.walletImplementation(),
+        walletsCreated: await factory.getCreated()
+    }
 }
 
 // returns how much deposits receive
@@ -114,33 +110,13 @@ Transactions.prototype.getTransactionCount = async function(address) {
     return {result: tx}
 }
 
-Transactions.prototype.checkName = async function(name) {
-    const resolver = await this.getResolver();
-    const tx = await resolver.addr(namehash.hash(name));
-    //console.log("TX=", tx);
-    if (tx == ethers.constants.AddressZero) {
-        var domain = name.split(".").splice(1).join(".");
-        var subdomain = name.split(".")[0];
-        var subdomainAddr = await resolver.addr(namehash.hash(domain));
-        console.log("subdomainRegistrar=", subdomainAddr);
-        
-        RegistrarInterface.setProvider(this.provider);
-        const subdomainRegistrar = await RegistrarInterface.at(subdomainAddr);
-        const rentPriceSub = await subdomainRegistrar.rentPrice(subdomain, duration);
-        console.log("tx?", rentPriceSub)
-
-        return { address: tx, cost: rentPriceSub.toString()};
-    } else {
-        return { address: tx, cost: 0 };
-    }
-}
-
 /**
  * Get wallet contract information, including optional reverse lookup, and root hashes
  * @param {*} address 
  */
 Transactions.prototype.getWalletInfo = async function(address) {
     var wallet = await this.getWallet(address);
+    console.log(wallet)
     return await wallet.wallet();
 }
 

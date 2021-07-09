@@ -310,6 +310,15 @@ contract TOTPWallet {
         masterCopy = newMasterCopy;
         emit WalletUpgraded(newMasterCopy);
     }
+
+    function getMasterCopy()
+        public
+        view
+        returns (address)
+    {
+        return masterCopy;
+    }
+
     //
     // Utility functions
     //

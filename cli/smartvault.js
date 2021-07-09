@@ -44,7 +44,7 @@ async function main() {
             console.log(client.getOTPScanUrl())
             qrcode.generate(client.getOTPScanUrl(),{small: true});
 
-            var validate = true;
+            var validate = false;
             while(!validate) 
             {
                const input = prompt("Enter the 6-digit OTP: ")
@@ -56,10 +56,10 @@ async function main() {
 
             const depositInfo = client.getDepositInfo();
             console.log("Make your first deposit. Fees will be deducted from your deposits");
-            console.log("Your wallet address is:", depositInfo.walletAddress);
-            console.log("Registration Fee:", depositInfo.rentPrice);
-            console.log("Network Fee:", depositInfo.createFee);
-            console.log("Total Fee:", depositInfo.totalFee)
+            console.log("Your wallet address is:", toBech32(depositInfo.walletAddress));
+            console.log("Registration Fee:", web3utils.fromWei(depositInfo.rentPrice));
+            console.log("Network Fee:", web3utils.fromWei(depositInfo.createFee));
+            console.log("Total Fee:", web3utils.fromWei(depositInfo.totalFee))
 
             var deposit = new web3utils.BN(0);
             
@@ -69,10 +69,11 @@ async function main() {
             }
 
             console.log("Got deposit ", deposit.toString());
-            await client.submitWallet(null, status=>{
+            var success = await client.submitWallet(null, status=>{
                 console.log("STATUS: ", status)
             });
             console.log("Wallet created!");
+            success && client.saveWalletLocal();
         });
 
 
@@ -129,7 +130,20 @@ async function main() {
             }
             try {
                 client.loadFromLocal(matches[index])
-                await client.relayClient.transferTX(client.walletData.walletAddress, fromBech32(to), web3utils.toWei(amount), envConfig.gasPrice, envConfig.gasLimit, client.ownerAccount);    
+                //console.log(envConfig.gasPrice, envConfig.gasLimit);
+                const tx = await client.relayClient.transferTX(client.walletData.walletAddress, fromBech32(to), web3utils.toWei(amount), envConfig.gasPrice, envConfig.gasLimit, client.ownerAccount);    
+
+                const f = tx.data.result.tx.logs.filter(e=>{
+                    return e.event == "TransactionExecuted";
+                })
+
+                if(f.length == 0 || !f[0].args.success) {
+                    console.log(`Failed!`);
+                    //console.log(JSON.stringify(tx.data))
+                } else {
+                    console.log("Success! TX=" + tx.data.result.tx.tx)
+                }
+
             }catch(e) {
                 console.error(e);
             }
