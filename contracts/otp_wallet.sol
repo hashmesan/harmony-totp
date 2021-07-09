@@ -109,9 +109,13 @@ contract TOTPWallet {
     // confirmMaterial contains OTP + intermediatory hashes + sides
     modifier onlyValidTOTP(bytes32[] memory confirmMaterial) 
     {
-        //require(_deriveChildTreeIdx(sides) == getCurrentCounter(), "unexpected counter value"); 
         bytes32 reduced = Recovery._reduceConfirmMaterial(confirmMaterial);
-        require(wallet.counter == Recovery._deriveChildTreeIdx(wallet.merkelHeight, confirmMaterial[confirmMaterial.length-1]), "Wrong counter");
+        uint32 counterProvided = Recovery._deriveChildTreeIdx(wallet.merkelHeight, confirmMaterial[confirmMaterial.length-1]);
+        require(counterProvided >= wallet.counter, "Provided counter must be greater or same");
+
+        // Google Authenticator doesn't allow custom counter or change counter back; so we must allow room to fudge
+        // allow some room if the counters were skipped at some point
+        require(counterProvided - wallet.counter  < 50, "Provided counter must not be more than 20 steps");
 
         bool foundMatch = false;
         for (uint32 i = 0; i < wallet.rootHash.length; i++) {
