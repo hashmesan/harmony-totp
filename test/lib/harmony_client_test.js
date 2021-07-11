@@ -1,5 +1,9 @@
 
 const HarmonyClient = require("../../lib/harmony_client");
+const chai = require('chai')
+const expect = chai.expect
+chai.use(require('chai-as-promised'))
+var assert = require('assert');
 
 describe("Library test", (accounts) => {
   it("checks for name available", async () => {
@@ -19,5 +23,10 @@ describe("Library test", (accounts) => {
   it("checks transaction details", async () => {
     var client = new HarmonyClient("https://api.s3.b.hmny.io", "0x4fb1C434101ced0773a3bc77D541B3465023639f","https://explorer.pops.one:8888");
     console.log(await client.getPublicResolver())
+  });
+
+  it("error when wallet doesn't exist", async () => {
+    var client = new HarmonyClient("https://api.s3.b.hmny.io", "0x4fb1C434101ced0773a3bc77D541B3465023639f","https://explorer.pops.one:8888");
+    await expect(client.getSmartVaultInfo("0x1727adcce8f11e7b9cbdd065e5ab64158f8bce3b")).to.rejectedWith("Bad smartvault address")
   });
 });

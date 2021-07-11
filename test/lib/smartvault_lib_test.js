@@ -1,11 +1,17 @@
 
+const chai = require('chai')
+const expect = chai.expect
+chai.use(require('chai-as-promised'))
+var assert = require('assert');
+
 const config = require("../../webclient/src/config");
 const SmartVault = require("../../lib/smartvault_lib");
 const HarmonyClient = require("../../lib/harmony_client");
-var assert = require('assert');
 const Web3 = require("web3");
 const sleep = (sec) => new Promise(resolve => setTimeout(resolve, 1000 * sec))
 const wallet = require("../../lib/wallet");
+const RelayerClient = require('../../lib/relayer_client');
+const Web3EthAccounts = require('web3-eth-accounts');
 
 describe("SmartVault test", () => {
     // ganache private key
@@ -36,7 +42,7 @@ describe("SmartVault test", () => {
        var secret = "JBSWY3DPEHPK3PXP";
        var tokens = [];
        for(var i=0; i<5; i++) {
-         tokens.push(wallet.getTOTP(secret, i+5));
+         tokens.push(wallet.getTOTP(secret, i+10));
        }
 
        var client = new SmartVault(config.CONFIG["development"]);
@@ -93,16 +99,44 @@ describe("SmartVault test", () => {
 
         await client.submitWallet(null, status=>{
             console.log("STATUS: ", status)
-        });
+        }, true);
         assert.strictEqual(client.getWalletData().root_arr.length, 5);
 
         deposits = await client.getDeposits();
         console.log("Balance=", deposits);    
-        assert.strictEqual("998769999999864291", deposits);
+        // assert.strictEqual("998769999999864291", deposits);
         
         client.saveWalletLocal();
 
+        // transfer tx 
+        const account = new Web3EthAccounts().create();
+        var methodData = RelayerClient.getContract().methods.makeTransfer(account.address,Web3.utils.toWei("0.0123")).encodeABI();
+        var tx1 = await client.submitTransaction(methodData);
+        var balance = await client.harmonyClient.getBalance(account.address);
+        console.log("Transfer balance", balance)
+        assert.strictEqual(balance, Web3.utils.toWei("0.0123"))
+        assert.strictEqual(true, tx1);
+        console.log(tx1);
+        
+        // try low gas fee
+        var methodData = RelayerClient.getContract().methods.makeTransfer(account.address,Web3.utils.toWei("0.0123")).encodeABI();
+        await expect(client.submitTransaction(methodData, 1000000000, 2000)).to.be.rejectedWith("base fee exceeds");
+
+        // trigger a revert by transferring enormous amount
+        var methodData = RelayerClient.getContract().methods.makeTransfer(account.address,Web3.utils.toWei("1000")).encodeABI();
+        await expect(client.submitTransaction(methodData)).to.be.rejectedWith("over withdrawal limit");
+
         return true;
     });
+
+
+    // test for error messages
+    // 1. network host connection
+    it("test for network error", async () => {
+      var testConfig = config.CONFIG["development"];
+      testConfig.RPC_URL = "https://api.s0.b.hmny.io/badurl"
+      var client = new SmartVault(testConfig);
+      await expect(client.create("hashmesan001.crazy.one")).to.be.rejectedWith("revert exception")
+    });   
 
 });
