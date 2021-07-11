@@ -14,33 +14,6 @@ const createWallet = (input, callback) => {
   })
 }
 
-const getBalance = (input, callback) => {
-  new Transactions(input.env || "testnet").getBalance(input.address).then(res => {
-    callback(200, {result: res});
-  }).catch(ex=>{
-    console.log(ex)
-    callback(500,ex.message)
-  })
-};
-
-const getWallet = (input, callback) => {
-  new Transactions(input.env || "testnet").getWalletInfo(input.address).then(res => {
-    callback(200, {result: res});
-  }).catch(ex=>{
-    console.log(ex)
-    callback(500,ex.message)
-  })
-};
-
-const getTransactionCount = (input, callback) => {
-  new Transactions(input.env || "testnet").getTransactionCount(input.address).then(res => {
-    callback(200, {result: res});
-  }).catch(ex=>{
-    console.log(ex)
-    callback(500,ex.message)
-  })
-};
-
 const getDepositAddress = (input, callback) => {
   new Transactions(input.env || "testnet").getDepositAddress(input.data).then(res => {
     callback(200, {result: res});
@@ -52,7 +25,8 @@ const getDepositAddress = (input, callback) => {
 
 // be sure not to use the same calling address, circular loop!!!!
 const getRefundInfo = (input, callback) => {
-  callback(200, {result: {createFee: CREATE_FEE, refundAddress: "one12ekw6fptr2uc4h3ld8pvvg7v5r059vuzvumukc"}});
+  var tx = new Transactions(input.env || "testnet");
+  callback(200, {result: {createFee: CREATE_FEE, refundAddress: tx.defaultAddress}});
 };
 
 const submitMetaTx = (input, callback) => {
@@ -111,8 +85,6 @@ const createRequest = (input, callback) => {
     const operation = input.operation
     switch(operation) {
       case "createWallet": createWallet(input, callback); break;
-      case "getBalance": getBalance(input, callback); break;
-      case "getTransactionCount": getTransactionCount(input, callback); break;
       case "getDepositAddress": getDepositAddress(input, callback); break;
       case "getRefundInfo": getRefundInfo(input, callback); break;
       case "submitMetaTx": submitMetaTx(input, callback); break;

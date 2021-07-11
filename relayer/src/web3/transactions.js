@@ -34,7 +34,6 @@ const CONFIG = {
     }
 }
 
-
 // should support multiple env, between testnet & mainnet & multiple shards
 function Transactions(env) {
     this.env = env;
@@ -85,18 +84,7 @@ Transactions.prototype.getDepositAddress = async function(data) {
     var tx = await factory.computeWalletAddress(data.owner, data.salt);
     return {address: tx};
 }
-
-/*
-function executeMetaTx(
-    bytes   calldata data,
-    bytes   calldata signatures,
-    uint256 nonce,
-    uint256 gasPrice,  
-    uint256 gasLimit,
-    address refundToken, 0x0
-    address refundAddress my main address         
-) external 
- */       
+     
 Transactions.prototype.submitMetaTx = async function(data) {
     // console.log(data);
     var wallet = await this.getWallet(data.from);
@@ -104,20 +92,5 @@ Transactions.prototype.submitMetaTx = async function(data) {
     return {tx: tx}
 }
 
-// used for nonce
-Transactions.prototype.getTransactionCount = async function(address) {
-    const tx = await new Web3(this.provider).eth.getTransactionCount(address);
-    return {result: tx}
-}
-
-/**
- * Get wallet contract information, including optional reverse lookup, and root hashes
- * @param {*} address 
- */
-Transactions.prototype.getWalletInfo = async function(address) {
-    var wallet = await this.getWallet(address);
-    console.log(wallet)
-    return await wallet.wallet();
-}
 
 module.exports = Transactions
