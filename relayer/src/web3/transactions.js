@@ -1,18 +1,14 @@
 const Web3 = require('web3');
-const Provider = require('@truffle/hdwallet-provider');
-const walletArtifacts = require('../../../build/contracts/TOTPWallet.json');
-const walletFactoryArtifacts = require('../../../build/contracts/WalletFactory.json');
 const ethers = require("ethers");
-
 const { TruffleProvider } = require('@harmony-js/core')
 const { Account } = require('@harmony-js/account')
 
+const Provider = require('@truffle/hdwallet-provider');
 var contract = require("@truffle/contract");
+const walletArtifacts = require('../../../build/contracts/TOTPWallet.json');
+const walletFactoryArtifacts = require('../../../build/contracts/WalletFactory.json');
 var Wallet = contract(walletArtifacts)
 var WalletFactory = contract(walletFactoryArtifacts)
-
-const NETWORK_FEE = Web3.utils.toWei("0.00123", "ether");
-const duration = 60 * 60 * 24 * 365; // 1 year
 
 const CONFIG = {
     development: {
@@ -34,63 +30,67 @@ const CONFIG = {
     }
 }
 
-// should support multiple env, between testnet & mainnet & multiple shards
-function Transactions(env) {
-    this.env = env;
-    this.config = CONFIG[env];
-    this.provider = new Provider(process.env.PRIVATE_KEY, this.config.provider);
-    this.defaultAddress = this.provider.getAddress(0);
-    console.log("Loaded ENV=" + env + " provider=" + this.config.provider, "defaultAddress=", this.defaultAddress);
-}
+class Transactions {
 
-Transactions.prototype.getWalletFactory = async function() {   
-    WalletFactory.setProvider(this.provider);
-    const address = walletFactoryArtifacts.networks[this.config.network_id].address;
-    // console.log("walletfactory=", address);
-    return await WalletFactory.at(address);
-}
+    /**
+     * should support multiple env, between testnet & mainnet & multiple shards
+     * @param {*} env 
+     */
+    constructor(env){
+        this.env = env;
+        this.config = CONFIG[env];
+        this.provider = new Provider(process.env.PRIVATE_KEY, this.config.provider);
+        this.defaultAddress = this.provider.getAddress(0);
+        console.log("Loaded ENV=" + env + " provider=" + this.config.provider, "defaultAddress=", this.defaultAddress);
+    }
 
-Transactions.prototype.getWallet = async function(address) {   
-    Wallet.setProvider(this.provider);
-    return await Wallet.at(address);
-}
+    async getWalletFactory() {   
+        WalletFactory.setProvider(this.provider);
+        const address = walletFactoryArtifacts.networks[this.config.network_id].address;
+        // console.log("walletfactory=", address);
+        return await WalletFactory.at(address);
+    }
 
-// submits wallet and receive a forwarder address
-Transactions.prototype.createWallet = async function(config) {
-    const factory = await this.getWalletFactory();
-    console.log("sent=", config);
-    var tx = await factory.createWallet(config,{ from: this.defaultAddress, gas: 712388});
-    return {tx: tx.tx};
-}
+    async getWallet(address) {   
+        Wallet.setProvider(this.provider);
+        return await Wallet.at(address);
+    }
 
-Transactions.prototype.getFactoryInfo = async function() {
-    const factory = await this.getWalletFactory();
+    async createWallet(config) {
+        const factory = await this.getWalletFactory();
+        console.log("sent=", config);
+        var tx = await factory.createWallet(config,{ from: this.defaultAddress, gas: 712388});
+        return {tx: tx.tx};
+    }
 
-    return {
-        address: factory.address,
-        implementation: await factory.walletImplementation(),
-        walletsCreated: await factory.getCreated()
+    async getFactoryInfo() {
+        const factory = await this.getWalletFactory();
+
+        return {
+            address: factory.address,
+            implementation: await factory.walletImplementation(),
+            walletsCreated: await factory.getCreated()
+        }
+    }
+
+    // returns how much deposits receive
+    async getBalance(address) {
+        const tx = await new Web3(this.provider).eth.getBalance(address);
+        return {balance: tx}
+    }
+
+    async getDepositAddress(data) {
+        const factory = await this.getWalletFactory();
+        var tx = await factory.computeWalletAddress(data.owner, data.salt);
+        return {address: tx};
+    }
+        
+    async submitMetaTx(data) {
+        // console.log(data);
+        var wallet = await this.getWallet(data.from);
+        var tx = await wallet.executeMetaTx(data.data, data.signatures, data.nonce, data.gasPrice, data.gasLimit, data.refundToken, data.refundAddress, { from: this.defaultAddress, gasLimit: data.gasLimit});
+        return {tx: tx}
     }
 }
-
-// returns how much deposits receive
-Transactions.prototype.getBalance = async function(address) {
-    const tx = await new Web3(this.provider).eth.getBalance(address);
-    return {balance: tx}
-}
-
-Transactions.prototype.getDepositAddress = async function(data) {
-    const factory = await this.getWalletFactory();
-    var tx = await factory.computeWalletAddress(data.owner, data.salt);
-    return {address: tx};
-}
-     
-Transactions.prototype.submitMetaTx = async function(data) {
-    // console.log(data);
-    var wallet = await this.getWallet(data.from);
-    var tx = await wallet.executeMetaTx(data.data, data.signatures, data.nonce, data.gasPrice, data.gasLimit, data.refundToken, data.refundAddress, { from: this.defaultAddress, gasLimit: data.gasLimit});
-    return {tx: tx}
-}
-
 
 module.exports = Transactions
