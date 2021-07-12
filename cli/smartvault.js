@@ -69,7 +69,7 @@ async function main() {
             }
 
             console.log("Got deposit ", deposit.toString());
-            var success = await client.submitWallet(null, status=>{
+            var success = await client.submitWallet(status=>{
                 console.log("STATUS: ", status)
             });
             console.log("Wallet created!");

@@ -64,7 +64,7 @@ class FirstDeposit extends Component {
         self.setState({busy: true});
         ev.preventDefault();
 
-        this.context.smartvault.submitWallet(null, status => {
+        this.context.smartvault.submitWallet(status => {
             self.setState({status: self.state.status +"\n"+ status})
         })
         .then(res=>{

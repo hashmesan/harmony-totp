@@ -14,7 +14,9 @@ class ChooseName extends Component {
           name: '',
           error: null,
           busy: false,
-          showCost: false
+          showCost: false,
+          dailyLimit: 10000,
+          drainAddress: ""
         }
     }
 
@@ -22,13 +24,21 @@ class ChooseName extends Component {
         this.setState({name: event.target.value, showCost: false});
     }
 
+    handleDrainChange(event) {
+        this.setState({drainAddress: event.target.value});
+    }    
+
+    handleDailyLimit(event) {
+        this.setState({dailyLimit: parseInt(event.target.value)});
+    }    
+
     // check if name is valid
     validate(e) {
         console.log(this, e);
 
         var self = this;
         self.setState({busy: true});
-        this.context.smartvault.create(this.state.name + ".crazy.one").then(res=>{
+        this.context.smartvault.create(this.state.name + ".crazy.one", null, this.state.dailyLimit, this.state.drainAddress).then(res=>{
             if(res == null) {
                 self.setState({error: "Already exists!"});
             } else {
@@ -40,7 +50,7 @@ class ChooseName extends Component {
             }
             self.setState({busy: false});
         }).catch((ex)=>{
-            self.setState({error: ex});
+            self.setState({error: ex.message});
             self.setState({busy: false});
         })
     }
@@ -48,6 +58,9 @@ class ChooseName extends Component {
     continue(ev) {
         ev.preventDefault();
         this.context.savePending();
+
+        // TODO: validate drain address
+
         this.props.history.push("/create/step2");
     }
     render() {
@@ -55,25 +68,48 @@ class ChooseName extends Component {
                 <SmartVaultConsumer>
                 {({smartvault}) => (
                     <React.Fragment>
-                    <h2>Choose a name for your wallet</h2>
+                    <h2>Configure your SmartVault</h2>
                     <h5 className="mt-4">A short, memorable name makes it easy find your wallet, and share with others.</h5>
                     <div className="row justify-content-md-center">
                         <div className="mt-4">
-                            <form class="form-inline">
+                            <form class="form text-left" style={{maxWidth:500}}>
                                 <div className="form-group mr-3">
-                                    <input type="text" className="form-control" value={this.state.name} onChange={this.handleChange.bind(this)}/>
-                                    <div className="input-group-append">
-                                        <span className="input-group-text" id="basic-addon2">.crazy.one</span>
+                                    <label for="exampleInputEmail1">Choose a name</label>
+                                    <div className="input-group">
+                                        <input type="text" className="form-control" value={this.state.name} onChange={this.handleChange.bind(this)}/>
+                                        <div className="input-group-append">
+                                            <span className="input-group-text" id="basic-addon2">.crazy.one</span>
+                                        </div>
+                                        <div className="ml-3">
+                                            {!this.state.busy && <button className="btn btn-success" onClick={this.validate.bind(this)}>Search</button>}
+                                            {this.state.busy && <button disabled className="btn btn-secondary">Checking...</button>}
+                                        </div>
+                                        <small id="emailHelp" class="form-text text-muted">Subject to availability and pricing based on number of characters.</small>
                                     </div>
                                 </div>
-                                {!this.state.busy && <button className="btn btn-success" onClick={this.validate.bind(this)}>Search</button>}
-                                {this.state.busy && <button disabled className="btn btn-secondary">Checking...</button>}
+                                <div className="form-group mr-3">
+                                    <label for="exampleInputEmail1">Daily Spending Limit</label>
+                                    <div className="input-group">
+                                        <input type="number" className="form-control" value={this.state.dailyLimit} onChange={this.handleDailyLimit.bind(this)}/>
+                                        <div className="input-group-append">
+                                            <span className="input-group-text" id="basic-addon2">ONE</span>
+                                        </div>
+                                    </div>
+                                    <small id="emailHelp" class="form-text text-muted">Can be changed later</small>
+                                </div>   
+                                <div className="form-group mr-3">
+                                    <label for="exampleInputEmail1">Set Drain Address (optional)</label>
+                                    <div className="input-group">
+                                        <input type="text" className="form-control" value={this.state.drainAddress} onChange={this.handleDrainChange.bind(this)}/>
+                                        <small id="emailHelp" class="form-text text-muted">The last resort to recover your funds by sending 1.0 ONE originating from the recovery address. It is IMPORTANT you do not use exchange wallet which may change address.</small>
+                                    </div>
+                                </div>                                                                
                             </form>
                         </div>
                     </div>
                     {this.state.error && <div className="row justify-content-md-center mt-4">
                         <div className="alert alert-danger w-50" role="alert">
-                            Name is not available!
+                            {this.state.error}
                         </div>
                     </div>}
                     

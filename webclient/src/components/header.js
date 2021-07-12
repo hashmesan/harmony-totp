@@ -17,7 +17,7 @@ class Header extends Component {
 
     render() {
         console.log(this.props);
-        const hasWallet = (getLocalWallet(this.props.environment) && JSON.parse(getLocalWallet(this.props.environment)).active == true)
+        const hasWallet = (getLocalWallet(this.props.environment) && JSON.parse(getLocalWallet(this.props.environment)).created == true)
 
         return (
             <div className="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">

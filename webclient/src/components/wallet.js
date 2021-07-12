@@ -16,6 +16,7 @@ import { connect } from "redux-zero/react";
 import actions from "../redux/actions";
 import {getStorageKey, getLocalWallet, getApiUrl, getExplorerUrl, CONFIG} from "../config";
 import SmartVault from '../../../lib/smartvault_lib';
+import SideMenu from "./side_menu";
 
 const Transaction = ({data, me})=> {
     if(data.to==me) {
@@ -103,71 +104,78 @@ class Wallet extends Component {
             return <Redirect to="/create"/>
         }
         return (
-            <div className="container pt-5 justify-content-md-center" style={{maxWidth: 960}}>
+            <div className="container-xl pt-5 justify-content-md-center">
                 <div className="row">
                     <div className="col-9">
-                        <h3>{walletData.name}</h3>
-                        {walletData.walletAddress} [copy]<br/>
-                        {toBech32(walletData.walletAddress)}                        
-                    </div>
-                    <div className="col-3 text-right">
-                        <div className="lead">
-                            {this.state.balance && web3utils.fromWei(this.state.balance+"")} ONE
+                        <div className="row">
+                            <div className="col-9">
+                                <h3>{walletData.name}</h3>
+                                {walletData.walletAddress} [copy]<br/>
+                                {toBech32(walletData.walletAddress)}                        
+                            </div>
+                            <div className="col-3 text-right">
+                                <div className="lead">
+                                    {this.state.balance && Number(web3utils.fromWei(this.state.balance+"")).toFixed(4)} ONE
+                                </div>
+                            </div>
                         </div>
+                        <div className="card mt-3">
+                            <div className="card-header">
+                                <ul className="nav nav-tabs card-header-tabs">
+                                <li className="nav-item">
+                                    <a className="nav-link active" href="#">Send</a>
+                                </li>
+                                <li className="nav-item">
+                                    <a className="nav-link" href="#">Receive</a>
+                                </li>
+                                </ul>
+                            </div> 
+                            <div className="card-body">
+                                <form>
+                                    <div className="form-group row">
+                                        <label htmlFor="inputEmail3" className="col-sm-4 col-form-label">Destination Address</label>
+                                        <div className="col-sm-8">
+                                            <input type="text" className="form-control" id="inputEmail3" value={this.state.destination} onChange={(e)=>this.setState({destination: e.target.value})}/>
+                                        </div>
+                                    </div>
+                                    <div className="form-group row">
+                                        <label htmlFor="inputEmail3" className="col-sm-4 col-form-label">Amount</label>
+                                        <div className="col-sm-8">
+                                            <input type="number" className="form-control" id="inputEmail3" value={this.state.sendAmount} onChange={(e)=>this.setState({sendAmount: e.target.value})}/>
+                                        </div>
+                                    </div>
+                                    <div className="form-group row">
+                                        <label htmlFor="inputEmail3" className="col-sm-4 col-form-label">Gas Limit</label>
+                                        <div className="col-sm-8">
+                                            <input type="number" className="form-control" id="inputEmail3" value={this.state.gasLimit} disabled onChange={(e)=>this.setState({gasLimit: e.target.value})}/>
+                                        </div>
+                                    </div>
+                                    {this.state.error &&                
+                                    <div className="row justify-content-md-center mt-4">
+                                        <div className="alert alert-danger w-50" role="alert">
+                                            {this.state.error && JSON.stringify(this.state.error)}
+                                        </div>
+                                    </div>}
+                                    <div className="form-group row mt-4">
+                                        <label htmlFor="inputEmail3" className="col-sm-4 col-form-label"></label>
+                                        <div className="col-sm-8">
+                                            {!this.state.submitting && <button className="btn btn-primary" onClick={this.transfer.bind(this)}>Submit Transaction</button>}
+                                            {this.state.submitting && <button className="btn btn-primary" disabled>Submitting..(wait)</button>}
+                                        </div>
+                                    </div>
+                                </form>                                           
+                                <hr/>
+                                <b>Transactions</b>
+                                {this.state.accountData && this.state.accountData.address.shardData[0].txs.map(e=>{
+                                    return <Transaction data={e} me={toBech32(this.wallet.walletAddress)}/>
+                                })}
+                            </div>
+                        </div>   
                     </div>
-                </div>
-                <div className="card mt-3">
-                    <div className="card-header">
-                        <ul className="nav nav-tabs card-header-tabs">
-                        <li className="nav-item">
-                            <a className="nav-link active" href="#">Send</a>
-                        </li>
-                        <li className="nav-item">
-                            <a className="nav-link" href="#">Receive</a>
-                        </li>
-                        </ul>
+                    <div className="col-3">
+                        <SideMenu/>
                     </div> 
-                    <div className="card-body">
-                        <form>
-                            <div className="form-group row">
-                                <label htmlFor="inputEmail3" className="col-sm-4 col-form-label">Destination Address</label>
-                                <div className="col-sm-8">
-                                    <input type="text" className="form-control" id="inputEmail3" value={this.state.destination} onChange={(e)=>this.setState({destination: e.target.value})}/>
-                                </div>
-                            </div>
-                            <div className="form-group row">
-                                <label htmlFor="inputEmail3" className="col-sm-4 col-form-label">Amount</label>
-                                <div className="col-sm-8">
-                                    <input type="number" className="form-control" id="inputEmail3" value={this.state.sendAmount} onChange={(e)=>this.setState({sendAmount: e.target.value})}/>
-                                </div>
-                            </div>
-                            <div className="form-group row">
-                                <label htmlFor="inputEmail3" className="col-sm-4 col-form-label">Gas Limit</label>
-                                <div className="col-sm-8">
-                                    <input type="number" className="form-control" id="inputEmail3" value={this.state.gasLimit} disabled onChange={(e)=>this.setState({gasLimit: e.target.value})}/>
-                                </div>
-                            </div>
-                            {this.state.error &&                
-                            <div className="row justify-content-md-center mt-4">
-                                <div className="alert alert-danger w-50" role="alert">
-                                    {this.state.error && JSON.stringify(this.state.error)}
-                                </div>
-                            </div>}
-                            <div className="form-group row mt-4">
-                                <label htmlFor="inputEmail3" className="col-sm-4 col-form-label"></label>
-                                <div className="col-sm-8">
-                                    {!this.state.submitting && <button className="btn btn-primary" onClick={this.transfer.bind(this)}>Submit Transaction</button>}
-                                    {this.state.submitting && <button className="btn btn-primary" disabled>Submitting..(wait)</button>}
-                                </div>
-                            </div>
-                        </form>                                           
-                        <hr/>
-                        <b>Transactions</b>
-                        {this.state.accountData && this.state.accountData.address.shardData[0].txs.map(e=>{
-                            return <Transaction data={e} me={toBech32(this.wallet.walletAddress)}/>
-                        })}
-                    </div>
-                </div>    
+                </div>
                 <Notifications/>            
             </div>
         );

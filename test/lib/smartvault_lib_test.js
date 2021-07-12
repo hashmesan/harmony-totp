@@ -42,7 +42,7 @@ describe("SmartVault test", () => {
        var secret = "JBSWY3DPEHPK3PXP";
        var tokens = [];
        for(var i=0; i<5; i++) {
-         tokens.push(wallet.getTOTP(secret, i+10));
+         tokens.push(wallet.getTOTP(secret, i+20));
        }
 
        var client = new SmartVault(config.CONFIG["development"]);
@@ -97,7 +97,7 @@ describe("SmartVault test", () => {
         assert.strictEqual(web3.utils.toWei("2.0"), deposits);
         
 
-        await client.submitWallet(null, status=>{
+        await client.submitWallet(status=>{
             console.log("STATUS: ", status)
         }, true);
         assert.strictEqual(client.getWalletData().root_arr.length, 5);
