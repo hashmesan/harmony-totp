@@ -38,7 +38,7 @@ class ChooseName extends Component {
 
         var self = this;
         self.setState({busy: true});
-        this.context.smartvault.create(this.state.name + ".crazy.one", null, web3utils.toWei(this.state.dailyLimit), this.state.drainAddress).then(res=>{
+        this.context.smartvault.create(this.state.name + ".crazy.one", null, web3utils.toWei(this.state.dailyLimit+""), this.state.drainAddress).then(res=>{
             if(res == null) {
                 self.setState({error: "Already exists!"});
             } else {

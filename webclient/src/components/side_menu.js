@@ -10,8 +10,10 @@ import {
 class SideMenu extends Component {
     render() {
         return (
-            <div>
-                <Link to="/wallet/set_drain">Set Drain Address</Link>
+            <div className="text-center mt-3 mb-3">
+                <div className="p-1"><Link to="/wallet/set_drain">Set Daily Limit</Link></div>
+                <div className="p-1"><Link to="/wallet/set_drain">Set Drain Address</Link></div>
+                <div className="p-1"><Link to="/wallet/set_drain">Upgrade Wallet</Link></div>
             </div>
         );
     }
