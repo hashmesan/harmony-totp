@@ -2,9 +2,8 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 const web3utils = require("web3-utils");
 import { connect } from "redux-zero/react";
-import actions from "../redux/actions";
-import {getApiUrl} from "../config";
-import {SmartVaultContext, SmartVaultConsumer} from "./smartvault_provider";
+import actions from "../../redux/actions";
+import {SmartVaultContext, SmartVaultConsumer} from "../smartvault_provider";
 
 
 class ChooseName extends Component {

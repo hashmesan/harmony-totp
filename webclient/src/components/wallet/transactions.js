@@ -24,13 +24,13 @@ const TransactionRow = ({data, me})=> {
 
 class Transactions extends Component {
     render() {
-        console.log(this.props.data)
+        //console.log(this.props.data)
         return (
                 <div className="card mb-3 mt-3">
                     <div className="card-header">Transactions</div>
                     <div className="card-body text-secondary">
                         {this.props.data && this.props.data.map(e=>{
-                            return <TransactionRow data={e}/>
+                            return <TransactionRow data={e} key={e.hash}/>
                         })}   
                     </div>
                 </div>

@@ -4,9 +4,9 @@ import OtpInput from 'react-otp-input';
 import styled from '@emotion/styled'
 const web3utils = require("web3-utils");
 import { connect } from "redux-zero/react";
-import actions from "../redux/actions";
-import {getApiUrl, getStorageKey, getLocalWallet, setLocalWallet} from "../config";
-import {SmartVaultContext, SmartVaultConsumer} from "./smartvault_provider";
+import actions from "../../redux/actions";
+import {getApiUrl, getStorageKey, getLocalWallet, setLocalWallet} from "../../config";
+import {SmartVaultContext, SmartVaultConsumer} from "../smartvault_provider";
 const ethers = require("ethers");
 
 var StyledOTPContainer = styled.div`

@@ -12,8 +12,15 @@ class AccountProvider extends Component {
         this.smartvault = new SmartVault(CONFIG[this.props.environment]);
         if(props.loadPending) {
             var data = JSON.parse(getLocalWallet(this.props.environment, true)) || {};
-            console.log("Loaded...", data);
+            console.log("Loaded...", data.name);
             this.smartvault.loadFromWalletData(data);
+        }
+        if(props.loadAccount) {
+            var data = JSON.parse(getLocalWallet(this.props.environment, false));
+            if(data) {
+                console.log("Loaded...", data.name);
+                this.smartvault.loadFromWalletData(data);    
+            }
         }
     }
 

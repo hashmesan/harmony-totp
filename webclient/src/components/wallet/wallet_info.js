@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import HarmonyClient from "../../../lib/harmony_client";
+import HarmonyClient from "../../../../lib/harmony_client";
 import { connect } from "redux-zero/react";
-import {getStorageKey, getLocalWallet, getApiUrl, getExplorerUrl, CONFIG} from "../config";
+import {getStorageKey, getLocalWallet, getApiUrl, getExplorerUrl, CONFIG} from "../../config";
 const ethers = require("ethers");
+const web3utils = require("web3-utils");
 
 class WalletInfo extends Component {
     constructor(props) {
@@ -15,7 +16,6 @@ class WalletInfo extends Component {
         const self = this;
         this.client.getSmartVaultInfo(this.props.walletAddress).then(e=>{
             self.setState({data: e})
-            console.log(e)
         })
     }
 
@@ -31,13 +31,13 @@ class WalletInfo extends Component {
                 <div className="card-body">
                     <div className="text-center">
                         <h6><b>Spending Limit</b></h6>
-                        <div>{this.state.data.spentToday} / {this.state.data.dailyLimit}</div>
+                        <div>{web3utils.fromWei(this.state.data.spentToday)} / {web3utils.fromWei(this.state.data.dailyLimit)} ONE</div>
                         resets in {this.state.data.lastDay}
                     </div>
                     <hr/>
                     <div className="text-center">
                         <h6><b>Two-Factor (2FA)</b></h6>
-                        <table class="table table-sm table-borderless text-left">
+                        <table className="table table-sm table-borderless text-left">
                         <tbody>
                             <tr>
                                 <td>OTP Tokens</td>

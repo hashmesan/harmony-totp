@@ -8,8 +8,8 @@ import {
     Link
   } from "react-router-dom";
 
-import FindWallet from './recover_step1';
-import ProvideCode from './recover_step2';
+import FindWallet from './recover/recover_step1';
+import ProvideCode from './recover/recover_step2';
 import AccountProvider from "./smartvault_provider";
 
 class RecoverPage extends Component {

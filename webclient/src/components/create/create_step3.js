@@ -7,9 +7,9 @@ const {
   } = require('@harmony-js/crypto');
 
 import { connect } from "redux-zero/react";
-import actions from "../redux/actions";
-import {getApiUrl, getStorageKey, setLocalWallet} from "../config";
-import {SmartVaultContext, SmartVaultConsumer} from "./smartvault_provider";
+import actions from "../../redux/actions";
+import {getApiUrl, getStorageKey, setLocalWallet} from "../../config";
+import {SmartVaultContext, SmartVaultConsumer} from "../smartvault_provider";
     
 class FirstDeposit extends Component {
     constructor(props) {

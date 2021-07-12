@@ -1,7 +1,4 @@
 import React, { Component } from 'react';
-import { css, jsx } from '@emotion/react'
-import OtpInput from 'react-otp-input';
-import styled from '@emotion/styled'
 import {
     HashRouter as Router,
     Switch,
@@ -9,17 +6,12 @@ import {
     Link
   } from "react-router-dom";
 
-  import crypto from "crypto";
-import b32 from "thirty-two";
-import Web3EthAccounts from 'web3-eth-accounts';
-
-import ChooseName from './create_step1';
-import ScanQRCode from './create_step2';
-import FirstDeposit from './create_step3';
+import ChooseName from './create/create_step1';
+import ScanQRCode from './create/create_step2';
+import FirstDeposit from './create/create_step3';
 import { connect } from "redux-zero/react";
 import actions from "../redux/actions";
 import {CONFIG, getStorageKey, getLocalWallet, setLocalWallet} from "../config";
-import SmartVault from "../../../lib/smartvault_lib";
 import AccountProvider from "./smartvault_provider";
 
 class Create extends Component {

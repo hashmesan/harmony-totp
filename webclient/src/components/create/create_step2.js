@@ -3,8 +3,8 @@ import OtpInput from 'react-otp-input';
 import styled from '@emotion/styled'
 import { withRouter } from 'react-router-dom';
 import { connect } from "redux-zero/react";
-import actions from "../redux/actions";
-import {SmartVaultContext, SmartVaultConsumer} from "./smartvault_provider";
+import actions from "../../redux/actions";
+import {SmartVaultContext, SmartVaultConsumer} from "../smartvault_provider";
 
 var StyledOTPContainer = styled.div`
     .inputStyle {
