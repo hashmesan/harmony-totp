@@ -27,55 +27,60 @@ async function main() {
                 console.error("Only support name.crazy.one");
                 return;
             }
-            var client = new SmartVault(config.CONFIG[program._optionValues.env]);
-            var walletData = await client.create(name);
-            if(walletData == null) {
-                console.error(`${name} is not available (${available.address})`);
-                return;
-            }
+            try {
+                var client = new SmartVault(config.CONFIG[program._optionValues.env]);
+                var walletData = await client.create(name);
+                if(walletData == null) {
+                    console.error(`${name} is not available.`);
+                    return;
+                }
 
-            const depth = 8;
-            var generateHash = () => new Promise((resolve, reject) => {
-                client.generateHashes(depth, (p)=>{
-                    console.log(`Generated leaves depth=${depth} ${p*100}%`);
+                const depth = 8;
+                var generateHash = () => new Promise((resolve, reject) => {
+                    client.generateHashes(depth, (p)=>{
+                        console.log(`Generated leaves depth=${depth} ${p*100}%`);
+                    });
+        
+                    resolve();
+                })
+                await generateHash();
+                console.log(client.getOTPScanUrl())
+                qrcode.generate(client.getOTPScanUrl(),{small: true});
+
+                var validate = false;
+                while(!validate) 
+                {
+                    const input = prompt("Enter the 6-digit OTP: ")
+                    validate = client.validateOTP(input);
+                    if(!validate) {
+                        console.error("OTP code do not match.")
+                    }
+                }            
+
+                const depositInfo = client.getDepositInfo();
+                console.log("Make your first deposit. Fees will be deducted from your deposits");
+                console.log("Your wallet address is:", toBech32(depositInfo.walletAddress), "or", depositInfo.walletAddress);
+                console.log("Registration Fee:", web3utils.fromWei(depositInfo.rentPrice));
+                console.log("Network Fee:", web3utils.fromWei(depositInfo.createFee));
+                console.log("Total Fee:", web3utils.fromWei(depositInfo.totalFee))
+
+                var deposit = new web3utils.BN(0);
+                
+                while(deposit.lt(new web3utils.BN(depositInfo.totalFee))) {
+                    await sleep(1);
+                    deposit = new web3utils.BN(await client.getDeposits());
+                }
+
+                console.log("Got deposit ", deposit.toString());
+                var success = await client.submitWallet(status=>{
+                    console.log("STATUS: ", status)
                 });
-    
-                resolve();
-            })
-            await generateHash();
-            console.log(client.getOTPScanUrl())
-            qrcode.generate(client.getOTPScanUrl(),{small: true});
-
-            var validate = false;
-            while(!validate) 
-            {
-               const input = prompt("Enter the 6-digit OTP: ")
-               validate = client.validateOTP(input);
-               if(!validate) {
-                console.error("OTP code do not match.")
-               }
-            }            
-
-            const depositInfo = client.getDepositInfo();
-            console.log("Make your first deposit. Fees will be deducted from your deposits");
-            console.log("Your wallet address is:", toBech32(depositInfo.walletAddress));
-            console.log("Registration Fee:", web3utils.fromWei(depositInfo.rentPrice));
-            console.log("Network Fee:", web3utils.fromWei(depositInfo.createFee));
-            console.log("Total Fee:", web3utils.fromWei(depositInfo.totalFee))
-
-            var deposit = new web3utils.BN(0);
-            
-            while(deposit.lt(new web3utils.BN(depositInfo.totalFee))) {
-                deposit = new web3utils.BN(await client.getDeposits());
-                await sleep(1);
+                console.log("Wallet created!");
+                success && client.saveWalletLocal();
+            } catch(e) {
+                console.error(e.message);
+                console.error(e.stack);
             }
-
-            console.log("Got deposit ", deposit.toString());
-            var success = await client.submitWallet(status=>{
-                console.log("STATUS: ", status)
-            });
-            console.log("Wallet created!");
-            success && client.saveWalletLocal();
         });
 
 
@@ -244,6 +249,23 @@ async function main() {
             console.error("Error: ", e.message)
         }
     });  
+
+    program
+    .command("debug-break")
+    .description("forces a revert")
+    .requiredOption('-f, --from <from>', 'Send from address')
+    .action( async ({from})=>{
+        var client = new SmartVault(config.CONFIG[program._optionValues.env]);
+        
+        try {
+            loadWalletByNameOrAddress(client, from)   
+            var methodData = RelayerClient.getContract().methods.cancelRecovery().encodeABI();    
+            const res = await client.submitTransaction(methodData)
+
+        } catch(e) {
+            console.error("Error: ", e.message)
+        }
+    });
                 
     await program.parse(process.argv);
 }

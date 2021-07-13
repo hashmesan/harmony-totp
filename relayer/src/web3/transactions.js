@@ -41,7 +41,7 @@ class Transactions {
         this.config = CONFIG[env];
         this.provider = new Provider(process.env.PRIVATE_KEY, this.config.provider);
         this.defaultAddress = this.provider.getAddress(0);
-        console.log("Loaded ENV=" + env + " provider=" + this.config.provider, "defaultAddress=", this.defaultAddress);
+        //console.log("Loaded ENV=" + env + " provider=" + this.config.provider, "defaultAddress=", this.defaultAddress);
     }
 
     async getWalletFactory() {   
@@ -57,9 +57,10 @@ class Transactions {
     }
 
     async createWallet(config) {
+        var count = await new Web3(this.provider).eth.getTransactionCount(this.defaultAddress);
         const factory = await this.getWalletFactory();
         console.log("sent=", config);
-        var tx = await factory.createWallet(config,{ from: this.defaultAddress, gas: 712388});
+        var tx = await factory.createWallet(config,{ from: this.defaultAddress, gas: 712388, nonce: count});
         return {tx: tx.tx};
     }
 
@@ -87,8 +88,9 @@ class Transactions {
         
     async submitMetaTx(data) {
         // console.log(data);
+        var count = await new Web3(this.provider).eth.getTransactionCount(this.defaultAddress);
         var wallet = await this.getWallet(data.from);
-        var tx = await wallet.executeMetaTx(data.data, data.signatures, data.nonce, data.gasPrice, data.gasLimit, data.refundToken, data.refundAddress, { from: this.defaultAddress, gasLimit: data.gasLimit});
+        var tx = await wallet.executeMetaTx(data.data, data.signatures, data.nonce, data.gasPrice, data.gasLimit, data.refundToken, data.refundAddress, { from: this.defaultAddress, gasLimit: data.gasLimit, nonce: count});
         return {tx: tx}
     }
 }
