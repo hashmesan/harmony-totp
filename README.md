@@ -37,6 +37,33 @@ Start using it out at [smartvault.one](https://smartvaule.one)
 
 ## Components
 
+### Command Line
+
+Install: `npm -g @hashmesan/smartvault`
+
+```
+Usage: smartvault [options] [command]
+
+Options:
+  -V, --version                                           output the version number
+  -e --env <env>                                          environment mainnet0, testnet0, testnet3 (default: "mainnet0")
+  -h, --help                                              display help for command
+
+Commands:
+  new [options] <name>                                    creates a new wallet
+  recover <name> <code1> <code2> <code3> <code4> <code5>  recover wallet
+  list                                                    list all wallets
+  balance <address>                                       get balance
+  transfer [options] [to] [amount]                        Transfer funds
+  info <address>                                          Display wallet info
+  set_daily_limit [options] <amount>                      set daily limit
+  set_drain_address [options] <address>                   set drain address
+  upgrade [options]                                       upgrades contract to latest
+  debug-break [options]                                   forces a revert
+  help [command]                                          display help for command
+```
+
+
 ### Smart contracts
 
 See [/contracts](/contracts/README.md)

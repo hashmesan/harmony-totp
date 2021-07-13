@@ -22,20 +22,22 @@ async function main() {
         .command("new <name>")
         .description( "creates a new wallet")
         .option('-d, --daily_limit <amount>', 'Send from address', 10000)
-        .action(async (name, options) =>{ 
+        .option('-r, --drain_address <address>', 'Send from address', ethers.constants.AddressZero)
+        .action(async (name, {daily_limit, drain_address}) =>{            
             if(!name.endsWith(".crazy.one")) {
                 console.error("Only support name.crazy.one");
                 return;
             }
             try {
                 var client = new SmartVault(config.CONFIG[program._optionValues.env]);
-                var walletData = await client.create(name);
+                var walletData = await client.create(name, null, daily_limit, drain_address == ethers.constants.AddressZero ? drain_address: fromBech32(drain_address));
+
                 if(walletData == null) {
                     console.error(`${name} is not available.`);
                     return;
                 }
 
-                const depth = 8;
+                const depth = 12;
                 var generateHash = () => new Promise((resolve, reject) => {
                     client.generateHashes(depth, (p)=>{
                         console.log(`Generated leaves depth=${depth} ${p*100}%`);
