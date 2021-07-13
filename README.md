@@ -54,7 +54,7 @@ Commands:
   recover <name> <code1> <code2> <code3> <code4> <code5>  recover wallet
   list                                                    list all wallets
   balance <address>                                       get balance
-  transfer [options] [to] [amount]                        Transfer funds
+  send [options] [to] [amount]                        Transfer funds
   info <address>                                          Display wallet info
   set_daily_limit [options] <amount>                      set daily limit
   set_drain_address [options] <address>                   set drain address
@@ -63,6 +63,7 @@ Commands:
   help [command]                                          display help for command
 ```
 
+See [Examples](https://github.com/hashmesan/harmony-totp/wiki/CLI-Examples)
 
 ### Smart contracts
 
