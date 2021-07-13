@@ -215,17 +215,30 @@ async function main() {
     program
     .command("upgrade")
     .description("upgrades contract to latest")
-    .action( async ()=>{
+    .requiredOption('-f, --from <from>', 'Send from address')
+    .action( async ({from})=>{
         var client = new SmartVault(config.CONFIG[program._optionValues.env]);
         
         try {
             loadWalletByNameOrAddress(client, from)        
-            var methodData = RelayerClient.getContract().methods.setDrainAddress(fromBech32(address)).encodeABI();    
-            const res = await client.submitTransaction(methodData)
-            if(res.success) {
-                console.log("Success! TX=" + res.data.tx)
-            } else {
-                console.log("Error", res)
+            const factoryInfo = await client.relayClient.getFactoryInfo();
+
+            var info = await client.harmonyClient.getSmartVaultInfo(fromBech32(from))
+            console.log("Current version: ", info.masterCopy);
+            console.log("Latest version: ", factoryInfo.implementation);
+            if(info.masterCopy == factoryInfo.implementation) {
+                console.log("No available update.");
+                return;
+            }
+            var n = prompt('Do you want to upgrade? (Y/N): ');
+            if (n == 'Y' || n == 'y') {
+                var methodData = RelayerClient.getContract().methods.upgradeMasterCopy(factoryInfo.implementation).encodeABI();    
+                const res = await client.submitTransaction(methodData)
+                if(res.success) {
+                    console.log("Success! TX=" + res.data.tx)
+                } else {
+                    console.log("Error", res)
+                }
             }
         } catch(e) {
             console.error("Error: ", e.message)
