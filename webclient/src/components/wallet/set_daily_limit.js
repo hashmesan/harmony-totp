@@ -6,7 +6,7 @@ const {
 const web3utils = require("web3-utils");
 import { SmartVaultContext, SmartVaultConsumer } from "../smartvault_provider";
 
-class SendPayment extends Component {
+class SetDailyLimit extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {gasLimit: "", gasPrice:"", gasFee:""}
@@ -19,6 +19,7 @@ class SendPayment extends Component {
 			gasFee: web3utils.toBN(this.context.smartvault.config.gasLimit).mul(web3utils.toBN(this.context.smartvault.config.gasPrice))
 		});
 	}
+
 	transfer(e) {
 		e.preventDefault();
 		var self = this;
@@ -48,16 +49,10 @@ class SendPayment extends Component {
                 {({smartvault}) => (				
 			<div className="card">
 				<div className="card-body">
-					<h3 className="card-title text-center">SEND PAYMENT</h3>
+					<h3 className="card-title text-center">SET DAILY LIMIT</h3>
 					<form>
 						<div className="form-group">
-							<label htmlFor="inputEmail3" className="col-form-label">Destination Address</label>
-							<div className="">
-								<input type="text" className="form-control" id="inputEmail3" value={this.state.destination} onChange={(e) => this.setState({ destination: e.target.value })} />
-							</div>
-						</div>
-						<div className="form-group">
-							<label htmlFor="inputEmail3" className="col-form-label">Amount</label>
+							<label htmlFor="inputEmail3" className="col-form-label">New Daily Limit</label>
 							<div className="">
 								<input type="number" className="form-control" id="inputEmail3" value={this.state.sendAmount} onChange={(e) => this.setState({ sendAmount: e.target.value })} />
 							</div>
@@ -102,6 +97,6 @@ class SendPayment extends Component {
 		);
 	}
 }
-SendPayment.contextType = SmartVaultContext;
+SetDailyLimit.contextType = SmartVaultContext;
 
-export default SendPayment;
+export default SetDailyLimit;

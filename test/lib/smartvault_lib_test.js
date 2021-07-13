@@ -115,7 +115,7 @@ describe("SmartVault test", () => {
         var balance = await client.harmonyClient.getBalance(account.address);
         console.log("Transfer balance", balance)
         assert.strictEqual(balance, Web3.utils.toWei("0.0123"))
-        assert.strictEqual(true, tx1);
+        assert.strictEqual(true, tx1.success);
         console.log(tx1);
         
         // try low gas fee

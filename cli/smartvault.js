@@ -2,6 +2,7 @@
 
 const { Command } = require('commander');
 const commander = require('commander');
+const RelayerClient = require("../lib/relayer_client");
 const SmartVault = require("../lib/smartvault_lib");
 const config = require("../webclient/src/config");
 const ethers = require("ethers");
@@ -20,6 +21,7 @@ async function main() {
     program
         .command("new <name>")
         .description( "creates a new wallet")
+        .option('-d, --daily_limit <amount>', 'Send from address', 10000)
         .action(async (name, options) =>{ 
             if(!name.endsWith(".crazy.one")) {
                 console.error("Only support name.crazy.one");
@@ -103,6 +105,20 @@ async function main() {
             })
         });
 
+
+    function loadWalletByNameOrAddress(client, nameOrAddress) {
+        var {dir, matches, addresses, names} = client.listWallets();
+
+        var index1 = addresses.indexOf(nameOrAddress)
+        var index2 = names.indexOf(nameOrAddress)
+        var index = index1 == -1 ? index2 : index1;
+
+        if(index == -1) {
+            throw Error("Error: Cannot find wallet")
+        }
+        client.loadFromLocal(dir + matches[index])        
+    }
+
     program
     .command("balance <address>")
     .description("get balance")
@@ -116,39 +132,106 @@ async function main() {
         .description("Transfer funds")
         .requiredOption('-f, --from <from>', 'Send from address')
         .action(async (to, amount, {from}) => {
-            console.log(from, to, amount)
             var envConfig = config.CONFIG[program._optionValues.env];
             var client = new SmartVault(envConfig);
-            var {matches, addresses, names} = client.listWallets();
-
-            var index1 = addresses.indexOf(from)
-            var index2 = names.indexOf(from)
-            var index = index1 == -1 ? index2 : index1;
-
-            if(index == -1) {
-                console.error("Cannot find wallet")
-            }
             try {
-                client.loadFromLocal(matches[index])
+                loadWalletByNameOrAddress(client, from);
                 //console.log(envConfig.gasPrice, envConfig.gasLimit);
-                const tx = await client.relayClient.transferTX(client.walletData.walletAddress, fromBech32(to), web3utils.toWei(amount), envConfig.gasPrice, envConfig.gasLimit, client.ownerAccount);    
+                const res = await client.relayClient.transferTX(client.walletData.walletAddress, fromBech32(to), web3utils.toWei(amount), envConfig.gasPrice, envConfig.gasLimit, client.ownerAccount);    
 
-                const f = tx.data.result.tx.logs.filter(e=>{
-                    return e.event == "TransactionExecuted";
-                })
-
-                if(f.length == 0 || !f[0].args.success) {
-                    console.log(`Failed!`);
-                    //console.log(JSON.stringify(tx.data))
+                if(res.success) {
+                    console.log("Success! TX=" + res.data.tx)
                 } else {
-                    console.log("Success! TX=" + tx.data.result.tx.tx)
+                    console.log("Error", res)
                 }
 
-            }catch(e) {
+            } catch(e) {
                 console.error(e);
             }
         })
 
+    program
+    .command("info <address>")
+    .description("Display wallet info")
+    .action( async (address)=>{
+        var client = new SmartVault(config.CONFIG[program._optionValues.env]);
+
+        try {
+            var balance = await client.harmonyClient.getBalance(fromBech32(address))
+            var info = await client.harmonyClient.getSmartVaultInfo(fromBech32(address))
+
+            console.log(`Version: ${info.masterCopy}`)
+            console.log(`Spending Limit: ${web3utils.fromWei(info.spentToday)} / ${web3utils.fromWei(info.dailyLimit)} ONE`)
+            console.log(`OTP Tokens: counter=${info.counter} max=${Math.pow(2, info.merkelHeight)}`)
+            console.log(`# of Guardians: ${info.guardians.length}`);
+            console.log(`IPFS Merkle Backup: ${info.hashStorageID}`);
+            console.log(`Drain Address: ${info.drainAddr}`);
+            console.log(`Balance: ${web3utils.fromWei(balance)} ONE`);    
+        } catch(e) {
+            console.error("Error: ", e.message)
+        }
+    });  
+                 
+    program
+    .command("set_daily_limit <amount>")
+    .description("set daily limit")
+    .requiredOption('-f, --from <from>', 'Send from address')
+    .action( async (amount, {from})=>{
+        var client = new SmartVault(config.CONFIG[program._optionValues.env]);
+        try {
+            loadWalletByNameOrAddress(client, from)        
+            var methodData = RelayerClient.getContract().methods.setDailyLimit(web3utils.toWei(amount)).encodeABI();    
+            const res = await client.submitTransaction(methodData)
+            if(res.success) {
+                console.log("Success! TX=" + res.data.tx)
+            } else {
+                console.log("Error", res)
+            }
+        } catch(e) {
+            console.error("Error: ", e.message)
+        }
+    });  
+        
+    program
+    .command("set_drain_address <address>")
+    .description("set drain address")
+    .requiredOption('-f, --from <from>', 'Send from address')
+    .action( async (address,  {from})=>{
+        var client = new SmartVault(config.CONFIG[program._optionValues.env]);
+        try {
+            loadWalletByNameOrAddress(client, from)        
+            var methodData = RelayerClient.getContract().methods.setDrainAddress(fromBech32(address)).encodeABI();    
+            const res = await client.submitTransaction(methodData)
+            if(res.success) {
+                console.log("Success! TX=" + res.data.tx)
+            } else {
+                console.log("Error", res)
+            }
+        } catch(e) {
+            console.error("Error: ", e.message)
+        }
+    });  
+            
+    program
+    .command("upgrade")
+    .description("upgrades contract to latest")
+    .action( async ()=>{
+        var client = new SmartVault(config.CONFIG[program._optionValues.env]);
+        
+        try {
+            loadWalletByNameOrAddress(client, from)        
+            var methodData = RelayerClient.getContract().methods.setDrainAddress(fromBech32(address)).encodeABI();    
+            const res = await client.submitTransaction(methodData)
+            if(res.success) {
+                console.log("Success! TX=" + res.data.tx)
+            } else {
+                console.log("Error", res)
+            }
+        } catch(e) {
+            console.error("Error: ", e.message)
+        }
+    });  
+                
     await program.parse(process.argv);
 }
 

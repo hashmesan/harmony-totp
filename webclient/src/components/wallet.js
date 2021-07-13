@@ -16,6 +16,8 @@ import SideMenu from "./wallet/side_menu";
 import Transactions from "./wallet/transactions";
 import WalletInfo from "./wallet/wallet_info";
 import SendPayment from "./wallet/send_payment";
+import SetDailyLimit from "./wallet/set_daily_limit";
+import SetDrainAddress from "./wallet/set_drain_address";
 
 import AccountProvider from "./smartvault_provider";
 import { SmartVaultContext, SmartVaultConsumer } from "./smartvault_provider";
@@ -68,8 +70,20 @@ class Wallet extends Component {
                             </div>
                         </div>
                         <div className="col-8 mt-5">
-                            <SendPayment/>
-                            <Transactions data={this.state.transactionsData}/>
+                            <Router>
+                                <Switch>
+                                    <Route exact path="/wallet">
+                                        <SendPayment/>
+                                        <Transactions data={this.state.transactionsData}/>                                    
+                                    </Route>
+                                    <Route path="/wallet/set_daily_limit">
+                                        <SetDailyLimit/>
+                                    </Route>
+                                    <Route path="/wallet/set_drain_address">
+                                        <SetDrainAddress/>
+                                    </Route>
+                                </Switch>
+                            </Router>                            
                         </div>                    
                         <div className="col-4 mt-5">
                             <WalletInfo walletAddress={walletData.walletAddress}/>

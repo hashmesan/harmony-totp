@@ -134,6 +134,8 @@ contract TOTPWallet {
             methodId == TOTPWallet.addGuardian.selector ||
             methodId == TOTPWallet.revokeGuardian.selector||
             methodId == TOTPWallet.upgradeMasterCopy.selector ||
+            methodId == TOTPWallet.setDailyLimit.selector ||
+            methodId == TOTPWallet.setDrainAddress.selector ||
             methodId == TOTPWallet.setHashStorageId.selector) {
             return (1, Core.OwnerSignature.Required);
         }
@@ -231,6 +233,9 @@ contract TOTPWallet {
         wallet.drainAddr = addr;
     }
 
+    function setDailyLimit(uint amount) external onlyFromWalletOrOwnerWhenUnlocked() {
+        wallet.dailyLimit = amount;
+    }
     //
     // Guardians functions
     //
