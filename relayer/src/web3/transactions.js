@@ -66,11 +66,18 @@ class Transactions {
 
     async getFactoryInfo() {
         const factory = await this.getWalletFactory();
-
+        const implementation = await factory.walletImplementation();
+        const releasePath = __dirname + "/../../releases/" + this.env + "/" + implementation + ".txt"
+        
+        var releaseNotes = null;
+        if(fs.existsSync(releasePath)) {
+            releaseNotes = fs.readFileSync(releasePath).toString()
+        }
         return {
             address: factory.address,
-            implementation: await factory.walletImplementation(),
-            walletsCreated: await factory.getCreated()
+            implementation: implementation,
+            walletsCreated: await factory.getCreated(),
+            releaseNotes: releaseNotes
         }
     }
 

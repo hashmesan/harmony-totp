@@ -136,7 +136,7 @@ async function main() {
     });        
     program
         .command("transfer [to] [amount]")
-        .description("Transfer funds")
+        .description("Send funds")
         .requiredOption('-f, --from <from>', 'Send from address')
         .action(async (to, amount, {from}) => {
             var envConfig = config.CONFIG[program._optionValues.env];

@@ -18,6 +18,7 @@ import WalletInfo from "./wallet/wallet_info";
 import SendPayment from "./wallet/send_payment";
 import SetDailyLimit from "./wallet/set_daily_limit";
 import SetDrainAddress from "./wallet/set_drain_address";
+import Upgrade from "./wallet/upgrade";
 
 import AccountProvider from "./smartvault_provider";
 import { SmartVaultContext, SmartVaultConsumer } from "./smartvault_provider";
@@ -81,6 +82,9 @@ class Wallet extends Component {
                                     </Route>
                                     <Route path="/wallet/set_drain_address">
                                         <SetDrainAddress/>
+                                    </Route>
+                                    <Route path="/wallet/upgrade">
+                                        <Upgrade/>
                                     </Route>
                                 </Switch>
                             </Router>                            
