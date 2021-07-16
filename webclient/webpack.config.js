@@ -5,7 +5,7 @@ require("@babel/polyfill");
 module.exports = {
   devServer: {
     contentBase: path.join(__dirname, 'public'),
-    compress: true,
+    compress: false,
   },
     node: {
         fs: 'empty',
@@ -40,8 +40,8 @@ module.exports = {
         // Copy our app's index.html to the build folder.
         new CopyWebpackPlugin([
             { from: './src/index.html', to: "index.html" },
-            { from: './js', to: "./js" },
-            { from: './css', to: "./css" },
+//            { from: './js', to: "./js" },
+//            { from: './css', to: "./css" },
             { from: './public', to: "./public" },
             { from: './CNAME', to: "./" },  // to prevent github resetting our domain 
           ])

@@ -5,11 +5,13 @@ const {
 } = require('@harmony-js/crypto');
 const web3utils = require("web3-utils");
 import { SmartVaultContext, SmartVaultConsumer } from "../smartvault_provider";
+import RelayerClient from '../../../../lib/relayer_client';
+import Notifications, {notify} from 'react-notify-toast';
 
 class SetDailyLimit extends Component {
 	constructor(props) {
 		super(props)
-		this.state = {gasLimit: "", gasPrice:"", gasFee:""}
+		this.state = {gasLimit: "", gasPrice:"", gasFee:"", dailyLimit: ""}
 	}
 
 	componentDidMount() {
@@ -25,12 +27,12 @@ class SetDailyLimit extends Component {
 		var self = this;
 		self.setState({ submitting: true });
 
-		this.context.smartvault.relayClient.transferTX(this.context.smartvault.walletData.walletAddress, fromBech32(this.state.destination), web3utils.toWei(this.state.sendAmount), 0, this.state.gasLimit, this.context.smartvault.ownerAccount).then(e => {
-			console.log("sigs", e);
+		var methodData = RelayerClient.getContract().methods.setDailyLimit(web3utils.toWei(this.state.dailyLimit)).encodeABI();    
+        this.context.smartvault.submitTransaction(methodData).then(e => {
 			setTimeout(() => {
-				self.setState({ submitting: false, destination: "", sendAmount: "" });
+				self.setState({ submitting: false, dailyLimit: "" });
 				notify.show('Transaction Successful!');
-				self.loadHistory();
+				window.location.reload();
 			}, 3000);
 
 		}).catch(e => {
@@ -54,7 +56,7 @@ class SetDailyLimit extends Component {
 						<div className="form-group">
 							<label htmlFor="inputEmail3" className="col-form-label">New Daily Limit</label>
 							<div className="">
-								<input type="number" className="form-control" id="inputEmail3" value={this.state.sendAmount} onChange={(e) => this.setState({ sendAmount: e.target.value })} />
+								<input type="number" className="form-control" id="inputEmail3" value={this.state.dailyLimit} onChange={(e) => this.setState({ dailyLimit: e.target.value })} />
 							</div>
 						</div>
 						<div className="form-group row">

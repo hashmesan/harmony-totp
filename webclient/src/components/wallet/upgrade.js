@@ -6,8 +6,9 @@ const {
 const web3utils = require("web3-utils");
 import { SmartVaultContext, SmartVaultConsumer } from "../smartvault_provider";
 import RelayerClient from '../../../../lib/relayer_client';
+import Notifications, {notify} from 'react-notify-toast';
 
-class SetDailyLimit extends Component {
+class UpgradePage extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {gasLimit: "", gasPrice:"", gasFee:""}
@@ -91,6 +92,6 @@ class SetDailyLimit extends Component {
 		);
 	}
 }
-SetDailyLimit.contextType = SmartVaultContext;
+UpgradePage.contextType = SmartVaultContext;
 
-export default SetDailyLimit;
+export default UpgradePage;

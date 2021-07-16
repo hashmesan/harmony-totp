@@ -5,6 +5,7 @@ const {
 } = require('@harmony-js/crypto');
 const web3utils = require("web3-utils");
 import { SmartVaultContext, SmartVaultConsumer } from "../smartvault_provider";
+import Notifications, {notify} from 'react-notify-toast';
 
 class SendPayment extends Component {
 	constructor(props) {
@@ -29,7 +30,7 @@ class SendPayment extends Component {
 			setTimeout(() => {
 				self.setState({ submitting: false, destination: "", sendAmount: "" });
 				notify.show('Transaction Successful!');
-				self.loadHistory();
+				window.location.reload();
 			}, 3000);
 
 		}).catch(e => {
