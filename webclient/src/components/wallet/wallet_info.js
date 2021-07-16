@@ -4,6 +4,10 @@ import { connect } from "redux-zero/react";
 import {getStorageKey, getLocalWallet, getApiUrl, getExplorerUrl, CONFIG} from "../../config";
 const ethers = require("ethers");
 const web3utils = require("web3-utils");
+const {
+	toBech32,
+	fromBech32,
+} = require('@harmony-js/crypto');
 
 class WalletInfo extends Component {
     constructor(props) {
@@ -57,7 +61,7 @@ class WalletInfo extends Component {
                     <hr/>
                     <div className="text-center">
                         <h6><b>Drain Address</b></h6>
-                        <div>{this.state.data.drainAddr == ethers.constants.AddressZero ? "Not set" : this.state.data.drainAddr}</div>
+                        <div>{this.state.data.drainAddr == ethers.constants.AddressZero ? "Not set" : toBech32(this.state.data.drainAddr)}</div>
                     </div>
                 </div>
                 </div>
