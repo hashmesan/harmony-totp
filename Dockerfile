@@ -1,8 +1,7 @@
-FROM node:10.15-alpine
+FROM node:13.14-alpine
 
 EXPOSE 8080
 
-RUN npm install -g yarn nodemon
 
 # Create app directory
 WORKDIR /app/relayer
@@ -21,6 +20,7 @@ COPY relayer/package*.json .
 COPY relayer/yarn.lock .
 COPY relayer/index.js .
 COPY relayer/src ./src
+COPY relayer/releases ./releases
 RUN yarn install
 
 COPY package*.json ../
