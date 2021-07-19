@@ -3,10 +3,7 @@ var window = self;
 import wallet from "../../../lib/wallet";
 
 onmessage = function(event) {
-    var mywallet = wallet.generateWallet(event.data.secret, event.data.depth,
-                         event.data.duration, event.data.timeOffset, (current, total)=>{
-                             postMessage({status: "working", current: current, total: total})
-                         });    
+    var mywallet = wallet.createHOTP(event.data.secret, event.data.depth);    
     postMessage({status: "done", mywallet: mywallet});
   };
   

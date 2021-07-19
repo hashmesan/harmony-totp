@@ -1,9 +1,30 @@
-var DailyLimit = artifacts.require("DailyLimit");
-var Guardians = artifacts.require("Guardians");
-var Recovery = artifacts.require("Recovery");
+const TOTPWallet = artifacts.require("TOTPWallet");
+const Guardians = artifacts.require("Guardians");
+const DailyLimit = artifacts.require("DailyLimit");
+const Recovery = artifacts.require("Recovery");
+const MetaTx = artifacts.require("MetaTx");
+const WalletFactory = artifacts.require("WalletFactory");
+const Relayer = artifacts.require("Relayer");
+const NameRegistry = artifacts.require("NameRegistry");
+const NameService = artifacts.require("NameService");
 
-module.exports = function(deployer) {
-  deployer.deploy(DailyLimit);
-  deployer.deploy(Guardians);
-  deployer.deploy(Recovery);
+module.exports = async function(deployer) {
+  await Promise.all([deployer.deploy(Guardians, {overwrite: false}), 
+                     deployer.deploy(DailyLimit, {overwrite: false}),
+                     deployer.deploy(Recovery, {overwrite: false}),
+                     deployer.deploy(MetaTx, {overwrite: false}),
+                     deployer.deploy(NameService)]);
+
+  await deployer.link(Guardians, TOTPWallet);
+  await deployer.link(DailyLimit, TOTPWallet);
+  await deployer.link(Recovery, TOTPWallet);
+  await deployer.link(MetaTx, TOTPWallet);
+  await deployer.link(NameService, TOTPWallet);
+
+  var instance = await deployer.deploy(TOTPWallet);
+  console.log("Implementation=", instance.address);
+  //var registry = await deployer.deploy(NameRegistry);
+
+  var factory = await deployer.deploy(WalletFactory, instance.address);
+  console.log("Factory=", factory.address);
 };

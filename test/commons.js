@@ -2,69 +2,146 @@ const TOTPWallet = artifacts.require("TOTPWallet");
 const Guardians = artifacts.require("Guardians");
 const DailyLimit = artifacts.require("DailyLimit");
 const Recovery = artifacts.require("Recovery");
+const MetaTx = artifacts.require("MetaTx");
+const WalletFactory = artifacts.require("WalletFactory");
+const NameRegistry = artifacts.require("NameRegistry");
+const NameService = artifacts.require("NameService");
+
 const totp = require("../lib/totp.js");
 const merkle = require("../lib/merkle.js");
 const ethers = require("ethers");
 const ethAbi = require("web3-eth-abi");
+const NUMOFTOKENS = 5;
 
 function h16(a) { return web3.utils.soliditySha3({v: a, t: "bytes", encoding: 'hex' }).substring(0, 34); }
+function h32(a) { return web3.utils.soliditySha3(a); }
 function h16a(a) { return web3.utils.soliditySha3(a).substring(0, 34); }
-function padNumber(x) { return web3.utils.padRight(x, 32); }
-function getTOTP(counter, duration) { return totp("JBSWY3DPEHPK3PXP", {period: duration, counter: counter}); }
+function padNumber(x) { return web3.utils.padRight(x, 64); }
+function getTOTP(counter) { return totp("JBSWY3DPEHPK3PXP", {counter: counter}); }
 
-function getLeavesAndRoot(timeOffset, duration, depth) {
+function getLeavesAndRoot(offset, depth) {
     var leaves = [];
-    // 1year / 300 ~= 105120
-    // 2^17 = 131072
-    // 1609459200 is 2021-01-01 00:00:00 -- 
-    // to save space, we're going to start from counter above!
-    var startCounter = timeOffset / duration;
-    //console.log("Start counter=", startCounter);
-
     for ( var i=0; i < Math.pow(2, depth); i++) {
-        //console.log(i, web3.utils.padRight(getTOTP(startCounter+i),6));
-        leaves.push(h16(padNumber(web3.utils.toHex(getTOTP(startCounter+i, duration)))));
+      var token = "";
+      for(var j=0;j < NUMOFTOKENS; j++) {
+        token = token + getTOTP((i*NUMOFTOKENS)+j+offset);
+      }
+      //console.log(token);
+      leaves.push(h32(padNumber(web3.utils.toHex(token))));
     }
     const root = merkle.reduceMT(leaves);
-    return {startCounter, leaves, root};
+    return {leaves, root};
 }
-async function createWallet(timeOffset, duration, depth, drainAddr) {
-    const {startCounter, leaves, root} = getLeavesAndRoot(timeOffset, duration, depth);
+
+async function createWalletFactory(resolver) {
+  const guardians = await Guardians.new();
+  const dailyLimit = await DailyLimit.new();
+  const recovery = await Recovery.new();
+  const metatx = await MetaTx.new();
+  const nameservice = await NameService.new();
+
+  await TOTPWallet.link("Guardians", guardians.address);
+  await TOTPWallet.link("DailyLimit", dailyLimit.address);
+  await TOTPWallet.link("Recovery", recovery.address);
+  await TOTPWallet.link("MetaTx", metatx.address);
+  await TOTPWallet.link("NameService", nameservice.address);
+
+  var wallet = await TOTPWallet.new();
+
+  // WalletFactory.link("NameRegistry", registry.address);
+  var walletFactory = await WalletFactory.new(wallet.address);
+  return walletFactory;
+}
+
+async function createNewImplementation(resolver) {
+  const guardians = await Guardians.new();
+  const dailyLimit = await DailyLimit.new();
+  const recovery = await Recovery.new();
+  const metatx = await MetaTx.new();
+  const nameservice = await NameService.new();
+
+  await TOTPWallet.link("Guardians", guardians.address);
+  await TOTPWallet.link("DailyLimit", dailyLimit.address);
+  await TOTPWallet.link("Recovery", recovery.address);
+  await TOTPWallet.link("MetaTx", metatx.address);
+  await TOTPWallet.link("NameService", nameservice.address);
+
+  var wallet = await TOTPWallet.new();
+  return wallet;
+}
+
+function createHOTP(depth) {
+  var leaves_arr = [], root_arr = [];
+  for(var i=0; i < 5; i++) {
+    const {leaves, root} = getLeavesAndRoot(i, depth);
+    leaves_arr.push(leaves);
+    root_arr.push(root);
+  }
+  return {root_arr, leaves_arr};
+}
+
+async function walletWithAddress(address) {
+  return await TOTPWallet.at(address);
+}
+
+async function createWallet(domain,owner, depth, drainAddr, feeAddress, feeAmount) {
+    const {root_arr, leaves_arr} = createHOTP(depth);
 
     const guardians = await Guardians.new();
     const dailyLimit = await DailyLimit.new();
     const recovery = await Recovery.new();
+    const metatx = await MetaTx.new();
+    const nameservice = await NameService.new();
+
     await TOTPWallet.link("Guardians", guardians.address);
     await TOTPWallet.link("DailyLimit", dailyLimit.address);
     await TOTPWallet.link("Recovery", recovery.address);
-    
-    var wallet = await TOTPWallet.new(root, depth, duration, timeOffset, drainAddr, web3.utils.toWei("0.01", "ether"));
+    await TOTPWallet.link("MetaTx", metatx.address);
+    await TOTPWallet.link("NameService", nameservice.address);
+
+    var wallet = await TOTPWallet.new();
+    //console.log(root_arr, feeAddress, feeAmount);
+    await wallet.initialize(domain, owner, root_arr, depth, drainAddr, web3.utils.toWei("0.01", "ether"), feeAddress, feeAmount);
 
     return {
-        startCounter,
-        root,
-        leaves,
+        root_arr,
+        leaves_arr,
         wallet
     }
 }
 
-async function getTOTPAndProof(leaves, timeOffset, duration) {
-    const { timestamp } = await web3.eth.getBlock("latest");
-    console.log("time=", timestamp);
+function findInLeavesSet(hash, leavesSet) {
+  for(var i=0;i<leavesSet.length;i++){
+    for(var j=0;j<leavesSet[i].length; j++) {
+      if(hash==leavesSet[i][j]) {
+        return leavesSet[i];
+      }
+    }
+  }
+  return null;
+}
 
-    var startCounter = timeOffset / duration;
-    var currentCounter = Math.floor((timestamp - timeOffset) / duration);
-    var currentOTP = getTOTP(startCounter + currentCounter, duration);
-    var proof = merkle.getProof(leaves, currentCounter, padNumber(web3.utils.toHex(currentOTP)))
-    return proof;
+async function getTOTPAndProof(offset, counter, leavesSet) {
+    var token = "";
+    for(var j=0;j < NUMOFTOKENS; j++) {
+      token = token + getTOTP((counter*NUMOFTOKENS)+j+offset);
+    }
+
+    var leaves = findInLeavesSet(h32(padNumber(web3.utils.toHex(token))), leavesSet);
+    if(leaves == null) {
+      throw Exception("Hash not found in leaves")
+    }
+    var proof = merkle.getProof(leaves, counter, padNumber(web3.utils.toHex(token)))
+    return {token, proof};
 }
 
 
-async function signRecoveryOffchain(signers, rootHash, merkelHeight, timePeriod, timeOffset) {
-    const messageHash = getMessageHash(rootHash, merkelHeight, timePeriod, timeOffset);
+async function signCreateTx(signers,owner, rootHash, merkleHeight, drainAddr, dailyLimit, salt ) {
+    const messageHash = getCreateHash(owner, rootHash, merkleHeight, drainAddr, dailyLimit, salt);
     const signatures = await Promise.all(
       signers.map(async (signer) => {
         const sig = await signMessage(messageHash, signer);
+        //console.log(signer.address, sig);
         return sig.slice(2);
       })
     );
@@ -74,15 +151,52 @@ async function signRecoveryOffchain(signers, rootHash, merkelHeight, timePeriod,
     return joinedSignatures;
   }
 
-function getMessageHash(rootHash, merkelHeight, timePeriod, timeOffset) {
-    const TYPE_STR = "startRecovery(bytes16, uint8, uint, uint)";
+ async function signOffchain2(signers, from, value, data, chainId, nonce, gasPrice, gasLimit, refundToken, refundAddress) {
+    const messageHash = getMessageHash2(from, value, data, chainId, nonce, gasPrice, gasLimit, refundToken, refundAddress);
+    const signatures = await Promise.all(
+      signers.map(async (signer) => {
+        const sig = await signMessage(messageHash, signer);
+        return sig.slice(2);
+      })
+    );
+    const joinedSignatures = `0x${signatures.join("")}`;
+
+    return joinedSignatures;
+  }
+
+async function getNonceForRelay() {
+    const block = await web3.eth.getBlockNumber();
+    const timestamp = new Date().getTime();
+    return `0x${ethers.utils.hexZeroPad(ethers.utils.hexlify(block), 16)
+      .slice(2)}${ethers.utils.hexZeroPad(ethers.utils.hexlify(timestamp), 16).slice(2)}`;
+  }
+
+function getMessageHash2(from, value, data, chainId, nonce, gasPrice, gasLimit, refundToken, refundAddress) {
+  const message = `0x${[
+    "0x19",
+    "0x00",
+    from,
+    ethers.utils.hexZeroPad(ethers.utils.hexlify(value), 32),
+    data,
+    ethers.utils.hexZeroPad(ethers.utils.hexlify(chainId), 32),
+    nonce,
+    ethers.utils.hexZeroPad(ethers.utils.hexlify(gasPrice), 32),
+    ethers.utils.hexZeroPad(ethers.utils.hexlify(gasLimit), 32),
+    refundToken,
+    refundAddress,
+  ].map((hex) => hex.slice(2)).join("")}`;
+
+  const messageHash = ethers.utils.keccak256(message);
+  return messageHash;
+}
+
+function getCreateHash(owner, rootHash, merkleHeight, drainAddr, dailyLimit, salt) {
+    const TYPE_STR = "createWallet(address owner, bytes32[] rootHash, uint8 merkelHeight, address payable drainAddr, uint dailyLimit,uint256 salt)";
     const TYPE_HASH = ethers.utils.keccak256(Buffer.from(TYPE_STR));
 
-    //console.log(rootHash, merkelHeight, timePeriod, timeOffset, TYPE_HASH);
-
     const encodedRequest = ethAbi.encodeParameters(
-        ["bytes32", "bytes16", "uint8", "uint", "uint"],
-        [TYPE_HASH, rootHash, merkelHeight, timePeriod, timeOffset]
+        ["bytes32", "address", "bytes32[]", "uint8", "address","uint", "uint256"],
+        [TYPE_HASH, owner, rootHash, merkleHeight, drainAddr, dailyLimit, salt]
       );
 
     const messageHash = ethers.utils.keccak256(encodedRequest);
@@ -91,7 +205,6 @@ function getMessageHash(rootHash, merkelHeight, timePeriod, timeOffset) {
 
 async function signMessage(message, signer) {
     const sig = await signer.sign(message).signature;
-    //console.log(message, sig);
     let v = parseInt(sig.substring(130, 132), 16);
     if (v < 27) v += 27;
     const normalizedSig = `${sig.substring(0, 130)}${v.toString(16)}`;
@@ -163,6 +276,13 @@ module.exports = {
     createWallet,
     getTOTPAndProof,
     getLeavesAndRoot,
-    signRecoveryOffchain,
-    increaseTime
+    signCreateTx,
+    increaseTime,
+    getMessageHash2,
+    signOffchain2,
+    getNonceForRelay,
+    createWalletFactory,
+    createHOTP,
+    walletWithAddress,
+    createNewImplementation
 }

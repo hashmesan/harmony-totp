@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 pragma solidity ^0.7.6;
 pragma experimental ABIEncoderV2;
 
@@ -8,18 +10,30 @@ library Core {
     }   
 
     struct RecoveryInfo {
-        bytes16 rootHash;
-        uint8 merkelHeight;
-        uint timePeriod; 
-        uint timeOffset;
+        address newOwner;
         uint expiration;
     }
 
+    enum OwnerSignature {
+        Anyone,             // Anyone
+        Required,           // Owner required
+        Optional,           // Owner and/or guardians
+        Disallowed,         // Guardians only
+        Session             // Session only
+    }
+
+    struct SignatureRequirement {
+        uint8 requiredSignatures;
+        OwnerSignature ownerSignatureRequirement;
+    }
+
     struct Wallet { 
-        bytes16 rootHash;
+        address owner;
+        bool locked;
+
+        bytes32[] rootHash;
         uint8 merkelHeight;
-        uint timePeriod; 
-        uint timeOffset;
+        uint counter;
         address payable drainAddr;
 
         // the list of guardians
@@ -32,8 +46,15 @@ library Core {
         uint dailyLimit;
         uint lastDay;
         uint spentToday;
+        
 
         // recovery
-        RecoveryInfo recovery;
+        string hashStorageID;
+        RecoveryInfo pendingRecovery;
+        mapping(bytes32 => bool) commitHash;
+
+        //
+        address resolver;
+
     }
 }

@@ -2,10 +2,9 @@ import React, { Component } from 'react';
 const twofactor = require("node-2fa");
 import crypto from "crypto";
 import b32 from "thirty-two";
-import wallet from "../../lib/wallet";
-import * as truffleClient from "./truffle_client";
+import wallet from "../../../lib/wallet";
+import * as truffleClient from "../truffle_client";
 import ProgressBar from "@ramonak/react-progress-bar";
-
 
 class Create extends Component {
     constructor(props) {

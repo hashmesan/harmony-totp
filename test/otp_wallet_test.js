@@ -4,43 +4,60 @@ const ethers = require("ethers");
 const merkle = require("../lib/merkle.js");
 const commons = require("./commons.js");
 
-const DURATION = 300;
-const time = Math.floor((Date.now() / 1000));
-const timeOffset = time - (time% 300);        
-
 contract("OTPWallet", accounts => {
 
-    it("should transfer & drain", async () => {
-        //const leaves = [h16(padNumber('0x1')),h16(padNumber('0x2')),h16(padNumber('0x3')),h16(padNumber('0x4'))];
- 
+    it("should transfer with direct signed requests", async () => {
+        const blockNumber = await web3.eth.getBlockNumber();
         var tmpWallet = web3.eth.accounts.create();
-        var {startCounter, root, leaves, wallet} = await commons.createWallet(timeOffset, DURATION, 16, tmpWallet.address);
+        var {root, leaves, wallet} = await commons.createWallet(["supercheaplong0000123123123123"+blockNumber,"crazy"],accounts[0] ,8, tmpWallet.address, tmpWallet.address, 0);
         console.log("root="+ root);
-        //console.log("leaves=", leaves);
 
+        await web3.eth.sendTransaction({from: accounts[0], to: wallet.address, value: web3.utils.toWei("2", "ether")});
+        await wallet.makeTransfer(tmpWallet.address, web3.utils.toWei("0.001234", "ether"));
 
-        // var receipt = await wallet._reduceConfirmMaterial(proof[0], proof[1]);
-        await web3.eth.sendTransaction({from: accounts[0], to: wallet.address, value: web3.utils.toWei("1", "ether")});
-
-        var proof = await commons.getTOTPAndProof(leaves, timeOffset, DURATION);
-        await wallet.makeTransfer(tmpWallet.address, web3.utils.toWei("0.01", "ether"), proof[0], proof[1]);
         var newBalance = await web3.eth.getBalance(tmpWallet.address);
         console.log("Balance=", newBalance);
-        assert.equal(newBalance, web3.utils.toWei(".01", "ether"), "withdraw amount is correct");
-        
-        proof = await commons.getTOTPAndProof(leaves, timeOffset, DURATION);
-        await wallet.drain(proof[0], proof[1])
-        var newBalance = await web3.eth.getBalance(tmpWallet.address);
-        console.log("Balance=", newBalance);
-        assert.equal(newBalance, web3.utils.toWei("1", "ether"), "withdraw amount is correct");
+        assert.equal(newBalance, web3.utils.toWei(".001234", "ether"), "withdraw amount is correct");
+
+    //     //var proof = await commons.getTOTPAndProof(counter, leaves);
+
+    //     // proof = await commons.getTOTPAndProof(counter.leaves);
+    //     // await wallet.drain(proof[0], proof[1])
+    //     // var newBalance = await web3.eth.getBalance(tmpWallet.address);
+    //     // console.log("Balance=", newBalance);
+    //     // assert.equal(newBalance, web3.utils.toWei("1", "ether"), "withdraw amount is correct");
 
     })
-    it("checks for remaing token", async () => {
+
+    it("should transfer with meta request from relayer", async () => {
+        const gasLimit = 100000;
+        const nonce = await commons.getNonceForRelay();
+        const blockNumber = await web3.eth.getBlockNumber();
+
+        var feeWallet = web3.eth.accounts.create();
         var tmpWallet = web3.eth.accounts.create();
-        var {startCounter, root, leaves, wallet} = await commons.createWallet(timeOffset - (Math.pow(2, 2) * DURATION),  DURATION, 2, tmpWallet.address);
-        var hasTokens = await wallet.remainingTokens();
-        console.log("counter=", (await wallet.getCurrentCounter()).toString());
-        console.log(hasTokens);
-        assert.isTrue(hasTokens > 0);               
-    })
+        var {root, leaves, wallet} = await commons.createWallet(["supercheaplong0000123123123123" + blockNumber,"crazy"], tmpWallet.address ,8, tmpWallet.address, tmpWallet.address, 0);
+        await web3.eth.sendTransaction({from: accounts[0], to: wallet.address, value: web3.utils.toWei("2", "ether")});
+        const methodData = wallet.contract.methods.makeTransfer(tmpWallet.address, web3.utils.toWei("0.0012345", "ether")).encodeABI();
+                
+        var sigs = await commons.signOffchain2(
+            [tmpWallet],
+            wallet.address,
+            0,
+            methodData,
+            0,
+            nonce,
+            0,
+            gasLimit,
+            ethers.constants.AddressZero,
+            feeWallet.address
+        );
+
+        await wallet.executeMetaTx(methodData, sigs, nonce, 0, gasLimit, ethers.constants.AddressZero, feeWallet.address);
+
+        var newBalance = await web3.eth.getBalance(tmpWallet.address);
+        console.log("Balance=", newBalance);
+        assert.equal(newBalance, web3.utils.toWei(".0012345", "ether"), "withdraw amount is correct");
+
+    });
 });
