@@ -1,6 +1,7 @@
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 require("@babel/polyfill");
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   devServer: {
@@ -30,16 +31,21 @@ module.exports = {
       worker: ['@babel/polyfill', './src/worker/generate.js'],
     },
     output: {
-        filename: '[name].js',
+        filename: '[name].[contenthash].js',
         path: path.resolve(__dirname, 'dist')
     },
     resolve: {
       extensions: ['.tsx', '.ts', '.js'],
     },
     plugins: [
+        new HtmlWebpackPlugin({
+          template: "./src/index.html",
+          minify: false
+        }),
+
         // Copy our app's index.html to the build folder.
         new CopyWebpackPlugin([
-            { from: './src/index.html', to: "index.html" },
+//            { from: './src/index.html', to: "index.html" },
 //            { from: './js', to: "./js" },
 //            { from: './css', to: "./css" },
             { from: './public', to: "./public" },
