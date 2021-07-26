@@ -1,9 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-pragma solidity ^0.7.6;
+pragma solidity >=0.7.6;
 pragma experimental ABIEncoderV2;
 
-import "openzeppelin-solidity/contracts/utils/Address.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
+
 import "./core/wallet_data.sol";
 import "./features/guardians.sol";
 import "./features/daily_limit.sol";
@@ -11,7 +17,7 @@ import "./features/recovery.sol";
 import "./features/metatx.sol";
 import "./features/name_service.sol";
 
-contract TOTPWallet {
+contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
 
     using Address for address payable;
     using Guardians for Core.Wallet;
@@ -326,6 +332,45 @@ contract TOTPWallet {
         returns (address)
     {
         return masterCopy;
+    }
+
+    //
+    // ERC1155 support
+    //
+    function onERC1155Received(
+        address operator,
+        address from,
+        uint256 id,
+        uint256 value,
+        bytes calldata data
+    ) external override returns (bytes4){
+        // emit ReceivedToken(TokenType.ERC1155, value, from, msg.sender, operator, id, data);
+        // _trackToken(TokenType.ERC1155, msg.sender, id);
+        return this.onERC1155Received.selector;
+    }
+
+    function onERC1155BatchReceived(address operator, address from, uint256[] calldata ids, uint256[] calldata values, bytes calldata data) external override returns (bytes4){
+        for (uint32 i = 0; i < ids.length; i++) {
+            this.onERC1155Received(operator, from, ids[i], values[i], data);
+        }
+        return this.onERC1155BatchReceived.selector;
+    }
+
+    function supportsInterface(bytes4 interfaceID) external override pure returns (bool) {
+        return interfaceID == this.supportsInterface.selector ||
+        interfaceID == this.onERC1155Received.selector ||
+        interfaceID == this.onERC721Received.selector;
+    }
+
+    function onERC721Received(
+        address operator,
+        address from,
+        uint256 tokenId,
+        bytes calldata data
+    ) external override returns (bytes4){
+        // emit ReceivedToken(TokenType.ERC721, 1, from, msg.sender, operator, tokenId, data);
+        // _trackToken(TokenType.ERC721, msg.sender, tokenId);
+        return this.onERC721Received.selector;
     }
 
     //
