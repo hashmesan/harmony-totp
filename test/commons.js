@@ -92,7 +92,7 @@ async function createWallet(resolver, domain,owner, depth, spendingLimit, drainA
     [resolver, ["quoc", "supercrazy"], owner, root_arr, depth, drainAddr, spendingLimit, feeAddress, feeAmount]
   );
     var wallet = await TOTPWallet.new();
-    console.log(resolver, domain, owner, root_arr, depth, drainAddr, spendingLimit, feeAddress, feeAmount);
+    //console.log("createWallet", resolver, domain, owner, root_arr, depth, drainAddr, spendingLimit, feeAddress, feeAmount);
     await wallet.initialize(resolver, 
                             domain, 
                             owner,

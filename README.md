@@ -1,7 +1,6 @@
 
 <p align="center">
-  <img src="./webclient/public/logo_smartvault.png"" height ="55" alt="" align="middle" />
-<br/>
+  <img src="./webclient/public/logo_smartvault.png"" height ="55" alt="" align="middle" style="margin:25px" />
 
 [**Smartvault.one**](https://smartvault.one) | 
 [**Demo Videos**](#demo-videos) |
@@ -9,6 +8,10 @@
 [**Smart Contracts**](#smart-contracts) |
 [**Relayer**](#relayer) |
 [**Web client**](#Webclient)
+
+![](https://github.com/hashmesan/harmony-totp/actions/workflows/docker-test.yml/badge.svg?branch=develop)
+![](https://github.com/hashmesan/harmony-totp/actions/workflows/webclient.yml/badge.svg?branch=develop)
+
 </p>
 
 SmartVault is a smart contract wallet designed with worry-free recovery using your Google Authenticator (no worry about key phrases, passwords, device loss, email phishing, sms hijacking), and with many advanced wallet features.
