@@ -18,6 +18,7 @@ SmartVault is a smart contract wallet designed with worry-free recovery using yo
 
 * **Worry-free recovery**: No worry about key phrases, passwords, device loss, email phishing, sms hijacking. Recover with 5 OTP tokens which means entering 30 digits code, providing you security of 100bits+ of entropy.
 * **Harmony Name Service**: Just like domain registration, register yourself an easy name to lookup  your wallet and share with your friends.
+* **HRC20/HRC721/HRC1155**: Fully supported HRC20, Non-Fungible Tokens (ERC721), and Multi-token Standard (HRC1155).
 * **Spending Limit**: Protect your wallet by capping spending limits and requiring 2FA OTP wallet verification.
 * **Social Guardians**: Take your wallet security to next level by requiring multiple devices you own or friends & family to authorize over spending limits, and recovery. 
 * **Smart contract without the hassle**: You don't need native wallet (like metamask or CLI) to sign transactions to use it. We designed *meta transactions* which can be relayed, and deduct fees from your wallet when it is successful.

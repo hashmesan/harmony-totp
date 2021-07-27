@@ -430,6 +430,5 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
                 revert(0, returndatasize())
             }
         }
-        //emit Invoked(msg.sender, _target, _value, _data);
     }
 }
