@@ -1,7 +1,6 @@
 
-<p align="center">
-  <img src="./webclient/public/logo_smartvault.png"" height ="55" alt="" align="middle" />
-<br/>
+<p align="center"><br/>&nbsp;
+  <img src="./webclient/public/logo_smartvault.png"" height ="65" alt="" align="middle"/><br/>&nbsp;
 
 [**Smartvault.one**](https://smartvault.one) | 
 [**Demo Videos**](#demo-videos) |
@@ -9,12 +8,17 @@
 [**Smart Contracts**](#smart-contracts) |
 [**Relayer**](#relayer) |
 [**Web client**](#Webclient)
+
+[![](https://github.com/hashmesan/harmony-totp/actions/workflows/docker-test.yml/badge.svg?branch=develop)](https://github.com/hashmesan/harmony-totp/actions/workflows/docker-test.yml)
+[![](https://github.com/hashmesan/harmony-totp/actions/workflows/webclient.yml/badge.svg?branch=develop)](https://github.com/hashmesan/harmony-totp/actions/workflows/webclient.yml)
+
 </p>
 
 SmartVault is a smart contract wallet designed with worry-free recovery using your Google Authenticator (no worry about key phrases, passwords, device loss, email phishing, sms hijacking), and with many advanced wallet features.
 
 * **Worry-free recovery**: No worry about key phrases, passwords, device loss, email phishing, sms hijacking. Recover with 5 OTP tokens which means entering 30 digits code, providing you security of 100bits+ of entropy.
 * **Harmony Name Service**: Just like domain registration, register yourself an easy name to lookup  your wallet and share with your friends.
+* **HRC20/HRC721/HRC1155**: Fully supported HRC20, Non-Fungible Tokens (ERC721), and Multi-token Standard (HRC1155).
 * **Spending Limit**: Protect your wallet by capping spending limits and requiring 2FA OTP wallet verification.
 * **Social Guardians**: Take your wallet security to next level by requiring multiple devices you own or friends & family to authorize over spending limits, and recovery. 
 * **Smart contract without the hassle**: You don't need native wallet (like metamask or CLI) to sign transactions to use it. We designed *meta transactions* which can be relayed, and deduct fees from your wallet when it is successful.
@@ -54,7 +58,7 @@ Commands:
   recover <name> <code1> <code2> <code3> <code4> <code5>  recover wallet
   list                                                    list all wallets
   balance <address>                                       get balance
-  send [options] [to] [amount]                        Transfer funds
+  transfer [options] [to] [amount]                        Transfer funds
   info <address>                                          Display wallet info
   set_daily_limit [options] <amount>                      set daily limit
   set_drain_address [options] <address>                   set drain address

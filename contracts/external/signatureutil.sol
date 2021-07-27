@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-pragma solidity ^0.7.6;
+pragma solidity >=0.7.6;
 
 library SignatureUtil {
     function verifySignatures(
@@ -8,7 +8,7 @@ library SignatureUtil {
         bytes   memory signatures
         )
         internal
-        view
+        pure
         returns (bool)
     {
         require(signers.length == signatures.length/65, "BAD_SIGNATURE_DATA");

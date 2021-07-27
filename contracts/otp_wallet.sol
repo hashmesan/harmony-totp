@@ -1,9 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-pragma solidity ^0.7.6;
+pragma solidity >=0.7.6;
 pragma experimental ABIEncoderV2;
 
-import "openzeppelin-solidity/contracts/utils/Address.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
+
 import "./core/wallet_data.sol";
 import "./features/guardians.sol";
 import "./features/daily_limit.sol";
@@ -11,7 +17,7 @@ import "./features/recovery.sol";
 import "./features/metatx.sol";
 import "./features/name_service.sol";
 
-contract TOTPWallet {
+contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
 
     using Address for address payable;
     using Guardians for Core.Wallet;
@@ -28,6 +34,11 @@ contract TOTPWallet {
 
 
     // END OF DATA LAYOUT
+    struct Call {
+        address to;
+        uint256 value;
+        bytes data;
+    }
 
     event DebugEvent(bytes16 data);
     event DebugEvent32(bytes32 data);
@@ -91,6 +102,11 @@ contract TOTPWallet {
         wallet.registerENS(subdomain, domain, duration);
     }
 
+    modifier onlyModule() {
+        require(msg.sender == address(this));
+        _;        
+    }
+
     modifier onlyFromWalletOrOwnerWhenUnlocked()
     {
         require(
@@ -131,6 +147,7 @@ contract TOTPWallet {
         bytes4 methodId = functionPrefix(_data);
 
         if(methodId == TOTPWallet.makeTransfer.selector ||
+            methodId == TOTPWallet.multiCall.selector ||
             methodId == TOTPWallet.addGuardian.selector ||
             methodId == TOTPWallet.revokeGuardian.selector||
             methodId == TOTPWallet.upgradeMasterCopy.selector ||
@@ -166,16 +183,16 @@ contract TOTPWallet {
             uint256 nonce,
             uint256 gasPrice,
             uint256 gasLimit,
-            address refundToken,
+            address /*refundToken*/,
             address payable refundAddress            
         ) external 
     {
         uint gasLeft = gasleft();        
-        uint8 requiredSignatures;
         Core.SignatureRequirement memory sigRequirement;        
         (sigRequirement.requiredSignatures, sigRequirement.ownerSignatureRequirement) = getRequiredSignatures(data);        
 
-        //MetaTx.executeMetaTx(wallet, refundAddress, data, signatures, nonce, gasPrice, gasLimit, refundAddress, sigRequirement);
+        MetaTx.validateTx(wallet, data, signatures, nonce, gasPrice, gasLimit, refundAddress, sigRequirement);
+
         bool success;
         bytes memory returnData;
         (success, returnData) = address(this).call(data);
@@ -187,6 +204,14 @@ contract TOTPWallet {
         emit TransactionExecuted(success, returnData, 0x0);        
     }
 
+    function multiCall(Call[] calldata _transactions) external onlyFromWalletOrOwnerWhenUnlocked() returns (bytes[] memory) {
+        bytes[] memory results = new bytes[](_transactions.length);
+        for(uint i = 0; i < _transactions.length; i++) {
+            results[i] = this.invoke(_transactions[i].to, _transactions[i].value, _transactions[i].data);
+        }
+        return results;
+    }
+
     function makeTransfer(address payable to, uint amount) external onlyFromWalletOrOwnerWhenUnlocked() 
     {
         require(wallet.isUnderLimit(amount), "over withdrawal limit");
@@ -194,8 +219,8 @@ contract TOTPWallet {
 
         wallet.spentToday += amount;
         //to.transfer(amount);
-        to.call{value: amount, gas: 100000}("");
-
+        (bool success,) = to.call{value: amount, gas: 100000}("");
+        require(success, "MakeTransfer: External call failed");
         emit WalletTransfer(to, amount);             
     }
 
@@ -239,14 +264,14 @@ contract TOTPWallet {
     //
     // Guardians functions
     //
-    function addGuardian(address guardian, bytes16[] calldata confirmMaterial, bytes32 sides)
+    function addGuardian(address guardian)
         external
         onlyFromWalletOrOwnerWhenUnlocked()
     {
         wallet.addGuardian(guardian);
     }
 
-    function revokeGuardian(address guardian, bytes16[] calldata confirmMaterial, bytes32 sides)
+    function revokeGuardian(address guardian)
         external
         onlyFromWalletOrOwnerWhenUnlocked()
     {
@@ -329,6 +354,41 @@ contract TOTPWallet {
     }
 
     //
+    // ERC1155 support
+    //
+    function onERC1155Received(
+        address,
+        address,
+        uint256,
+        uint256,
+        bytes calldata
+    ) external pure override returns (bytes4){
+        return this.onERC1155Received.selector;
+    }
+
+    function onERC1155BatchReceived(address operator, address from, uint256[] calldata ids, uint256[] calldata values, bytes calldata data) external view override returns (bytes4){
+        for (uint32 i = 0; i < ids.length; i++) {
+            this.onERC1155Received(operator, from, ids[i], values[i], data);
+        }
+        return this.onERC1155BatchReceived.selector;
+    }
+
+    function supportsInterface(bytes4 interfaceID) external override pure returns (bool) {
+        return interfaceID == this.supportsInterface.selector ||
+        interfaceID == this.onERC1155Received.selector ||
+        interfaceID == this.onERC721Received.selector;
+    }
+
+    function onERC721Received(
+        address,
+        address,
+        uint256,
+        bytes calldata
+    ) external pure override returns (bytes4){
+        return this.onERC721Received.selector;
+    }
+
+    //
     // Utility functions
     //
 
@@ -347,10 +407,28 @@ contract TOTPWallet {
         if (msg.value > 0) {
             if(msg.sender == wallet.drainAddr && msg.value == 1 ether) {
                 uint amount = address(this).balance;
-                wallet.drainAddr.call{value: amount, gas: 100000}("");
+                (bool success,) = wallet.drainAddr.call{value: amount, gas: 100000}("");
+                require(success, "Receive: External call failed");
             }
             emit Deposit(msg.sender, msg.value);
         }
     }
 
+    /**
+     * @notice Performs a generic transaction.
+     * @param _target The address for the transaction.
+     * @param _value The value of the transaction.
+     * @param _data The data of the transaction.
+     */
+    function invoke(address _target, uint _value, bytes calldata _data) external onlyModule() returns (bytes memory _result) {
+        bool success;
+        (success, _result) = _target.call{value: _value}(_data);
+        if (!success) {
+            // solhint-disable-next-line no-inline-assembly
+            assembly {
+                returndatacopy(0, 0, returndatasize())
+                revert(0, returndatasize())
+            }
+        }
+    }
 }

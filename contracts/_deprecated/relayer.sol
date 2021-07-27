@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-pragma solidity ^0.7.6;
+pragma solidity >=0.7.6;
 pragma experimental ABIEncoderV2;
 
-import "openzeppelin-solidity/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "../wallet_factory.sol";
 import "./forwarder.sol";
 
@@ -82,7 +82,7 @@ contract Relayer is Ownable
         emit EnqueuedNewWallet(lastForwarder);
     }
 
-    function getConfigHash(WalletFactory.WalletConfig calldata config) internal view returns(bytes32) {
+    function getConfigHash(WalletFactory.WalletConfig calldata config) internal pure returns(bytes32) {
         return keccak256(abi.encodePacked(config.owner, config.rootHash, config.merkelHeight, config.drainAddr, config.dailyLimit, config.salt));
     }
 
@@ -103,7 +103,9 @@ contract Relayer is Ownable
         // send excess network fees to the new wallet
         address wallet = factory.computeWalletAddress(state.config.owner, state.config.salt);
         if (state.deposits > state.networkFee) {
-            wallet.call{value: (state.deposits - state.networkFee), gas: 100000}("");
+            (bool success,) = wallet.call{value: (state.deposits - state.networkFee), gas: 100000}("");
+            require(success, "processWallet: External call failed");
+
         }
 
         delete walletQueue[forwarder];
@@ -111,7 +113,7 @@ contract Relayer is Ownable
         emit WalletCreated(wallet, forwarder);
     }
 
-    function processDeposit(address addr) external payable{
+    function processDeposit() external payable{
         require(walletQueue[msg.sender].exists, "NO QUEUED ACCOUNT FOUND");
         walletQueue[msg.sender].deposits += msg.value;
         collectedFees += walletQueue[msg.sender].networkFee;
@@ -123,8 +125,7 @@ contract Relayer is Ownable
         collectedFees = 0;
     }
 
-    /// @dev Fallback function allows to deposit ether.
-    fallback() external payable {
+    receive() external payable {
         emit DepositReceived(msg.sender, msg.value);
     }
 
@@ -141,7 +142,7 @@ contract Relayer is Ownable
 
     function deployForwarder(uint salt_) internal returns (Forwarder) {
         Forwarder forwarder = _deployForwarder(salt_);
-        forwarder.init(address(this));
+        forwarder.init(payable(this));
         return forwarder;
     }
 
