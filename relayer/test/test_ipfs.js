@@ -6,7 +6,7 @@ var wallet = require("../../lib/wallet.js");
 
 const env = "development";
 
-describe('test IPFS()', function () {
+describe.skip('test IPFS()', function () {
 //   it('test add', async function () {
 //       const text = "abcdef";
 //       const res = await ipfs.add(text);
