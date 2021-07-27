@@ -38,40 +38,6 @@ library MetaTx {
         require(validateSignatures(_wallet, ex.signHash, signatures, sigRequirement.ownerSignatureRequirement), "RM: Invalid signatures");
     }
 
-    function executeMetaTx(
-            Core.Wallet storage _wallet,
-            address sw,
-            bytes   calldata _data,
-            bytes   calldata signatures,
-            uint256 nonce,
-            uint256 gasPrice,
-            uint256 gasLimit,
-            address refundAddress,
-            Core.SignatureRequirement memory sigRequirement
-        ) public
-    {
-        StackExtension memory ex;
-
-        //require(sigRequirement.requiredSignatures > 0 || sigRequirement.ownerSignatureRequirement == Core.OwnerSignature.Anyone, "RM: Wrong signature requirement");
-        require(sigRequirement.requiredSignatures * 65 == signatures.length, "Wrong number of signatures");
-
-        ex.signHash = getSignHash(
-            address(this),
-            0,
-            _data,
-            nonce,
-            gasPrice,
-            gasLimit,
-            address(0),
-            refundAddress);
-
-        require(validateSignatures(_wallet, ex.signHash, signatures, sigRequirement.ownerSignatureRequirement), "RM: Invalid signatures");
-
-        (ex.success, ex.returnData) = address(sw).call(_data);
-
-        // refund
-    }
-
     function getSignHash(
         address _from,
         uint256 _value,

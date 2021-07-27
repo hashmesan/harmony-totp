@@ -98,4 +98,7 @@ contract("TokenTest", async (accounts) => {
         // console.log(await erc721.balanceOf(recipient.address))
     });
 
+    it("should accept HRC1155 and send HRC1155", async () => {
+        
+    });
 })
