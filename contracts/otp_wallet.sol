@@ -183,16 +183,16 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
             uint256 nonce,
             uint256 gasPrice,
             uint256 gasLimit,
-            address refundToken,
+            address /*refundToken*/,
             address payable refundAddress            
         ) external 
     {
         uint gasLeft = gasleft();        
-        uint8 requiredSignatures;
         Core.SignatureRequirement memory sigRequirement;        
         (sigRequirement.requiredSignatures, sigRequirement.ownerSignatureRequirement) = getRequiredSignatures(data);        
 
-        //MetaTx.executeMetaTx(wallet, refundAddress, data, signatures, nonce, gasPrice, gasLimit, refundAddress, sigRequirement);
+        MetaTx.validateTx(wallet, data, signatures, nonce, gasPrice, gasLimit, refundAddress, sigRequirement);
+
         bool success;
         bytes memory returnData;
         (success, returnData) = address(this).call(data);
@@ -219,8 +219,8 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
 
         wallet.spentToday += amount;
         //to.transfer(amount);
-        to.call{value: amount, gas: 100000}("");
-
+        (bool success,) = to.call{value: amount, gas: 100000}("");
+        require(success, "MakeTransfer: External call failed");
         emit WalletTransfer(to, amount);             
     }
 
@@ -357,18 +357,18 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
     // ERC1155 support
     //
     function onERC1155Received(
-        address operator,
-        address from,
-        uint256 id,
-        uint256 value,
-        bytes calldata data
-    ) external override returns (bytes4){
+        address,
+        address,
+        uint256,
+        uint256,
+        bytes calldata
+    ) external pure override returns (bytes4){
         // emit ReceivedToken(TokenType.ERC1155, value, from, msg.sender, operator, id, data);
         // _trackToken(TokenType.ERC1155, msg.sender, id);
         return this.onERC1155Received.selector;
     }
 
-    function onERC1155BatchReceived(address operator, address from, uint256[] calldata ids, uint256[] calldata values, bytes calldata data) external override returns (bytes4){
+    function onERC1155BatchReceived(address operator, address from, uint256[] calldata ids, uint256[] calldata values, bytes calldata data) external view override returns (bytes4){
         for (uint32 i = 0; i < ids.length; i++) {
             this.onERC1155Received(operator, from, ids[i], values[i], data);
         }
@@ -382,11 +382,11 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
     }
 
     function onERC721Received(
-        address operator,
-        address from,
-        uint256 tokenId,
-        bytes calldata data
-    ) external override returns (bytes4){
+        address,
+        address,
+        uint256,
+        bytes calldata
+    ) external pure override returns (bytes4){
         // emit ReceivedToken(TokenType.ERC721, 1, from, msg.sender, operator, tokenId, data);
         // _trackToken(TokenType.ERC721, msg.sender, tokenId);
         return this.onERC721Received.selector;
@@ -411,7 +411,8 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
         if (msg.value > 0) {
             if(msg.sender == wallet.drainAddr && msg.value == 1 ether) {
                 uint amount = address(this).balance;
-                wallet.drainAddr.call{value: amount, gas: 100000}("");
+                (bool success,) = wallet.drainAddr.call{value: amount, gas: 100000}("");
+                require(success, "Receive: External call failed");
             }
             emit Deposit(msg.sender, msg.value);
         }

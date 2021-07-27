@@ -103,7 +103,9 @@ contract Relayer is Ownable
         // send excess network fees to the new wallet
         address wallet = factory.computeWalletAddress(state.config.owner, state.config.salt);
         if (state.deposits > state.networkFee) {
-            wallet.call{value: (state.deposits - state.networkFee), gas: 100000}("");
+            (bool success,) = wallet.call{value: (state.deposits - state.networkFee), gas: 100000}("");
+            require(success, "processWallet: External call failed");
+
         }
 
         delete walletQueue[forwarder];
@@ -123,8 +125,7 @@ contract Relayer is Ownable
         collectedFees = 0;
     }
 
-    /// @dev Fallback function allows to deposit ether.
-    fallback() external payable {
+    receive() external payable {
         emit DepositReceived(msg.sender, msg.value);
     }
 
