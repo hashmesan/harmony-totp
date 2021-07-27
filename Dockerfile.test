@@ -1,6 +1,13 @@
 FROM node:13.14-alpine
 
+RUN apk update && apk upgrade && \
+	apk add --no-cache git make gcc g++ python
+    
 COPY entrypoint.sh /entrypoint.sh
 
 # Executes `entrypoint.sh` when the Docker container starts up
 ENTRYPOINT ["/entrypoint.sh"]
+
+
+# docker build -t dockertest -f Dockerfile.test .
+# docker run -e GITHUB_WORKSPACE=/github/workspace -v /home/quoc/Projects/harmony-totp-pure/tmp/harmony-totp:/github/workspace dockertest 
