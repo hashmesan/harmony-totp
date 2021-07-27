@@ -245,14 +245,14 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
     //
     // Guardians functions
     //
-    function addGuardian(address guardian, bytes16[] calldata confirmMaterial, bytes32 sides)
+    function addGuardian(address guardian)
         external
         onlyFromWalletOrOwnerWhenUnlocked()
     {
         wallet.addGuardian(guardian);
     }
 
-    function revokeGuardian(address guardian, bytes16[] calldata confirmMaterial, bytes32 sides)
+    function revokeGuardian(address guardian)
         external
         onlyFromWalletOrOwnerWhenUnlocked()
     {

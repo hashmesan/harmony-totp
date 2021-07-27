@@ -168,7 +168,7 @@ contract("OTPWallet", accounts => {
 
         return walletAddrComputed;        
     }
-    it.only("should transfer between smartvaults via factory", async()=>{
+    it("should transfer between smartvaults via factory", async()=>{
         var tmpWallet = web3.eth.accounts.create();
         var tmpWallet2 = web3.eth.accounts.create();
 
@@ -197,8 +197,6 @@ contract("OTPWallet", accounts => {
         );
 
         var tx = await wallet.executeMetaTx(methodData, sigs, nonce, 0, gasLimit, ethers.constants.AddressZero, feeWallet.address);       
-        console.log(tx);
-        console.log(tx.logs[2].args);
         //console.log(web3utils.hexToAscii(tx.logs[0].args.returnData))
 
         newBalance = await web3.eth.getBalance(wallet2);
