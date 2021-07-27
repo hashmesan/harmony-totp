@@ -363,8 +363,6 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
         uint256,
         bytes calldata
     ) external pure override returns (bytes4){
-        // emit ReceivedToken(TokenType.ERC1155, value, from, msg.sender, operator, id, data);
-        // _trackToken(TokenType.ERC1155, msg.sender, id);
         return this.onERC1155Received.selector;
     }
 
@@ -387,8 +385,6 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
         uint256,
         bytes calldata
     ) external pure override returns (bytes4){
-        // emit ReceivedToken(TokenType.ERC721, 1, from, msg.sender, operator, tokenId, data);
-        // _trackToken(TokenType.ERC721, msg.sender, tokenId);
         return this.onERC721Received.selector;
     }
 
