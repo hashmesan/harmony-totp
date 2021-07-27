@@ -34,6 +34,11 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
 
 
     // END OF DATA LAYOUT
+    struct Call {
+        address to;
+        uint256 value;
+        bytes data;
+    }
 
     event DebugEvent(bytes16 data);
     event DebugEvent32(bytes32 data);
@@ -97,6 +102,11 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
         wallet.registerENS(subdomain, domain, duration);
     }
 
+    modifier onlyModule() {
+        require(msg.sender == address(this));
+        _;        
+    }
+
     modifier onlyFromWalletOrOwnerWhenUnlocked()
     {
         require(
@@ -137,6 +147,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
         bytes4 methodId = functionPrefix(_data);
 
         if(methodId == TOTPWallet.makeTransfer.selector ||
+            methodId == TOTPWallet.multiCall.selector ||
             methodId == TOTPWallet.addGuardian.selector ||
             methodId == TOTPWallet.revokeGuardian.selector||
             methodId == TOTPWallet.upgradeMasterCopy.selector ||
@@ -191,6 +202,14 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
             refundAddress.transfer(gasUsed);
         }
         emit TransactionExecuted(success, returnData, 0x0);        
+    }
+
+    function multiCall(Call[] calldata _transactions) external onlyFromWalletOrOwnerWhenUnlocked() returns (bytes[] memory) {
+        bytes[] memory results = new bytes[](_transactions.length);
+        for(uint i = 0; i < _transactions.length; i++) {
+            results[i] = this.invoke(_transactions[i].to, _transactions[i].value, _transactions[i].data);
+        }
+        return results;
     }
 
     function makeTransfer(address payable to, uint amount) external onlyFromWalletOrOwnerWhenUnlocked() 
@@ -398,4 +417,22 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
         }
     }
 
+    /**
+     * @notice Performs a generic transaction.
+     * @param _target The address for the transaction.
+     * @param _value The value of the transaction.
+     * @param _data The data of the transaction.
+     */
+    function invoke(address _target, uint _value, bytes calldata _data) external onlyModule() returns (bytes memory _result) {
+        bool success;
+        (success, _result) = _target.call{value: _value}(_data);
+        if (!success) {
+            // solhint-disable-next-line no-inline-assembly
+            assembly {
+                returndatacopy(0, 0, returndatasize())
+                revert(0, returndatasize())
+            }
+        }
+        //emit Invoked(msg.sender, _target, _value, _data);
+    }
 }
