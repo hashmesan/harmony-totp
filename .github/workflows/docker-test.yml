@@ -14,8 +14,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile.test --tag testbuild      
-    - name: Runs docker
-      run: docker run testbuild
+    - name: Run test on docker
+      uses: ./ # Uses an action in the root directory
+      id: test
       
