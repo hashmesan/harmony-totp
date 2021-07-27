@@ -1,4 +1,4 @@
-var Transactions = require("./../src/web3/transactions.js");
+var Transactions = require("../src/web3/transactions.js");
 var ENS = require('@ensdomains/ensjs');
 const Web3 = require('web3');
 const ethers = require("ethers");
