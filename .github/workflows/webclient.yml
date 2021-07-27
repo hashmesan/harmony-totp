@@ -21,9 +21,11 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      - run: cd webclient
       - run: yarn install
+        working-directory: ./webclient
       - run: yarn build
-      - run: cd ../relayer
+        working-directory: ./webclient
       - run: yarn install
+        working-directory: ./relayer
       - run: yarn test
+        working-directory: ./relayer
