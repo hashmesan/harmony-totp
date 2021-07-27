@@ -13,5 +13,5 @@ yarn install
 mv secrets.js.template secrets.js
 tar xvf ganache-db.tar 
 ls -la ganache-db
-sh ganache.sh &
+sh ganache.sh|tee ganache.log &
 truffle test
