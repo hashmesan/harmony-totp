@@ -12,10 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: PrepareReg Names
-      run: |
-        echo IMAGE_REPOSITORY=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]' | tr -d '-') >> $GITHUB_ENV
-        echo IMAGE_TAG=$(echo ${{ github.ref }} | tr '[:upper:]' '[:lower:]' | awk '{split($0,a,"/"); print a[3]}') >> $GITHUB_ENV
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile.test --tag dockertest
     - name: Run test on docker
       uses: ./ # Uses an action in the root directory
       id: test
