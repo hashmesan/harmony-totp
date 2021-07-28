@@ -6,7 +6,11 @@ const Relayer = artifacts.require("Relayer");
 
 contract("Relayer", accounts => {
 
-	it.skip("should be able to relay", async () => {
+	it("should be able to transfer before create", async () => {
+
+	});
+
+	it("should be able to relay", async () => {
 		var merkelHeight = 6;
 		var salt = 100;
 		var dailyLimit = web3.utils.toWei("0.01", "ether");

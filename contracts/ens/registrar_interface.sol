@@ -1,5 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-pragma solidity >=0.7.0;
+pragma solidity ^0.7.0;
 
 abstract contract RegistrarInterface {
     event OwnerChanged(bytes32 indexed label, address indexed oldOwner, address indexed newOwner);

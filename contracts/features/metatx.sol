@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-pragma solidity >=0.7.6;
+pragma solidity ^0.7.6;
 pragma experimental ABIEncoderV2;
 
 import "../core/wallet_data.sol";
@@ -12,18 +12,22 @@ library MetaTx {
         bytes returnData;
     }
 
-    function validateTx(
-                        Core.Wallet storage _wallet,
-                        bytes   calldata _data,
-                        bytes   calldata signatures,
-                        uint256 nonce,
-                        uint256 gasPrice,
-                        uint256 gasLimit,
-                        address refundAddress,
-                        Core.SignatureRequirement memory sigRequirement
-                        ) public view {
-        require(sigRequirement.requiredSignatures * 65 == signatures.length, "Wrong number of signatures");
+    function executeMetaTx(
+            Core.Wallet storage _wallet,
+            address sw,
+            bytes   calldata _data,
+            bytes   calldata signatures,
+            uint256 nonce,
+            uint256 gasPrice,
+            uint256 gasLimit,
+            address refundAddress,
+            Core.SignatureRequirement memory sigRequirement
+        ) public
+    {
         StackExtension memory ex;
+
+        //require(sigRequirement.requiredSignatures > 0 || sigRequirement.ownerSignatureRequirement == Core.OwnerSignature.Anyone, "RM: Wrong signature requirement");
+        require(sigRequirement.requiredSignatures * 65 == signatures.length, "Wrong number of signatures");
 
         ex.signHash = getSignHash(
             address(this),
@@ -36,6 +40,10 @@ library MetaTx {
             refundAddress);
 
         require(validateSignatures(_wallet, ex.signHash, signatures, sigRequirement.ownerSignatureRequirement), "RM: Invalid signatures");
+
+        (ex.success, ex.returnData) = address(sw).call(_data);
+
+        // refund
     }
 
     function getSignHash(

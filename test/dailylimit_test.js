@@ -11,23 +11,16 @@ contract("DailyLimit", accounts => {
 
     it("should test for daily limit", async () => {
         var tmpWallet = web3.eth.accounts.create();
-        var { root, leaves, wallet } = await commons.createWallet(
-            ethers.constants.AddressZero,
-            ["", ""],
-            accounts[0],
-            8,
-            web3.utils.toWei("0.1", "ether"),
-            tmpWallet.address,
-            tmpWallet.address,
-            0);
-        
+        var {startCounter, root, leaves, wallet} = await commons.createWallet(timeOffset, DURATION, 16, tmpWallet.address);
+        var proof = await commons.getTOTPAndProof(leaves, timeOffset, DURATION);
+
         await web3.eth.sendTransaction({from: accounts[0], to: wallet.address, value: web3.utils.toWei("1", "ether")});
-        await wallet.makeTransfer(tmpWallet.address, web3.utils.toWei("0.001234", "ether"));
+        await wallet.makeTransfer(tmpWallet.address, web3.utils.toWei("0.01", "ether"), proof[0], proof[1]);
         var newBalance = await web3.eth.getBalance(tmpWallet.address);
         //console.log(newBalance);
 
-        var overlimit = wallet.makeTransfer(tmpWallet.address, web3.utils.toWei("0.2", "ether"));
-        await truffleAssert.reverts(overlimit, "revert over withdrawal limit");
+        var overLimit = wallet.makeTransfer(tmpWallet.address, web3.utils.toWei("0.01", "ether"), proof[0], proof[1]);
+        await truffleAssert.reverts(overLimit, "over withdrawal limit");
     })
 
 })

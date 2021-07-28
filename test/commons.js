@@ -92,7 +92,7 @@ async function createWallet(resolver, domain,owner, depth, spendingLimit, drainA
     [resolver, ["quoc", "supercrazy"], owner, root_arr, depth, drainAddr, spendingLimit, feeAddress, feeAmount]
   );
     var wallet = await TOTPWallet.new();
-    //console.log("createWallet", resolver, domain, owner, root_arr, depth, drainAddr, spendingLimit, feeAddress, feeAmount);
+    console.log(resolver, domain, owner, root_arr, depth, drainAddr, spendingLimit, feeAddress, feeAmount);
     await wallet.initialize(resolver, 
                             domain, 
                             owner,
@@ -154,8 +154,6 @@ async function getNonceForRelay() {
   }
 
 function getMessageHash2(from, value, data, chainId, nonce, gasPrice, gasLimit, refundToken, refundAddress) {
-  //console.log(from, value, data, chainId, nonce, gasPrice, gasLimit, refundToken, refundAddress)
-
   const message = `0x${[
     "0x19",
     "0x00",
