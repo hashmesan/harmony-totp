@@ -48,14 +48,14 @@ contract("DrainTest", accounts => {
     it("should test for daily limit", async () => {
         var owner = accounts[7];
         var startBalance = await web3.eth.getBalance(owner);
-        //console.log(owner, startBalance);
+        console.log(owner, startBalance);
 
         var wallet = await createFactoryWallet(owner, 0);
         await web3.eth.sendTransaction({ from: owner, to: wallet, value: web3.utils.toWei("1.0", "ether") , gas: 300000});
 
         var newBalance = await web3.eth.getBalance(owner);
         var delta = new web3.utils.BN(newBalance).sub(new web3.utils.BN(startBalance));
-        //console.log(web3.utils.fromWei(delta));
+        console.log(web3.utils.fromWei(delta));
         assert.equal(delta.gt(new web3.utils.BN(web3.utils.toWei("8.99"))), true)
     })
 

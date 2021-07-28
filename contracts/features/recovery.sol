@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-pragma solidity >=0.7.6;
+pragma solidity ^0.7.6;
 import "../core/wallet_data.sol";
 import "./metatx.sol";
 
@@ -37,7 +37,7 @@ library Recovery {
     function _deriveChildTreeIdx(uint merkelHeight, bytes32 sides) public pure returns (uint32) {
         uint32 derivedIdx = 0;
         for(uint8 i = 0 ; i < merkelHeight ; i++){
-            if(bytes1(0x01) == sides[i]){
+            if(byte(0x01) == sides[i]){
                 derivedIdx |=  uint32(0x01) << i;
             }
         }
@@ -53,7 +53,7 @@ library Recovery {
 
     function _reduceAuthPath(bytes32[] memory authPath, bytes32 sides) internal pure returns (bytes32){
         for (uint8 i = 1; i < authPath.length - 1; i++) {
-            if(bytes1(0x00) == sides[i - 1]){
+            if(byte(0x00) == sides[i - 1]){
                 authPath[0] = keccak256(abi.encodePacked(authPath[0], authPath[i]));
             } else{
                 authPath[0] = keccak256(abi.encodePacked(authPath[i], authPath[0]));

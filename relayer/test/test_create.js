@@ -4,7 +4,7 @@ var assert = require('assert');
 var Transactions = require("./../src/web3/transactions.js");
 const env = "development";
 
-describe.skip('testResolver()', function () {
+describe('testResolver()', function () {
   it('name checks', async function () {
     const res = await new Transactions(env).checkName("sueprcrazylongcheapname00001949.crazy.one");
     console.log("res", res);
