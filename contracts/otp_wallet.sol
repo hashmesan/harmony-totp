@@ -49,6 +49,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
     event Deposit(address indexed sender, uint value);
     event WalletUpgraded(address newImpl);
     event TransactionExecuted(bool indexed success, bytes returnData, bytes32 signedHash);
+    event Invoked(address indexed target, uint indexed value, bytes data, bool success, bytes returnData);
 
     constructor() {
         isImplementationContract = true;
@@ -207,7 +208,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
     function multiCall(Call[] calldata _transactions) external onlyFromWalletOrOwnerWhenUnlocked() returns (bytes[] memory) {
         bytes[] memory results = new bytes[](_transactions.length);
         for(uint i = 0; i < _transactions.length; i++) {
-            results[i] = this.invoke(_transactions[i].to, _transactions[i].value, _transactions[i].data);
+            results[i] = invoke(_transactions[i].to, _transactions[i].value, _transactions[i].data);
         }
         return results;
     }
@@ -420,9 +421,12 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
      * @param _value The value of the transaction.
      * @param _data The data of the transaction.
      */
-    function invoke(address _target, uint _value, bytes calldata _data) external onlyModule() returns (bytes memory _result) {
+    function invoke(address _target, uint _value, bytes calldata _data) internal returns (bytes memory _result) {
         bool success;
         (success, _result) = _target.call{value: _value}(_data);
+
+        emit Invoked(_target, _value, _data, success, _result);
+
         if (!success) {
             // solhint-disable-next-line no-inline-assembly
             assembly {

@@ -13,6 +13,7 @@ const CONFIG = {
         API_URL: "https://api.smartvault.one:8443/",
         EXPLORER_URL: "https://explorer.pops.one:8888",
         RPC_URL: "https://api.s0.b.hmny.io",
+        ENS_ADDRESS: "0x51766DEF619112F76dF1FD7C361e0C6F47eE19de",
         gasPrice: 1000000000,
         gasLimit: 200000
     },
