@@ -175,7 +175,8 @@ contract TOTPWallet {
         Core.SignatureRequirement memory sigRequirement;        
         (sigRequirement.requiredSignatures, sigRequirement.ownerSignatureRequirement) = getRequiredSignatures(data);        
 
-        //MetaTx.executeMetaTx(wallet, refundAddress, data, signatures, nonce, gasPrice, gasLimit, refundAddress, sigRequirement);
+        MetaTx.validateTx(wallet, data, signatures, nonce, gasPrice, gasLimit, refundAddress, sigRequirement);
+
         bool success;
         bytes memory returnData;
         (success, returnData) = address(this).call(data);

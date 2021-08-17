@@ -56,7 +56,7 @@ module.exports = {
         host: "127.0.0.1",
         port: 8545, // port: 7545 for Ganashe
         network_id: "*", // Match any network id
-        gas: 4000000,
+        gas: 4500000,
       },
       advanced: {
         port: 8777,             // Custom port
