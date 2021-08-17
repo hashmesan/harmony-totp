@@ -168,7 +168,7 @@ contract("OTPWallet", accounts => {
 
         return walletAddrComputed;        
     }
-    it.only("should transfer between smartvaults via factory", async()=>{
+    it("should transfer between smartvaults via factory", async()=>{
         var tmpWallet = web3.eth.accounts.create();
         var tmpWallet2 = web3.eth.accounts.create();
 

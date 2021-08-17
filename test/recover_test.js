@@ -39,11 +39,12 @@ contract("Recovery", accounts => {
         console.log("precommit=", merkle.concat(newOwnerWallet.address,proof[0]));
         console.log(proof[0]);
         
+        var secretHash = web3.utils.soliditySha3(proof[0]);
         var commitHash =  web3.utils.soliditySha3(merkle.concat(newOwnerWallet.address,proof[0]));
         console.log("commitHash: ", commitHash)
         // await wallet.startRecoverCommit(commitHash);
 
-        const methodData = wallet.contract.methods.startRecoverCommit(commitHash).encodeABI();
+        const methodData = wallet.contract.methods.startRecoverCommit(secretHash, commitHash).encodeABI();
                 
         // zero signature required, just HOTP
         var sigs = await commons.signOffchain2(
@@ -100,8 +101,9 @@ contract("Recovery", accounts => {
         // make sure an attacker can't re-use the same token
         //
         var attackerWallet = web3.eth.accounts.create();
+        var secretHash = web3.utils.soliditySha3(proof[0]);
         var commitHash =  web3.utils.soliditySha3(merkle.concat(attackerWallet.address,proof[0]));
-        const methodData3 = wallet.contract.methods.startRecoverCommit(commitHash).encodeABI();
+        const methodData3 = wallet.contract.methods.startRecoverCommit(secretHash, commitHash).encodeABI();
                 
         // zero signature required, just HOTP
         var sigs = await commons.signOffchain2(
@@ -160,11 +162,12 @@ contract("Recovery", accounts => {
         var {token, proof} = await commons.getTOTPAndProof(3, 0, leaves_arr);
 
         console.log(newOwnerWallet.address, proof[0]);
+        var secretHash = web3.utils.soliditySha3(proof[0]);
         var commitHash =  web3.utils.soliditySha3(merkle.concat(newOwnerWallet.address,proof[0]));
         console.log("commitHash: ", commitHash)
         // await wallet.startRecoverCommit(commitHash);
 
-        const methodData = wallet.contract.methods.startRecoverCommit(commitHash).encodeABI();
+        const methodData = wallet.contract.methods.startRecoverCommit(secretHash, commitHash).encodeABI();
                 
         // zero signature required, just HOTP
         var sigs = await commons.signOffchain2(
