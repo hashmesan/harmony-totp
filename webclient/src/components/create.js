@@ -64,7 +64,7 @@ class Start extends Component {
                 <Link className="mt-5 btn btn-lg btn-primary" to="/create/step1">Start</Link>             
                 <div className="mt-4">
                     or <Link to="/recover">Recover Wallet</Link>             
-                </div>   
+                </div>
             </React.Fragment>
         );
     }

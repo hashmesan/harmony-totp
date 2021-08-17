@@ -25,6 +25,7 @@ const getDepositAddress = (input, callback) => {
 
 // be sure not to use the same calling address, circular loop!!!!
 const getRefundInfo = (input, callback) => {
+  console.log("input here: ", input);
   var tx = new Transactions(input.env || "testnet");
   callback(200, {result: {createFee: CREATE_FEE, refundAddress: tx.defaultAddress}});
 };

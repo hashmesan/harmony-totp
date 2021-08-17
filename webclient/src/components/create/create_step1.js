@@ -71,7 +71,7 @@ class ChooseName extends Component {
                     <h5 className="mt-4">A short, memorable name makes it easy find your wallet, and share with others.</h5>
                     <div className="row justify-content-md-center">
                         <div className="mt-4">
-                            <form class="form text-left" style={{maxWidth:500}}>
+                            <form className="form text-left" style={{maxWidth:500}}>
                                 <div className="form-group mr-3">
                                     <label for="exampleInputEmail1">Choose a name</label>
                                     <div className="input-group">
