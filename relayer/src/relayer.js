@@ -2,7 +2,7 @@ require('dotenv').config()
 var Transactions = require("./web3/transactions");
 var ipfs = require("./ipfs");
 const web3utils = require("web3-utils");
-const CREATE_FEE = web3utils.toWei("0.00123", "ether");
+const CREATE_FEE = web3utils.toWei("0.09", "ether");
 
 // accepts createwallet, then forwards to our own relayer
 const createWallet = (input, callback) => {

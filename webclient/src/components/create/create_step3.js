@@ -106,7 +106,7 @@ class FirstDeposit extends Component {
                     <p>
                         <b>Name Service Fee:</b> {depositInfo.rentPrice && web3utils.fromWei(depositInfo.rentPrice).split(".")[0]} ONE<br/>
                         <b>Network Fee:</b> {depositInfo.createFee && web3utils.fromWei(depositInfo.createFee)} ONE<br/>
-                        <b>TOTAL FEE:</b> {web3utils.fromWei(depositInfo.totalFee)}
+                        <b>TOTAL FEE:</b> {Number(web3utils.fromWei(depositInfo.totalFee)).toFixed(1)} ONE
                     </p>
                     
                     {!this.state.continue ? 
