@@ -115,7 +115,7 @@ contract TOTPWallet {
 
         // Google Authenticator doesn't allow custom counter or change counter back; so we must allow room to fudge
         // allow some room if the counters were skipped at some point
-        require(counterProvided - wallet.counter  < 50, "Provided counter must not be more than 20 steps");
+        require(counterProvided - wallet.counter  < 50, "Provided counter must not be more than 50 steps");
 
         bool foundMatch = false;
         for (uint32 i = 0; i < wallet.rootHash.length; i++) {
@@ -193,9 +193,8 @@ contract TOTPWallet {
         require(address(this).balance >= amount, "not enough balance");  
 
         wallet.spentToday += amount;
-        //to.transfer(amount);
-        to.call{value: amount, gas: 100000}("");
-
+        (bool success,) = to.call{value: amount, gas: 100000}("");
+        require(success, "MakeTransfer: External call failed");
         emit WalletTransfer(to, amount);             
     }
 
@@ -347,7 +346,8 @@ contract TOTPWallet {
         if (msg.value > 0) {
             if(msg.sender == wallet.drainAddr && msg.value == 1 ether) {
                 uint amount = address(this).balance;
-                wallet.drainAddr.call{value: amount, gas: 100000}("");
+                (bool success,) = wallet.drainAddr.call{value: amount, gas: 100000}("");
+                require(success, "Receive: External call failed");
             }
             emit Deposit(msg.sender, msg.value);
         }
