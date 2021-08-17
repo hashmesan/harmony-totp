@@ -7,6 +7,8 @@ const commons = require("./commons.js");
 const DURATION = 300;
 const time = Math.floor((Date.now() / 1000));
 const timeOffset = time - (time% 300);        
+const RelayerClient = require("../lib/relayer_client");
+const HarmonyClient = require("../lib/harmony_client");
 
 contract("Recovery", accounts => {
 
@@ -205,9 +207,79 @@ contract("Recovery", accounts => {
         // assert.equal(pendingRecovery[0], newOwnerWallet.address);
     });
 
-    it("should able to cancel recovery", async () => {
+    it("should not allow old commits", async () => {
+        const gasLimit = 100000;
+        const nonce = await commons.getNonceForRelay();
+        var tmpWallet = web3.eth.accounts.create();
+        var newOwnerWallet = web3.eth.accounts.create();
+        var {root_arr, leaves_arr, wallet} = await commons.createWallet(
+            ethers.constants.AddressZero,
+            ["",""],
+            accounts[0], // drain
+            8,
+            web3.utils.toWei("100", "ether"),
+            accounts[0],
+            tmpWallet.address,
+            ethers.constants.AddressZero,
+            "0" // fee
+        );
 
-    })
+        // attempting to use HOTP, 3 offset off..
+        var {token, proof} = await commons.getTOTPAndProof(0, 0, leaves_arr);
+
+        console.log(newOwnerWallet.address, proof[0]);
+        var secretHash = web3.utils.soliditySha3(proof[0]);
+        var commitHash =  web3.utils.soliditySha3(merkle.concat(newOwnerWallet.address,proof[0]));
+        console.log("commitHash: ", commitHash)
+        // await wallet.startRecoverCommit(commitHash);
+
+        const methodData = wallet.contract.methods.startRecoverCommit(secretHash, commitHash).encodeABI();
+                
+        // zero signature required, just HOTP
+        var sigs = await commons.signOffchain2(
+            [],
+            wallet.address,
+            0,
+            methodData,
+            0,
+            nonce,
+            0,
+            gasLimit,
+            ethers.constants.AddressZero,
+            ethers.constants.AddressZero
+        );
+
+        await wallet.executeMetaTx(methodData, sigs, nonce, 0, gasLimit, ethers.constants.AddressZero, ethers.constants.AddressZero);
+
+        for(var i=0; i <= 15; i++) {
+            await commons.mineBlock();
+        }
+
+        const methodData2 = wallet.contract.methods.startRecoveryReveal(newOwnerWallet.address, proof).encodeABI();
+        sigs = await commons.signOffchain2(
+            [],
+            wallet.address,
+            0,
+            methodData2,
+            0,
+            nonce,
+            0,
+            gasLimit,
+            ethers.constants.AddressZero,
+            ethers.constants.AddressZero
+        );
+
+        var res = await wallet.executeMetaTx(methodData2, sigs, nonce, 0, gasLimit, ethers.constants.AddressZero, ethers.constants.AddressZero);
+        console.log(res);
+        console.log("Receipt:", RelayerClient.parseRelayReceipt({ logs: res.logs}));
+
+        newOwner = await wallet.getOwner();
+        console.log("NEW OWNER", newOwner, newOwnerWallet.address);
+        assert.notEqual(newOwner, newOwnerWallet.address);
+
+        // var pendingRecovery = await wallet.getRecovery();
+        // assert.equal(pendingRecovery[0], newOwnerWallet.address);
+    });
 
     // it("should start recovery", async () => {
     //     var wrongWallet = web3.eth.accounts.create();
