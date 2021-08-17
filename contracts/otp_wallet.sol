@@ -285,16 +285,19 @@ contract TOTPWallet {
     // recover with combination of commithash and signatures
     function startRecoverCommit(bytes32 secretHash, bytes32 dataHash)  onlySelf() external {
         require(wallet.commitHash[secretHash].blockNumber == 0, "COMMIT ALREADY EXIST");
-        wallet.commitHash[secretHash] = Core.CommitInfo(dataHash, block.number);
+        wallet.commitHash[secretHash] = Core.CommitInfo(dataHash, block.number, false);
     }
 
     function startRecoveryReveal(address newOwner, bytes32[] calldata confirmMaterial)  onlySelf() onlyValidTOTP(confirmMaterial) external {
         bytes32 secretHash = keccak256(abi.encodePacked(confirmMaterial[0]));
         require(wallet.commitHash[secretHash].blockNumber != 0, "NO COMMIT");
+        require(wallet.commitHash[secretHash].revealed == false, "COMMIT ALREADY REVEALED");
+        require(block.number - wallet.commitHash[secretHash].blockNumber < 15, "Commit is too old");
 
         bytes32 hash = keccak256(abi.encodePacked(newOwner, confirmMaterial[0]));
         require(hash == wallet.commitHash[secretHash].dataHash, "Datahash does match");
 
+        wallet.commitHash[secretHash].revealed = true;
         wallet.owner = newOwner;
         wallet.counter = wallet.counter + 1;
     }

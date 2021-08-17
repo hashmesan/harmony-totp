@@ -17,6 +17,7 @@ library Core {
     struct CommitInfo {
         bytes32 dataHash;
         uint blockNumber;
+        bool revealed;
     }
 
     enum OwnerSignature {
