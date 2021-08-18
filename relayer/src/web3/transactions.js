@@ -13,7 +13,7 @@ var WalletFactory = contract(walletFactoryArtifacts)
 const CONFIG = {
     development: {
         network_id: 1000,
-        provider: "http://localhost:7545",
+        provider: "http://localhost:8545",
     },
     testnet0: {
         network_id: 1666700000,

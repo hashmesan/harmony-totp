@@ -28,9 +28,9 @@ const CONFIG = {
     },
     "development" : {
         ENV: "development",
-        API_URL: "http://localhost:8080",
+        API_URL: "http://localhost:8989",
         EXPLORER_URL: "https://explorer.pops.one:8888",
-        RPC_URL: "http://localhost:7545",
+        RPC_URL: "http://localhost:8545",
         ENS_ADDRESS: "0xD29154f92F4825202768961ca44d1ffE26C11F76",
         gasPrice: 1000000000,
         gasLimit: 200000

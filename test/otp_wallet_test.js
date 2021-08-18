@@ -40,7 +40,7 @@ contract("OTPWallet", accounts => {
 
     })
 
-    it("should transfer with meta request from relayer", async () => {
+    it.only("should transfer with meta request from relayer", async () => {
         const gasLimit = 100000;
         const nonce = await commons.getNonceForRelay();
         const blockNumber = await web3.eth.getBlockNumber();

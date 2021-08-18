@@ -1,93 +1,60 @@
-import React, { Component } from "react";
-var ReactDOM = require("react-dom");
+import React, { Component } from 'react';
+var ReactDOM = require('react-dom');
 
 import {
-  HashRouter as Router,
-  Switch,
-  Route,
-  Redirect,
-  Link,
-} from "react-router-dom";
+    HashRouter as Router,
+    Switch,
+    Route,
+    Redirect,
+    Link
+  } from "react-router-dom";
+
 import createStore from "redux-zero";
 import { Provider, connect } from "redux-zero/react";
-import { getLocalWallet } from "./config";
+import {getLocalWallet} from "./config";
 
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { fab } from "@fortawesome/free-brands-svg-icons";
-import {
-  faHome,
-  faAmbulance,
-  faChartPie,
-  faCogs,
-  faExchangeAlt,
-  faPiggyBank,
-  faHistory,
-  faCheck,
-} from "@fortawesome/free-solid-svg-icons";
-
-import store from "./redux/store";
-import Navbar from "./components/navbar";
-
-import Create from "./components/create";
-import Wallet from "./components/wallet";
-import Recover from "./components/recover";
-
-import Home from "./components/home";
-
-library.add(
-  fab,
-  faHome,
-  faAmbulance,
-  faChartPie,
-  faCogs,
-  faExchangeAlt,
-  faPiggyBank,
-  faHistory,
-  faCheck
-);
+import store from './redux/store';
+import Header from './components/header';
+import Create from './components/create';
+import Wallet from './components/wallet';
+import Recover from './components/recover';
 
 const mapToProps = ({ environment }) => ({ environment });
-const App = connect(mapToProps)(({ environment }) => (
-  <Router>
-    <div className="container-fluid">
-      <div className="row flex-nowrap">
-        <Navbar />
-        <div className="col py-3">
-          <Switch>
+const App = connect(mapToProps)(({environment}) => (
+    <Router>
+        <Header/>
+        <Switch>
             <Route exact path="/">
-              {getLocalWallet(environment, false) ? (
-                <Redirect to="/portfolio" />
-              ) : (
-                <Redirect to="/home" />
-              )}
-            </Route>
-            <Route path="/Home">
-              <Home />
+                {getLocalWallet(environment, false) ?<Redirect to="/wallet"/> : <Redirect to="/create"/>}
             </Route>
             <Route path="/create">
-              <Create />
+                <Create/>
             </Route>
-            <Route path="/portfolio">
-              <Wallet />
+            <Route path="/wallet">
+                <Wallet/>
             </Route>
             <Route path="/recover">
-              <Recover />
+                <Recover/>
             </Route>
-          </Switch>
-        </div>
-      </div>
-    </div>
-  </Router>
-));
+        </Switch>
+        <footer className="my-5 pt-5 text-muted text-center text-small">
+            <p className="mb-1">Smartvault (beta) powered by Harmony Blockchain | Opensource (GPL)</p>
+            <ul className="list-inline">
+            <li className="list-inline-item"><a href="https://github.com/hashmesan/harmony-totp">Github</a></li>
+            <li className="list-inline-item"><a href="https://github.com/hashmesan/harmony-totp/issues">Report issues</a></li>
+            </ul>
+        </footer>
+    </Router>    
+))
 
 class MainScreen extends Component {
-  render() {
-    return (
-      <Provider store={store}>
-        <App />
-      </Provider>
-    );
-  }
+    render() {
+        return (
+            <Provider store={store}>
+                <App/>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+            </Provider>
+        );
+    }
 }
 
-ReactDOM.render(<MainScreen />, document.getElementById("container"));
+ReactDOM.render(<MainScreen/>, document.getElementById('container'));
