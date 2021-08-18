@@ -296,7 +296,7 @@ contract TOTPWallet {
         require(block.number - wallet.commitHash[secretHash].blockNumber < 15, "Commit is too old");
 
         bytes32 hash = keccak256(abi.encodePacked(newOwner, confirmMaterial[0]));
-        require(hash == wallet.commitHash[secretHash].dataHash, "Datahash does match");
+        require(hash == wallet.commitHash[secretHash].dataHash, "Datahash does not match");
 
         wallet.commitHash[secretHash].revealed = true;
         wallet.owner = newOwner;
