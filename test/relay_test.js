@@ -1,17 +1,12 @@
 
 const truffleAssert = require("truffle-assertions");
 const ethers = require("ethers");
-const merkle = require("../lib/merkle.js");
 const commons = require("./commons.js");
 const Relayer = artifacts.require("Relayer");
 
 contract("Relayer", accounts => {
 
-	it("should be able to transfer before create", async () => {
-
-	});
-
-	it("should be able to relay", async () => {
+	it.skip("should be able to relay", async () => {
 		var merkelHeight = 6;
 		var salt = 100;
 		var dailyLimit = web3.utils.toWei("0.01", "ether");

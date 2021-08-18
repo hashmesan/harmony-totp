@@ -1,0 +1,32 @@
+name: webclient
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [13.14.0]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: yarn install
+      - run: yarn install
+        working-directory: ./webclient
+      - run: yarn build
+        working-directory: ./webclient
+      - run: yarn install
+        working-directory: ./relayer
+      - run: yarn test
+        working-directory: ./relayer

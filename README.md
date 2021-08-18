@@ -1,52 +1,85 @@
-# Harmony TOTP Smart Contract 
 
-## Webclient
+<p align="center"><br/>&nbsp;
+  <img src="./webclient/public/logo_smartvault.png"" height ="65" alt="" align="middle"/><br/>&nbsp;
 
-Check out demo at [https://hashmesan.github.io/harmony-totp/webclient/dist](https://hashmesan.github.io/harmony-totp/webclient/dist). 
-Compatible with Ethereum networks & Harmony on Metamask.
+[**Smartvault.one**](https://smartvault.one) | 
+[**Demo Videos**](#demo-videos) |
+[**Security & Usability**](#security--usabilities) |
+[**Smart Contracts**](#smart-contracts) |
+[**Relayer**](#relayer) |
+[**Web client**](#Webclient)
 
-## Build smart contract
+[![](https://github.com/hashmesan/harmony-totp/actions/workflows/docker-test.yml/badge.svg?branch=develop)](https://github.com/hashmesan/harmony-totp/actions/workflows/docker-test.yml)
+[![](https://github.com/hashmesan/harmony-totp/actions/workflows/webclient.yml/badge.svg?branch=develop)](https://github.com/hashmesan/harmony-totp/actions/workflows/webclient.yml)
+
+</p>
+
+SmartVault is a smart contract wallet designed with worry-free recovery using your Google Authenticator (no worry about key phrases, passwords, device loss, email phishing, sms hijacking), and with many advanced wallet features.
+
+* **Worry-free recovery**: No worry about key phrases, passwords, device loss, email phishing, sms hijacking. Recover with 5 OTP tokens which means entering 30 digits code, providing you security of 100bits+ of entropy.
+* **Harmony Name Service**: Just like domain registration, register yourself an easy name to lookup  your wallet and share with your friends.
+* **HRC20/HRC721/HRC1155**: Fully supported HRC20, Non-Fungible Tokens (ERC721), and Multi-token Standard (HRC1155).
+* **Spending Limit**: Protect your wallet by capping spending limits and requiring 2FA OTP wallet verification.
+* **Social Guardians**: Take your wallet security to next level by requiring multiple devices you own or friends & family to authorize over spending limits, and recovery. 
+* **Smart contract without the hassle**: You don't need native wallet (like metamask or CLI) to sign transactions to use it. We designed *meta transactions* which can be relayed, and deduct fees from your wallet when it is successful.
+* **Activate your wallet with a simple deposit**: Using counter-factual wallet [EIP 1014](https://eips.ethereum.org/EIPS/eip-1014), we can generate your "future" wallet before it is created, and safely deposit into the address any amount, from anywhere (even exchanges like Binance, Coinbase, etc), to activate your smart wallet contract (aka Smartvault).
+* **Fully Upgradeable**: Smartvault has built-in upgrade functions. As there are more features like staking, DEX added, simply upgrade with all the new features without moving your assets, and still keep the same address.
+
+### Demo Videos
+#### New Wallet Demo
+![Demo Video- Create](designs/create.gif)
+
+#### Recover Demo
+![Demo Video- Recover](designs/recover.gif)
+
+## Security & Usabilities
+
+## Deployment
+
+Deployed to gh-pages branch.
+Start using it out at [smartvault.one](https://smartvaule.one)
+
+## Components
+
+### Command Line
+
+Install: `npm -g @hashmesan/smartvault`
 
 ```
-yarn
-truffle build
+Usage: smartvault [options] [command]
+
+Options:
+  -V, --version                                           output the version number
+  -e --env <env>                                          environment mainnet0, testnet0, testnet3 (default: "mainnet0")
+  -h, --help                                              display help for command
+
+Commands:
+  new [options] <name>                                    creates a new wallet
+  recover <name> <code1> <code2> <code3> <code4> <code5>  recover wallet
+  list                                                    list all wallets
+  balance <address>                                       get balance
+  transfer [options] [to] [amount]                        Transfer funds
+  info <address>                                          Display wallet info
+  set_daily_limit [options] <amount>                      set daily limit
+  set_drain_address [options] <address>                   set drain address
+  upgrade [options]                                       upgrades contract to latest
+  debug-break [options]                                   forces a revert
+  help [command]                                          display help for command
 ```
 
-## Setup WebClient
+See [Examples](https://github.com/hashmesan/harmony-totp/wiki/CLI-Examples)
 
-```
-yarn (at the base level)
-cd webclient
-yarn
-yarn dev
-```
+### Smart contracts
 
-Visit http://localhost:8082
+See [/contracts](/contracts/README.md)
 
-## Wallet Design
+### Relayer
 
-TOTP/Google Authenticator Unlocks wallet for:
-* Payment within the daily limit
-* Add / remove guardians
-* Drain account back address given at constructor
+See [/relayer](/relayer/README.md)
 
-There are limited number of tokens available on the wallet. Call getRemainingTokens() to check. 
+### Webclient
 
-When TOTP/Google Authenticator Tokens depleted:
-* Drain account can request drain back
-* replenishMoreTokens() to add more tokens
-
-If you lose the Google Authenticator token, you can initiate recovery token via your guardians.
-* Requires Ceil(N/2) 
-
-## TODO 
-
-- [ ] Change duration/depth does the work in webworker, and show progress wheel.
-- [ ] Update TOTP code show some progress / background since takes a while.
-- [ ] Investigate into IndexDB for larger storage. Current implementation will break at large depth with hashes greater than 5MB or 10MB depending on browser.
-- [ ] 2 TOTP code hashed together to generate stronger hashes.
-- [ ] Drain account function after all codes are expired.
-- [ ] Environment selector or indicator ?
+See [/webclient](/webclient/README.md)
 
 ## Credits
 

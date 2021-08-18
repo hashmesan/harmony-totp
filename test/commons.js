@@ -8,30 +8,14 @@ const NameRegistry = artifacts.require("NameRegistry");
 const NameService = artifacts.require("NameService");
 
 const totp = require("../lib/totp.js");
-const merkle = require("../lib/merkle.js");
+const walletLib = require("../lib/wallet.js");
 const ethers = require("ethers");
 const ethAbi = require("web3-eth-abi");
 const NUMOFTOKENS = 5;
+const secret = "JBSWY3DPEHPK3PXP";
 
-function h16(a) { return web3.utils.soliditySha3({v: a, t: "bytes", encoding: 'hex' }).substring(0, 34); }
-function h32(a) { return web3.utils.soliditySha3(a); }
-function h16a(a) { return web3.utils.soliditySha3(a).substring(0, 34); }
 function padNumber(x) { return web3.utils.padRight(x, 64); }
-function getTOTP(counter) { return totp("JBSWY3DPEHPK3PXP", {counter: counter}); }
-
-function getLeavesAndRoot(offset, depth) {
-    var leaves = [];
-    for ( var i=0; i < Math.pow(2, depth); i++) {
-      var token = "";
-      for(var j=0;j < NUMOFTOKENS; j++) {
-        token = token + getTOTP((i*NUMOFTOKENS)+j+offset);
-      }
-      //console.log(token);
-      leaves.push(h32(padNumber(web3.utils.toHex(token))));
-    }
-    const root = merkle.reduceMT(leaves);
-    return {leaves, root};
-}
+function getTOTP(counter) { return totp(secret, {counter: counter}); }
 
 async function createWalletFactory(resolver) {
   const guardians = await Guardians.new();
@@ -70,22 +54,12 @@ async function createNewImplementation(resolver) {
   return wallet;
 }
 
-function createHOTP(depth) {
-  var leaves_arr = [], root_arr = [];
-  for(var i=0; i < 5; i++) {
-    const {leaves, root} = getLeavesAndRoot(i, depth);
-    leaves_arr.push(leaves);
-    root_arr.push(root);
-  }
-  return {root_arr, leaves_arr};
-}
-
 async function walletWithAddress(address) {
   return await TOTPWallet.at(address);
 }
 
-async function createWallet(domain,owner, depth, drainAddr, feeAddress, feeAmount) {
-    const {root_arr, leaves_arr} = createHOTP(depth);
+async function createWallet(resolver, domain,owner, depth, spendingLimit, drainAddr, feeAddress, feeAmount) {
+    const {root_arr, leaves_arr} = walletLib.createHOTP(secret, depth);
 
     const guardians = await Guardians.new();
     const dailyLimit = await DailyLimit.new();
@@ -99,9 +73,35 @@ async function createWallet(domain,owner, depth, drainAddr, feeAddress, feeAmoun
     await TOTPWallet.link("MetaTx", metatx.address);
     await TOTPWallet.link("NameService", nameservice.address);
 
+    /*
+        function initialize(
+        address              resolver_,
+        string[2]   calldata domain_, // empty means no registration
+        address             owner_, 
+        bytes32[] calldata    rootHash_, 
+        uint8               merkelHeight_, 
+        address payable     drainAddr_, 
+        uint                dailyLimit_,
+        address             feeRecipient,
+        uint                feeAmount                
+        ) external 
+    */
+
+   const encodedRequest = ethAbi.encodeParameters(
+    ["address", "string[2]", "address", "bytes32[]", "uint8","address", "uint", "address", "uint"],
+    [resolver, ["quoc", "supercrazy"], owner, root_arr, depth, drainAddr, spendingLimit, feeAddress, feeAmount]
+  );
     var wallet = await TOTPWallet.new();
-    //console.log(root_arr, feeAddress, feeAmount);
-    await wallet.initialize(domain, owner, root_arr, depth, drainAddr, web3.utils.toWei("0.01", "ether"), feeAddress, feeAmount);
+    //console.log("createWallet", resolver, domain, owner, root_arr, depth, drainAddr, spendingLimit, feeAddress, feeAmount);
+    await wallet.initialize(resolver, 
+                            domain, 
+                            owner,
+                            root_arr,
+                            depth,
+                            drainAddr,
+                            spendingLimit,
+                            feeAddress,
+                            feeAmount);
 
     return {
         root_arr,
@@ -110,31 +110,13 @@ async function createWallet(domain,owner, depth, drainAddr, feeAddress, feeAmoun
     }
 }
 
-function findInLeavesSet(hash, leavesSet) {
-  for(var i=0;i<leavesSet.length;i++){
-    for(var j=0;j<leavesSet[i].length; j++) {
-      if(hash==leavesSet[i][j]) {
-        return leavesSet[i];
-      }
-    }
-  }
-  return null;
-}
-
 async function getTOTPAndProof(offset, counter, leavesSet) {
-    var token = "";
+    var token = [];
     for(var j=0;j < NUMOFTOKENS; j++) {
-      token = token + getTOTP((counter*NUMOFTOKENS)+j+offset);
+      token.push(getTOTP((counter*NUMOFTOKENS)+j+offset));
     }
-
-    var leaves = findInLeavesSet(h32(padNumber(web3.utils.toHex(token))), leavesSet);
-    if(leaves == null) {
-      throw Exception("Hash not found in leaves")
-    }
-    var proof = merkle.getProof(leaves, counter, padNumber(web3.utils.toHex(token)))
-    return {token, proof};
+    return walletLib.getProofWithOTP(token, leavesSet);
 }
-
 
 async function signCreateTx(signers,owner, rootHash, merkleHeight, drainAddr, dailyLimit, salt ) {
     const messageHash = getCreateHash(owner, rootHash, merkleHeight, drainAddr, dailyLimit, salt);
@@ -172,6 +154,8 @@ async function getNonceForRelay() {
   }
 
 function getMessageHash2(from, value, data, chainId, nonce, gasPrice, gasLimit, refundToken, refundAddress) {
+  //console.log(from, value, data, chainId, nonce, gasPrice, gasLimit, refundToken, refundAddress)
+
   const message = `0x${[
     "0x19",
     "0x00",
@@ -269,20 +253,16 @@ async function increaseTime (seconds) {
   }
 
 module.exports = {
-    h16,
-    h16a,
     padNumber,
     getTOTP,
     createWallet,
     getTOTPAndProof,
-    getLeavesAndRoot,
     signCreateTx,
     increaseTime,
     getMessageHash2,
     signOffchain2,
     getNonceForRelay,
     createWalletFactory,
-    createHOTP,
     walletWithAddress,
     createNewImplementation
 }

@@ -1,9 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-pragma solidity ^0.7.6;
+pragma solidity >=0.7.6;
 pragma experimental ABIEncoderV2;
 
-import "openzeppelin-solidity/contracts/utils/Address.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
+
 import "./core/wallet_data.sol";
 import "./features/guardians.sol";
 import "./features/daily_limit.sol";
@@ -11,7 +17,7 @@ import "./features/recovery.sol";
 import "./features/metatx.sol";
 import "./features/name_service.sol";
 
-contract TOTPWallet {
+contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
 
     using Address for address payable;
     using Guardians for Core.Wallet;
@@ -28,6 +34,11 @@ contract TOTPWallet {
 
 
     // END OF DATA LAYOUT
+    struct Call {
+        address to;
+        uint256 value;
+        bytes data;
+    }
 
     event DebugEvent(bytes16 data);
     event DebugEvent32(bytes32 data);
@@ -38,6 +49,7 @@ contract TOTPWallet {
     event Deposit(address indexed sender, uint value);
     event WalletUpgraded(address newImpl);
     event TransactionExecuted(bool indexed success, bytes returnData, bytes32 signedHash);
+    event Invoked(address indexed target, uint indexed value, bytes data, bool success, bytes returnData);
 
     constructor() {
         isImplementationContract = true;
@@ -91,6 +103,11 @@ contract TOTPWallet {
         wallet.registerENS(subdomain, domain, duration);
     }
 
+    modifier onlyModule() {
+        require(msg.sender == address(this));
+        _;        
+    }
+
     modifier onlyFromWalletOrOwnerWhenUnlocked()
     {
         require(
@@ -109,9 +126,13 @@ contract TOTPWallet {
     // confirmMaterial contains OTP + intermediatory hashes + sides
     modifier onlyValidTOTP(bytes32[] memory confirmMaterial) 
     {
-        //require(_deriveChildTreeIdx(sides) == getCurrentCounter(), "unexpected counter value"); 
         bytes32 reduced = Recovery._reduceConfirmMaterial(confirmMaterial);
-        require(wallet.counter == Recovery._deriveChildTreeIdx(wallet.merkelHeight, confirmMaterial[confirmMaterial.length-1]), "Wrong counter");
+        uint32 counterProvided = Recovery._deriveChildTreeIdx(wallet.merkelHeight, confirmMaterial[confirmMaterial.length-1]);
+        require(counterProvided >= wallet.counter, "Provided counter must be greater or same");
+
+        // Google Authenticator doesn't allow custom counter or change counter back; so we must allow room to fudge
+        // allow some room if the counters were skipped at some point
+        require(counterProvided - wallet.counter  < 50, "Provided counter must not be more than 20 steps");
 
         bool foundMatch = false;
         for (uint32 i = 0; i < wallet.rootHash.length; i++) {
@@ -127,9 +148,12 @@ contract TOTPWallet {
         bytes4 methodId = functionPrefix(_data);
 
         if(methodId == TOTPWallet.makeTransfer.selector ||
+            methodId == TOTPWallet.multiCall.selector ||
             methodId == TOTPWallet.addGuardian.selector ||
             methodId == TOTPWallet.revokeGuardian.selector||
             methodId == TOTPWallet.upgradeMasterCopy.selector ||
+            methodId == TOTPWallet.setDailyLimit.selector ||
+            methodId == TOTPWallet.setDrainAddress.selector ||
             methodId == TOTPWallet.setHashStorageId.selector) {
             return (1, Core.OwnerSignature.Required);
         }
@@ -160,19 +184,33 @@ contract TOTPWallet {
             uint256 nonce,
             uint256 gasPrice,
             uint256 gasLimit,
-            address refundToken,
-            address refundAddress            
+            address /*refundToken*/,
+            address payable refundAddress            
         ) external 
     {
-        uint8 requiredSignatures;
+        uint gasLeft = gasleft();        
         Core.SignatureRequirement memory sigRequirement;        
         (sigRequirement.requiredSignatures, sigRequirement.ownerSignatureRequirement) = getRequiredSignatures(data);        
 
-        //MetaTx.executeMetaTx(wallet, refundAddress, data, signatures, nonce, gasPrice, gasLimit, refundAddress, sigRequirement);
+        MetaTx.validateTx(wallet, data, signatures, nonce, gasPrice, gasLimit, refundAddress, sigRequirement);
+
         bool success;
         bytes memory returnData;
         (success, returnData) = address(this).call(data);
+
+        if(gasPrice > 0 && success && refundAddress != address(0x0)) {
+            uint gasUsed = gasLeft - gasleft() + 70000; //35k overhead
+            refundAddress.transfer(gasUsed);
+        }
         emit TransactionExecuted(success, returnData, 0x0);        
+    }
+
+    function multiCall(Call[] calldata _transactions) external onlyFromWalletOrOwnerWhenUnlocked() returns (bytes[] memory) {
+        bytes[] memory results = new bytes[](_transactions.length);
+        for(uint i = 0; i < _transactions.length; i++) {
+            results[i] = invoke(_transactions[i].to, _transactions[i].value, _transactions[i].data);
+        }
+        return results;
     }
 
     function makeTransfer(address payable to, uint amount) external onlyFromWalletOrOwnerWhenUnlocked() 
@@ -181,7 +219,9 @@ contract TOTPWallet {
         require(address(this).balance >= amount, "not enough balance");  
 
         wallet.spentToday += amount;
-        to.transfer(amount);
+        //to.transfer(amount);
+        (bool success,) = to.call{value: amount, gas: 100000}("");
+        require(success, "MakeTransfer: External call failed");
         emit WalletTransfer(to, amount);             
     }
 
@@ -189,7 +229,7 @@ contract TOTPWallet {
         view
         returns (address) 
     {
-        return wallet.owner;
+        return wallet.owner;  
     }
 
     function getCounter()  public
@@ -214,28 +254,25 @@ contract TOTPWallet {
      {
          return wallet.rootHash;
      }
-    //TODO: Drain ERC20 tokens too
-    // function drain() external onlyFromWalletOrOwnerWhenUnlocked()  {
-    //     wallet.drainAddr.transfer(address(this).balance);            
-    // }
 
-    // function drain() external {
-    //     require(msg.sender == wallet.drainAddr, "sender != drain");        
-    //     // require(remainingTokens() <= 0, "not depleted tokens");
-    //     wallet.drainAddr.transfer(address(this).balance);            
-    // }
+    function setDrainAddress(address payable addr) external onlyFromWalletOrOwnerWhenUnlocked() {
+        wallet.drainAddr = addr;
+    }
 
+    function setDailyLimit(uint amount) external onlyFromWalletOrOwnerWhenUnlocked() {
+        wallet.dailyLimit = amount;
+    }
     //
     // Guardians functions
     //
-    function addGuardian(address guardian, bytes16[] calldata confirmMaterial, bytes32 sides)
+    function addGuardian(address guardian)
         external
         onlyFromWalletOrOwnerWhenUnlocked()
     {
         wallet.addGuardian(guardian);
     }
 
-    function revokeGuardian(address guardian, bytes16[] calldata confirmMaterial, bytes32 sides)
+    function revokeGuardian(address guardian)
         external
         onlyFromWalletOrOwnerWhenUnlocked()
     {
@@ -281,7 +318,9 @@ contract TOTPWallet {
         bytes32 hash = keccak256(abi.encodePacked(newOwner, confirmMaterial[0]));
         require(wallet.commitHash[hash], "NO COMMIT");
 
-        wallet.startRecovery(newOwner);
+        //wallet.startRecovery(newOwner);
+        wallet.owner = newOwner;
+
         delete wallet.commitHash[hash];
         wallet.counter = wallet.counter + 1;
     }
@@ -306,6 +345,50 @@ contract TOTPWallet {
         masterCopy = newMasterCopy;
         emit WalletUpgraded(newMasterCopy);
     }
+
+    function getMasterCopy()
+        public
+        view
+        returns (address)
+    {
+        return masterCopy;
+    }
+
+    //
+    // ERC1155 support
+    //
+    function onERC1155Received(
+        address,
+        address,
+        uint256,
+        uint256,
+        bytes calldata
+    ) external pure override returns (bytes4){
+        return this.onERC1155Received.selector;
+    }
+
+    function onERC1155BatchReceived(address operator, address from, uint256[] calldata ids, uint256[] calldata values, bytes calldata data) external view override returns (bytes4){
+        for (uint32 i = 0; i < ids.length; i++) {
+            this.onERC1155Received(operator, from, ids[i], values[i], data);
+        }
+        return this.onERC1155BatchReceived.selector;
+    }
+
+    function supportsInterface(bytes4 interfaceID) external override pure returns (bool) {
+        return interfaceID == this.supportsInterface.selector ||
+        interfaceID == this.onERC1155Received.selector ||
+        interfaceID == this.onERC721Received.selector;
+    }
+
+    function onERC721Received(
+        address,
+        address,
+        uint256,
+        bytes calldata
+    ) external pure override returns (bytes4){
+        return this.onERC721Received.selector;
+    }
+
     //
     // Utility functions
     //
@@ -322,8 +405,34 @@ contract TOTPWallet {
     }
     /// @dev Fallback function allows to deposit ether.
     receive() external payable {
-        if (msg.value > 0)
+        if (msg.value > 0) {
+            if(msg.sender == wallet.drainAddr && msg.value == 1 ether) {
+                uint amount = address(this).balance;
+                (bool success,) = wallet.drainAddr.call{value: amount, gas: 100000}("");
+                require(success, "Receive: External call failed");
+            }
             emit Deposit(msg.sender, msg.value);
+        }
     }
 
+    /**
+     * @notice Performs a generic transaction.
+     * @param _target The address for the transaction.
+     * @param _value The value of the transaction.
+     * @param _data The data of the transaction.
+     */
+    function invoke(address _target, uint _value, bytes calldata _data) internal returns (bytes memory _result) {
+        bool success;
+        (success, _result) = _target.call{value: _value}(_data);
+
+        emit Invoked(_target, _value, _data, success, _result);
+
+        if (!success) {
+            // solhint-disable-next-line no-inline-assembly
+            assembly {
+                returndatacopy(0, 0, returndatasize())
+                revert(0, returndatasize())
+            }
+        }
+    }
 }

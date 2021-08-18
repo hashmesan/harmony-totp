@@ -8,8 +8,9 @@ import {
     Link
   } from "react-router-dom";
 
-import FindWallet from './recover_step1';
-import ProvideCode from './recover_step2';
+import FindWallet from './recover/recover_step1';
+import ProvideCode from './recover/recover_step2';
+import AccountProvider from "./smartvault_provider";
 
 class RecoverPage extends Component {
     constructor(props) {
@@ -29,6 +30,7 @@ class RecoverPage extends Component {
     render() {
         return (
             <div className="container text-center pt-5 justify-content-md-center pb-5" style={{maxWidth: 960}}>
+                <AccountProvider>
                 <Router>
                     <Switch>
                         <Route exact path="/recover">
@@ -42,6 +44,7 @@ class RecoverPage extends Component {
                         </Route>
                     </Switch>
                 </Router>
+                </AccountProvider>
             </div>
         );
     }
