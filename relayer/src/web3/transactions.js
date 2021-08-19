@@ -106,7 +106,6 @@ class Transactions {
         let rawdata = fs.readFileSync(deployedPath);
         let jsonData = JSON.parse(rawdata);
         const factories = jsonData[this.env];
-        console.log(factories);
         let res = {};
         var web3 = new Web3(this.provider);
 

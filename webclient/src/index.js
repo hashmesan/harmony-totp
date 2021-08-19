@@ -18,6 +18,7 @@ import Header from './components/header';
 import Create from './components/create';
 import Wallet from './components/wallet';
 import Recover from './components/recover';
+import Stats from './components/stats';
 
 const mapToProps = ({ environment }) => ({ environment });
 const App = connect(mapToProps)(({environment}) => (
@@ -36,10 +37,14 @@ const App = connect(mapToProps)(({environment}) => (
             <Route path="/recover">
                 <Recover/>
             </Route>
+            <Route path="/stats">
+                <Stats/>
+            </Route>            
         </Switch>
         <footer className="my-5 pt-5 text-muted text-center text-small">
             <p className="mb-1">Smartvault (beta) powered by Harmony Blockchain | Opensource (GPL)</p>
             <ul className="list-inline">
+            <li className="list-inline-item"><a href="#/stats">Stats</a></li>
             <li className="list-inline-item"><a href="https://github.com/hashmesan/harmony-totp">Github</a></li>
             <li className="list-inline-item"><a href="https://github.com/hashmesan/harmony-totp/issues">Report issues</a></li>
             </ul>
