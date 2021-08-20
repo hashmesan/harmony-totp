@@ -29,9 +29,14 @@ class AccountProvider extends Component {
         setLocalWallet(this.props.environment, JSON.stringify(this.smartvault.walletData), true);
     }
 
+    saveWallet() {
+        console.log("Save data...");
+        setLocalWallet(this.props.environment, JSON.stringify(this.smartvault.walletData), false);
+    }
+
     render () {
         return (
-           <SmartVaultContext.Provider value={{smartvault: this.smartvault, savePending: this.savePending.bind(this)}}>
+           <SmartVaultContext.Provider value={{smartvault: this.smartvault, saveWallet: this.saveWallet.bind(this), savePending: this.savePending.bind(this)}}>
             {this.props.children}
           </SmartVaultContext.Provider>
         )
