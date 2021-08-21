@@ -1,17 +1,10 @@
 import React, { Component } from "react";
-import { HashRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { connect } from "redux-zero/react";
 import styled from "@emotion/styled";
 
 import actions from "../redux/actions";
 import { getLocalWallet } from "../config";
-
-const StyledNavbar = styled.nav`
-  display: flex;
-  flex-direction: horizontal;
-  justify-content: space-between;
-  font-family: "Nunito", sans-serif;
-`;
 
 class Header extends Component {
   handleChange(e) {
@@ -26,11 +19,84 @@ class Header extends Component {
       JSON.parse(getLocalWallet(this.props.environment)).created == true;
 
     return (
-      <div className="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white shadow-sm">
+      <React.Fragment>
+        <nav className="navbar navbar-expand-lg bg-dark navbar-dark py-3">
+          <div className="container">
+            <Link to="/" className="navbar-brand">
+              The R Bank
+            </Link>
+            <button
+              className="navbar-toggler"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#navbar"
+            >
+              <span className="navbar-toggler-icon"></span>
+            </button>
+            <div className="collapse navbar-collapse" id="navbar">
+              <ul className="navbar-nav">
+                <li className="nav-item">
+                  <Link to="/create" className="nav-link">
+                    Products
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/recover" className="nav-link">
+                    Client Benefits
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/" className="nav-link">
+                    Resources
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/" className="nav-link">
+                    About
+                  </Link>
+                </li>
+              </ul>
+              <ul className="navbar-nav ms-auto">
+                <li className="nav-item">
+                  <Link to="" className="nav-link">
+                    Log In
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="" className="nav-link">
+                    Find My Rate
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <select
+                    className="form-select"
+                    aria-label="Network selection"
+                    value={this.props.environment}
+                    onChange={this.handleChange.bind(this)}
+                  >
+                    <option value="mainnet0">Mainnet</option>
+                    <option value="testnet0">Testnet</option>
+                    <option value="development">Local</option>
+                  </select>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </React.Fragment>
+    );
+  }
+}
+
+const mapToProps = ({ environment }) => ({ environment });
+export default connect(mapToProps, actions)(Header);
+
+/*
+<div className="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white shadow-sm">
         <div className="my-0 mr-md-auto font-weight-normal">
-          <a href="/">
+          <Link to="/">
             <img src="public/logo_smartvault.png" height="50" />
-          </a>
+          </Link>
         </div>
         {!hasWallet ? (
           <StyledNavbar className="my-2 my-md-0 mr-md-3">
@@ -62,9 +128,4 @@ class Header extends Component {
           <option value="development">Development</option>
         </select>
       </div>
-    );
-  }
-}
-
-const mapToProps = ({ environment }) => ({ environment });
-export default connect(mapToProps, actions)(Header);
+*/

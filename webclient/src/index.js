@@ -16,6 +16,7 @@ import Header from "./components/header";
 import Create from "./components/create";
 import Wallet from "./components/wallet";
 import Recover from "./components/recover";
+import Landing from "./components/landing";
 
 const mapToProps = ({ environment }) => ({ environment });
 const App = connect(mapToProps)(({ environment }) => (
@@ -26,8 +27,11 @@ const App = connect(mapToProps)(({ environment }) => (
         {getLocalWallet(environment, false) ? (
           <Redirect to="/wallet" />
         ) : (
-          <Redirect to="/create" />
+          <Redirect to="/landing" />
         )}
+      </Route>
+      <Route path="/landing">
+        <Landing />
       </Route>
       <Route path="/create">
         <Create />
