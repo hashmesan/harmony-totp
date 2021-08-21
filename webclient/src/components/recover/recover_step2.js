@@ -159,4 +159,8 @@ class ProvideCode extends Component {
 ProvideCode.contextType = SmartVaultContext;
 
 const mapToProps = ({ environment }) => ({ environment });
+<<<<<<< HEAD
 export default connect(mapToProps, actions)(withRouter(ProvideCode));
+=======
+export default connect(mapToProps, actions)(withRouter(ProvideCode));
+>>>>>>> navbar

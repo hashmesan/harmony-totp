@@ -148,4 +148,8 @@ class FirstDeposit extends Component {
 FirstDeposit.contextType = SmartVaultContext;
 
 const mapToProps = ({ environment }) => ({ environment });
+<<<<<<< HEAD
 export default connect(mapToProps, actions)(withRouter(FirstDeposit));
+=======
+export default connect(mapToProps, actions)(withRouter(FirstDeposit));
+>>>>>>> navbar
