@@ -1,25 +1,11 @@
 import React, { Component } from "react";
-<<<<<<< HEAD
-import { HashRouter as Router, Switch, Route, Link } from "react-router-dom";
-=======
 import { Link } from "react-router-dom";
->>>>>>> navbar
 import { connect } from "redux-zero/react";
 import styled from "@emotion/styled";
 
 import actions from "../redux/actions";
 import { getLocalWallet } from "../config";
 
-<<<<<<< HEAD
-const StyledNavbar = styled.nav`
-  display: flex;
-  flex-direction: horizontal;
-  justify-content: space-between;
-  font-family: "Nunito", sans-serif;
-`;
-
-=======
->>>>>>> navbar
 class Header extends Component {
   handleChange(e) {
     e.preventDefault();
@@ -33,13 +19,6 @@ class Header extends Component {
       JSON.parse(getLocalWallet(this.props.environment)).created == true;
 
     return (
-<<<<<<< HEAD
-      <div className="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white shadow-sm">
-        <div className="my-0 mr-md-auto font-weight-normal">
-          <a href="/">
-            <img src="public/logo_smartvault.png" height="50" />
-          </a>
-=======
       <React.Fragment>
         <nav className="navbar navbar-expand-lg bg-dark navbar-dark py-3">
           <div className="container">
@@ -118,7 +97,6 @@ export default connect(mapToProps, actions)(Header);
           <Link to="/">
             <img src="public/logo_smartvault.png" height="50" />
           </Link>
->>>>>>> navbar
         </div>
         {!hasWallet ? (
           <StyledNavbar className="my-2 my-md-0 mr-md-3">
@@ -150,13 +128,4 @@ export default connect(mapToProps, actions)(Header);
           <option value="development">Development</option>
         </select>
       </div>
-<<<<<<< HEAD
-    );
-  }
-}
-
-const mapToProps = ({ environment }) => ({ environment });
-export default connect(mapToProps, actions)(Header);
-=======
 */
->>>>>>> navbar
