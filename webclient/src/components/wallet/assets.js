@@ -20,10 +20,20 @@ class SendPayment extends Component {
 	}
 
     loadHistory() {
-        console.log(this.context.smartvault.walletData);
         var self = this;
         this.context.smartvault.getDeposits().then(balance=>{
             self.setState({balance: balance})
+        })
+
+        let erc20 = this.context.smartvault.walletData.erc20.slice();
+
+        this.context.smartvault.harmonyClient.getErc20Balance(erc20.map(e=>e.contractAddress), this.context.smartvault.walletData.walletAddress).then(balances=>{
+            self.setState({erc20: balances})
+            balances.forEach((b, i) =>{
+              erc20[i].balance = b;
+            })
+            console.log("ERC20", erc20);
+            self.setState({erc20: erc20});    
         })
     }
 
@@ -49,10 +59,12 @@ class SendPayment extends Component {
             contractAddress: this.state.contractAddress
         });
         this.context.saveWallet();
-        
+
         $('#exampleModal').modal('hide');
+        this.loadHistory();
     }
 	render() {
+        
 		return (
 			<SmartVaultConsumer>
                 {({smartvault}) => (				
@@ -66,13 +78,17 @@ class SendPayment extends Component {
                             <Link to="/wallet/send_one">Send</Link>
                         </div>
                     </div>
-                    <div className="bg-light text-dark p-3 mb-2">
-                        <b>ONE</b>
-                        <div className="float-right">
-                            <span className="mr-4">0.10</span>
-                            <button className="btn btn-dark">Send</button>
-                        </div>
-                    </div>
+                    {this.state.erc20 && this.state.erc20.map(token=>{
+                        return (
+                        <div className="bg-light text-dark p-3 mb-2" key={token.name}>
+                            <b>{token.symbol}</b>
+                            <div className="float-right">
+                            <span className="mr-4">{token.balance && Number(web3utils.fromWei(token.balance+"")).toFixed(4)}</span>
+                                <Link to={"/wallet/send_hrc20/" + token.contractAddress}>Send</Link>
+                            </div>
+                        </div>                                
+                        )
+                    })}
                     <div className="text-center mt-3">
                        <a href="#"  data-toggle="modal" data-target="#exampleModal">Add Token</a>
                     </div>

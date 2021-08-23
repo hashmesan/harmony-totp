@@ -16,6 +16,7 @@ import SideMenu from "./wallet/side_menu";
 import Transactions from "./wallet/transactions";
 import WalletInfo from "./wallet/wallet_info";
 import SendPayment from "./wallet/send_payment";
+import SendHRC20 from "./wallet/send_erc20";
 import SetDailyLimit from "./wallet/set_daily_limit";
 import SetDrainAddress from "./wallet/set_drain_address";
 import Upgrade from "./wallet/upgrade";
@@ -76,6 +77,10 @@ class Wallet extends Component {
                                 <Switch>
                                     <Route exact path="/wallet">
                                         <Assets/>
+                                        <Transactions data={this.state.transactionsData}/>                                    
+                                    </Route>
+                                    <Route path="/wallet/send_hrc20/:address">
+                                        <SendHRC20/>
                                         <Transactions data={this.state.transactionsData}/>                                    
                                     </Route>
                                     <Route path="/wallet/send_one">
