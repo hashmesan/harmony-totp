@@ -21,6 +21,8 @@ import SetDailyLimit from "./wallet/set_daily_limit";
 import SetDrainAddress from "./wallet/set_drain_address";
 import Upgrade from "./wallet/upgrade";
 import Assets from "./wallet/assets";
+import Dapps from "./wallet/dapps";
+import Viper from "./wallet/viper";
 
 import AccountProvider from "./smartvault_provider";
 import { SmartVaultContext, SmartVaultConsumer } from "./smartvault_provider";
@@ -79,6 +81,12 @@ class Wallet extends Component {
                                         <Assets/>
                                         <Transactions data={this.state.transactionsData}/>                                    
                                     </Route>
+                                    <Route exact path="/wallet/dapps">
+                                        <Dapps/>
+                                    </Route>                                  
+                                    <Route exact path="/wallet/viper">
+                                        <Viper/>
+                                    </Route>                                      
                                     <Route path="/wallet/send_hrc20/:address">
                                         <SendHRC20/>
                                         <Transactions data={this.state.transactionsData}/>                                    
