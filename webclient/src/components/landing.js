@@ -17,6 +17,18 @@ class Landing extends Component {
           <div className="container">
             <div className="d-sm-flex align-items-center justify-content-between">
               <div>
+                <Link to="/create">
+                  <img
+                    src="bitcoin.svg"
+                    alt=""
+                    className="img-fluid m-1"
+                    width="24px"
+                  />
+                  <a href="" className="btn btn-link">
+                    Create your Crypto Portfolio
+                  </a>
+                  <i className="bi bi-arrow-right-short"></i>
+                </Link>
                 <h1>
                   Become the <span className="text-warning">MASTER</span> of
                   your wealth
@@ -26,10 +38,12 @@ class Landing extends Component {
                   it - we're giving you back{" "}
                   <span className="text-warning">YOUR</span> freedom
                 </p>
-                <button className="btn btn-primary btn-lg">Enter now</button>
+                <Link to="/create" className="btn btn-primary btn-lg">
+                  Enter now
+                </Link>
               </div>
               <img
-                className="img-fluid w-80"
+                className="img-fluid w-75"
                 src="undraw_wallet_aym5.svg"
                 alt=""
               />
@@ -55,7 +69,7 @@ class Landing extends Component {
         </section>
         <section className="p-5">
           <div className="container">
-            <div className="row text-center">
+            <div className="row text-center g-4">
               <div className="col-md">
                 <div className="card bg-dark text-light">
                   <div className="card-body text-center">
@@ -67,9 +81,7 @@ class Landing extends Component {
                       Lorem ipsum dolor sit amet consectetur adipisicing elit.
                       Consectetur, ex!
                     </p>
-                    <a href="" className="btn btn-primary">
-                      Read more
-                    </a>
+                    <button className="btn btn-primary">Read more</button>
                   </div>
                 </div>
               </div>
@@ -84,9 +96,7 @@ class Landing extends Component {
                       Lorem ipsum dolor sit amet consectetur adipisicing elit.
                       Consectetur, ex!
                     </p>
-                    <a href="" className="btn btn-dark">
-                      Read more
-                    </a>
+                    <button className="btn btn-dark">Read more</button>
                   </div>
                 </div>
               </div>
@@ -101,9 +111,7 @@ class Landing extends Component {
                       Lorem ipsum dolor sit amet consectetur adipisicing elit.
                       Consectetur, ex!
                     </p>
-                    <a href="" className="btn btn-primary">
-                      Read more
-                    </a>
+                    <button className="btn btn-primary">Read more</button>
                   </div>
                 </div>
               </div>
