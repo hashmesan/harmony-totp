@@ -69,16 +69,20 @@ class Stats extends Component {
 
     swap(e) {
         e.preventDefault();
+        var self = this;
 
+        this.setState({submitting: true})
         swapToken(this.context.smartvault, 
             this.state.from, 
             this.state.to, 
             web3utils.toWei(this.state.fromAmount),
             web3utils.toWei(this.state.toAmount)).then(res=>{
                 console.log("res", res)
+                window.location.reload()
             })
             .catch(ex=>{
                 console.log("ex:", ex)
+                self.setState({error: ex, submitting: false});
             })
     }
 
@@ -117,7 +121,13 @@ class Stats extends Component {
 
     reverseToken(e) {
         e.preventDefault();
-        this.setState({from: this.state.to, to: this.state.from})
+        this.setState({
+            from: this.state.to, 
+            fromAmount: this.state.toAmount, 
+            toAmount: this.state.fromAmount, 
+            from_amount: this.state.to_amount,
+            to_amount: this.state.from_amount,
+            to: this.state.from})
     }
 
     updateFromAmount() {
@@ -194,9 +204,16 @@ class Stats extends Component {
 							<div className="col-sm-12 text-center">
                                 {this.state.insufficient && <button className="btn btn-primary btn-lg w-50" disabled>INSUFFICIENT {this.state.from.symbol} balance</button>}
 								{(!this.state.submitting && !this.state.insufficient) && <button className="btn btn-primary  btn-lg w-50" onClick={this.swap.bind(this)}>Swap</button>}
-								{(this.state.submitting && !this.state.insufficient) && <button className="btn btn-primary btn-lg w-50" disabled>Swapping..(wait)</button>}
+								{(this.state.submitting && !this.state.insufficient) && <button className="btn btn-primary btn-lg w-50" disabled>Swapping..</button>}
 							</div>
 						</div>                        
+                        <div className="form-group row mt-4">
+                            <div className="col-sm-12 text-center">
+                                {this.state.error  && <div className="alert alert-danger w-100" role="alert">
+                                        {this.state.error && JSON.stringify(this.state.error)}
+                                </div>}
+                            </div>                            
+                        </div>
                     </form>
                     <div className="modal fade " tabindex="-1" id="exampleModal" >
                         <div className="modal-dialog modal-dialog-scrollable modal-sm modal-dialog-centered">
