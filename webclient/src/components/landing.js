@@ -8,7 +8,6 @@ const InputWrapper = styled.div`
     width: 50%;
   }
 `;
-
 class Landing extends Component {
   render() {
     return (
