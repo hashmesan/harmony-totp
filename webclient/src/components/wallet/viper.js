@@ -29,17 +29,13 @@ class Stats extends Component {
             to: {
                 symbol: "ETH",
                 logoURI: ""
-            }
+            },
+            insufficient: false
         }
     }
 
     updateData() {
         var self = this;
-        var client = new RelayerClient(CONFIG[this.props.environment].API_URL, this.props.environment)
-        client.getContractCreated().then(res=>{
-            self.setState({result: res.data.result})
-        })
-
 
         this.context.smartvault.harmonyClient.getNetworkId().then(networkId =>{
             self.setState({networkId: networkId});
@@ -52,10 +48,13 @@ class Stats extends Component {
                         return e.chainId == networkId;
                     }
                 })
-                self.setState({tokens: tokens, to: tokens.length > 0 ? tokens[0]: {symbol: "ETH"}})
+                self.setState({tokens: tokens, to: tokens.length > 0 ? tokens[0]: {symbol: "ETH"}}, ()=>{
+                    self.updateTokenAmount('to');
+                })
             })    
         });
 
+        this.updateTokenAmount('from');
     }
     componentDidMount() {
         this.updateData();
@@ -88,13 +87,32 @@ class Stats extends Component {
         $('#exampleModal').modal('show');
     }
 
+    updateTokenAmount(source) {
+        var token = this.state[source];
+        var self = this;
+        if(token.symbol == "ONE") {
+            this.context.smartvault.getDeposits().then(balance=>{
+                self.setState({[source + "_amount"]: balance})
+            });
+        }
+        else {
+            if(token.address) {
+                this.context.smartvault.harmonyClient.getErc20Balance([token.address], this.context.smartvault.walletData.walletAddress).then(balances=>{
+                    self.setState({[source + "_amount"]: balances[0]})
+                });
+            }  
+        }
+    }
+
     chooseToken(token) {
         var self = this;
         const showToken = this.state.showToken;
         this.setState({[showToken]: token},()=>{
             self.updateFromAmount();
+            self.updateTokenAmount(showToken);
         });
         $('#exampleModal').modal('hide');
+
     }
 
     reverseToken(e) {
@@ -108,6 +126,12 @@ class Stats extends Component {
         getBestAmountOut(this.context.smartvault, this.state.from, this.state.to, web3utils.toWei(this.state.fromAmount)).then(amount=>{
             self.setState({toAmount: Number(web3utils.fromWei(amount)).toFixed(6), toAmountRaw: amount})
         })
+
+        if(Number(this.state.fromAmount) > Number(web3utils.fromWei(this.state.from_amount || '0'))) {
+            self.setState({insufficient: true})
+        } else {
+            self.setState({insufficient: false})            
+        }
     }
 
     updateToAmount() {
@@ -140,7 +164,7 @@ class Stats extends Component {
                 <div className="card-body text-secondary p-5">
                     <form>
 						<div className="form-group">
-							<label htmlFor="inputEmail3" className="col-form-label">From</label>
+							<label htmlFor="inputEmail3" className="col-form-label">From</label><span className="float-right p-2">Balance: {this.state.from_amount && Number(web3utils.fromWei(this.state.from_amount)).toFixed(4)}</span>
 							<div className="input-group">
                                 <input type="text" className="form-control" id="inputEmail3" placeholder="0.0"  value={this.state.fromAmount} onChange={this.changeFromAmount.bind(this)} />
                                 <div className="input-group-append">
@@ -155,7 +179,7 @@ class Stats extends Component {
                             <a href="#" onClick={this.reverseToken.bind(this)}><i class="fa fa-arrow-down"></i></a>
                         </div>
 						<div className="form-group">
-							<label htmlFor="inputEmail3" className="col-form-label">To</label>
+							<label htmlFor="inputEmail3" className="col-form-label">To</label><span className="float-right p-2">Balance: {this.state.to_amount && Number(web3utils.fromWei(this.state.to_amount)).toFixed(4)}</span>
 							<div className="input-group">
 								<input type="text" className="form-control" id="inputEmail3" placeholder="0.0" value={this.state.toAmount} onChange={this.changeToAmount.bind(this)} />
                                 <div className="input-group-append">
@@ -167,10 +191,10 @@ class Stats extends Component {
     						</div>
 						</div>
 						<div className="form-group row mt-4">
-							<label htmlFor="inputEmail3" className="col-sm-4 col-form-label"></label>
-							<div className="col-sm-8">
-								{!this.state.submitting && <button className="btn btn-primary" onClick={this.swap.bind(this)}>Swap</button>}
-								{this.state.submitting && <button className="btn btn-primary" disabled>Swapping..(wait)</button>}
+							<div className="col-sm-12 text-center">
+                                {this.state.insufficient && <button className="btn btn-primary btn-lg w-50" disabled>INSUFFICIENT {this.state.from.symbol} balance</button>}
+								{(!this.state.submitting && !this.state.insufficient) && <button className="btn btn-primary  btn-lg w-50" onClick={this.swap.bind(this)}>Swap</button>}
+								{(this.state.submitting && !this.state.insufficient) && <button className="btn btn-primary btn-lg w-50" disabled>Swapping..(wait)</button>}
 							</div>
 						</div>                        
                     </form>
