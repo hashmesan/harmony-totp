@@ -83,6 +83,11 @@ class Stats extends Component {
         $('#exampleModal').modal('hide');
     }
 
+    reverseToken(e) {
+        e.preventDefault();
+        this.setState({from: this.state.to, to: this.state.from})
+    }
+
     render() {
         return (
             <div className="card mb-3">
@@ -102,7 +107,7 @@ class Stats extends Component {
                             </div>
                         </div>
                         <div className="form-group text-center">
-                            <i class="fa fa-arrow-down"></i>
+                            <a href="#" onClick={this.reverseToken.bind(this)}><i class="fa fa-arrow-down"></i></a>
                         </div>
 						<div className="form-group">
 							<label htmlFor="inputEmail3" className="col-form-label">To</label>
