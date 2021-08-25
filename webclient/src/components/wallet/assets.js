@@ -13,7 +13,7 @@ import {
     Link
   } from "react-router-dom";
 
-class SendPayment extends Component {
+class AssetPage extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {gasLimit: "", gasPrice:"", gasFee:""}
@@ -25,7 +25,7 @@ class SendPayment extends Component {
             self.setState({balance: balance})
         })
 
-        let erc20 = this.context.smartvault.walletData.erc20.slice();
+        let erc20 = this.context.smartvault.walletData.erc20 ? this.context.smartvault.walletData.erc20.slice() : [];
 
         this.context.smartvault.harmonyClient.getErc20Balance(erc20.map(e=>e.contractAddress), this.context.smartvault.walletData.walletAddress).then(balances=>{
             self.setState({erc20: balances})
@@ -142,6 +142,6 @@ class SendPayment extends Component {
 		);
 	}
 }
-SendPayment.contextType = SmartVaultContext;
+AssetPage.contextType = SmartVaultContext;
 
-export default SendPayment;
+export default AssetPage;

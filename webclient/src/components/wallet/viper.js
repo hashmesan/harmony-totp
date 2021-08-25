@@ -12,6 +12,8 @@ import RelayerClient from '../../../../lib/relayer_client';
 import {CONFIG} from "../../config";
 import axios from "axios";
 import { SmartVaultContext, SmartVaultConsumer } from "../smartvault_provider";
+import { getBestAmountOut, swapToken } from "./viper_helper";
+const web3utils = require("web3-utils");
 
 const default_list = "https://d1xrz6ki9z98vb.cloudfront.net/venomswap/lists/venomswap-default.tokenlist.json";
 const nativeToken = {
@@ -25,7 +27,8 @@ class Stats extends Component {
         this.state = {
             from: nativeToken,
             to: {
-                symbol: "ETH"
+                symbol: "ETH",
+                logoURI: ""
             }
         }
     }
@@ -39,7 +42,6 @@ class Stats extends Component {
 
 
         this.context.smartvault.harmonyClient.getNetworkId().then(networkId =>{
-            console.log(networkId)
             self.setState({networkId: networkId});
 
             axios.get(default_list).then(e=>{
@@ -50,7 +52,7 @@ class Stats extends Component {
                         return e.chainId == networkId;
                     }
                 })
-                self.setState({tokens: tokens, to: tokens[0]})
+                self.setState({tokens: tokens, to: tokens.length > 0 ? tokens[0]: {symbol: "ETH"}})
             })    
         });
 
@@ -67,25 +69,68 @@ class Stats extends Component {
       } 
 
     swap(e) {
+        e.preventDefault();
 
+        swapToken(this.context.smartvault, 
+            this.state.from, 
+            this.state.to, 
+            web3utils.toWei(this.state.fromAmount),
+            web3utils.toWei(this.state.toAmount)).then(res=>{
+                console.log("res", res)
+            })
+            .catch(ex=>{
+                console.log("ex:", ex)
+            })
     }
 
     showToken(source) {
-        console.log(source);
         this.setState({showToken: source});
         $('#exampleModal').modal('show');
     }
 
     chooseToken(token) {
+        var self = this;
         const showToken = this.state.showToken;
-        console.log(this, showToken, token);
-        this.setState({[showToken]: token});
+        this.setState({[showToken]: token},()=>{
+            self.updateFromAmount();
+        });
         $('#exampleModal').modal('hide');
     }
 
     reverseToken(e) {
         e.preventDefault();
         this.setState({from: this.state.to, to: this.state.from})
+    }
+
+    updateFromAmount() {
+        var self = this;
+        if(!this.state.fromAmount || this.state.fromAmount == "") return;
+        getBestAmountOut(this.context.smartvault, this.state.from, this.state.to, web3utils.toWei(this.state.fromAmount)).then(amount=>{
+            self.setState({toAmount: Number(web3utils.fromWei(amount)).toFixed(6), toAmountRaw: amount})
+        })
+    }
+
+    updateToAmount() {
+        var self = this;
+        if(this.state.toAmount == "") return;
+        
+        getBestAmountOut(this.context.smartvault, this.state.to, this.state.from, web3utils.toWei(this.state.toAmount)).then(amount=>{
+            self.setState({fromAmount: Number(web3utils.fromWei(amount)).toFixed(6)})
+        })
+    }
+
+    changeFromAmount(e) {
+        var self = this;
+        this.setState({fromAmount: e.target.value}, ()=>{
+            self.updateFromAmount();
+        });
+    }
+
+    changeToAmount(e) {
+        var self = this;
+        this.setState({toAmount: e.target.value}, ()=>{
+            self.updateToAmount();
+        });
     }
 
     render() {
@@ -97,7 +142,7 @@ class Stats extends Component {
 						<div className="form-group">
 							<label htmlFor="inputEmail3" className="col-form-label">From</label>
 							<div className="input-group">
-                                <input type="text" className="form-control" id="inputEmail3" placeholder="0.0"  value={this.state.destination} onChange={(e) => this.setState({ destination: e.target.value })} />
+                                <input type="text" className="form-control" id="inputEmail3" placeholder="0.0"  value={this.state.fromAmount} onChange={this.changeFromAmount.bind(this)} />
                                 <div className="input-group-append">
                                     <button className="btn btn-outline-secondary" type="button" onClick={this.showToken.bind(this, 'from')}>
                                         <img src={this.state.from.logoURI} className="float-left mr-2" style={{width: 25}}/>
@@ -112,7 +157,7 @@ class Stats extends Component {
 						<div className="form-group">
 							<label htmlFor="inputEmail3" className="col-form-label">To</label>
 							<div className="input-group">
-								<input type="text" className="form-control" id="inputEmail3" placeholder="0.0" value={this.state.destination} onChange={(e) => this.setState({ destination: e.target.value })} />
+								<input type="text" className="form-control" id="inputEmail3" placeholder="0.0" value={this.state.toAmount} onChange={this.changeToAmount.bind(this)} />
                                 <div className="input-group-append">
                                     <button className="btn btn-outline-secondary" type="button" onClick={this.showToken.bind(this, 'to')}>
                                         <img src={this.state.to.logoURI} className="float-left mr-2" style={{width: 25}}/>
