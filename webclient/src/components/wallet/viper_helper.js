@@ -55,9 +55,9 @@ export async function swapToken(client, from, to, amountIn, amountOut) {
     console.log("UniswapAddr=", UNISWAP_ADDRESS[client.config.ENV], "wallet=", client.walletData.walletAddress, path)
 
     if(fromToken.address == WETH[getChainId(client.config.ENV)].address) {
-        var data = uniswapContract.methods.swapETHForExactTokens(amountOut, path, client.walletData.walletAddress, timestamp).encodeABI()
+        var data = uniswapContract.methods.swapExactETHForTokens(amountOut, path, client.walletData.walletAddress, timestamp).encodeABI()
 		var methodData = RelayerClient.getContract().methods.multiCall([{ to: UNISWAP_ADDRESS[client.config.ENV], value: amountIn, data: data }]).encodeABI()
-		var res = await client.submitTransaction(methodData, 1000000000, 400000)
+		var res = await client.submitTransaction(methodData, 1000000000, 1000000)
         console.log(res);
         return res;
     }
@@ -68,11 +68,17 @@ export async function swapToken(client, from, to, amountIn, amountOut) {
             { to: fromToken.address, value: 0, data: approve},
             { to: UNISWAP_ADDRESS[client.config.ENV], value: 0, data: data }
         ]).encodeABI()
-		var res2 = await client.submitTransaction(methodData, 1000000000, 700000)
+		var res2 = await client.submitTransaction(methodData, 1000000000, 1000000)
+        return res;
     } 
     else {
-        var data = uniswapContract.methods.swapExactTokensForTokens(amountIn, path, client.walletData.walletAddress, timestamp).encodeABI()
-		var methodData = RelayerClient.getContract().methods.multiCall([{ to: uniswapContract.options.address, value: web3utils.toWei("2.5"), data: data }]).encodeABI()
-		var res2 = await client.submitTransaction(methodData)
+		const approve = erc20Contract.methods.approve(UNISWAP_ADDRESS[client.config.ENV], amountIn).encodeABI();
+        var data = uniswapContract.methods.swapExactTokensForTokens(amountIn, amountOut, path, client.walletData.walletAddress, timestamp).encodeABI()
+		var methodData = RelayerClient.getContract().methods.multiCall([
+            { to: fromToken.address, value: 0, data: approve},
+            { to: UNISWAP_ADDRESS[client.config.ENV], value: 0, data: data }
+        ]).encodeABI()
+		var res2 = await client.submitTransaction(methodData, 1000000000, 1000000)
+        return res;    
     }
 }
