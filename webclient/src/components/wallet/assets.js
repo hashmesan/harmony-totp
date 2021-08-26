@@ -13,6 +13,19 @@ import {
     Link
   } from "react-router-dom";
 
+import { css, jsx } from '@emotion/react'
+import styled from '@emotion/styled'
+
+var StyledHoverBox = styled.span`
+a {
+    display: none;
+}
+
+span:hover > a {
+    display: inline;
+};
+`;
+
 class AssetPage extends Component {
 	constructor(props) {
 		super(props)
@@ -26,8 +39,8 @@ class AssetPage extends Component {
         })
 
         let erc20 = this.context.smartvault.walletData.erc20 ? this.context.smartvault.walletData.erc20.slice() : [];
-
-        this.context.smartvault.harmonyClient.getErc20Balance(erc20.map(e=>e.contractAddress), this.context.smartvault.walletData.walletAddress).then(balances=>{
+        console.log(erc20);
+        this.context.smartvault.harmonyClient.getErc20Balance(erc20.filter(e=>e.contractAddress).map(e=>e.contractAddress), this.context.smartvault.walletData.walletAddress).then(balances=>{
             self.setState({erc20: balances})
             balances.forEach((b, i) =>{
               erc20[i].balance = b;
@@ -63,6 +76,17 @@ class AssetPage extends Component {
         $('#exampleModal').modal('hide');
         this.loadHistory();
     }
+
+    removeToken(e, index) {
+        console.log("remove", e);
+        e.preventDefault();
+        if(confirm("Are you sure?")) {
+            this.context.smartvault.walletData.erc20.splice(index, 1);
+            this.context.saveWallet();    
+            this.loadHistory();
+        }
+    }
+
 	render() {
         
 		return (
@@ -78,10 +102,10 @@ class AssetPage extends Component {
                             <Link to="/wallet/send_one">Send</Link> | <Link to={"/wallet/viper?token=ONE"}>Swap</Link>
                         </div>
                     </div>
-                    {this.state.erc20 && this.state.erc20.map(token=>{
+                    {this.state.erc20 && this.state.erc20.map((token, index)=>{
                         return (
                         <div className="bg-light text-dark p-3 mb-2" key={token.name}>
-                            <b>{token.symbol}</b>
+                            <StyledHoverBox><span><b>{token.symbol}</b><a href="#" className="ml-1" onClick={(e)=>this.removeToken(e, index)}><i className="fa fa-trash"></i></a></span></StyledHoverBox>
                             <div className="float-right">
                             <span className="mr-4">{token.balance && Number(web3utils.fromWei(token.balance+"")).toFixed(4)}</span>
                                 <Link to={"/wallet/send_hrc20/" + token.contractAddress}>Send</Link> | <Link to={"/wallet/viper?token=" + token.contractAddress}>Swap</Link>

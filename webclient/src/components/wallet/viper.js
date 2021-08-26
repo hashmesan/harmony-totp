@@ -79,6 +79,18 @@ class Stats extends Component {
                 this.updateTokenAmount('from');
                 this.updateTokenAmount('to');
                 this.setState({fromAmount: "", toAmount: "", submitting: false});
+
+                // add to ERC20                
+                this.context.smartvault.walletData.erc20 = this.context.smartvault.walletData.erc20 || [];
+                if(this.context.smartvault.walletData.erc20.findIndex(e=> e.contractAddress == this.state.to.address) == -1) {
+                    this.context.smartvault.walletData.erc20.push({
+                        name: this.state.to.name,
+                        symbol: this.state.to.symbol,
+                        decimals: this.state.to.decimals,
+                        contractAddress: this.state.to.address
+                    });
+                    this.context.saveWallet();    
+                }
             })
             .catch(ex=>{
                 console.log("ex:", ex)
