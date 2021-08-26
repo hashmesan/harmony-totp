@@ -32,7 +32,7 @@ SmartVault is a smart contract wallet designed with worry-free recovery using yo
 
 ## Developer Guide
 
-[SmartVault Specifications](https://github.com/hashmesan/harmony-totp/wiki/SmartVault)
+[SmartVault Specifications](https://github.com/hashmesan/harmony-totp/wiki/SmartVault-Specifications)
 
 [Developer Guide](https://github.com/hashmesan/harmony-totp/wiki/Developer-Guide)
 
