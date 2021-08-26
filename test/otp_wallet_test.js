@@ -44,6 +44,9 @@ contract("OTPWallet", accounts => {
         const gasLimit = 100000;
         const nonce = await commons.getNonceForRelay();
         const blockNumber = await web3.eth.getBlockNumber();
+        const chainId = await web3.eth.getChainId();
+
+        console.log("nonce", nonce, "chainId", chainId);
 
         var feeWallet = web3.eth.accounts.create();
         var tmpWallet = web3.eth.accounts.create();
@@ -84,7 +87,7 @@ contract("OTPWallet", accounts => {
             wallet.address,
             0,
             methodData,
-            0,
+            chainId,
             nonce,
             0,
             gasLimit,
@@ -102,6 +105,8 @@ contract("OTPWallet", accounts => {
 
     it("should transfer between smartvaults", async () => {
         const blockNumber = await web3.eth.getBlockNumber();
+        const chainId = await web3.eth.getChainId();
+
         var tmpWallet = web3.eth.accounts.create();
         var feeWallet = web3.eth.accounts.create();
 
@@ -136,7 +141,7 @@ contract("OTPWallet", accounts => {
             wallet.address,
             0,
             methodData,
-            0,
+            chainId,
             nonce,
             0,
             gasLimit,
@@ -155,7 +160,7 @@ contract("OTPWallet", accounts => {
             wallet.address,
             0,
             methodData,
-            0,
+            chainId,
             nonce,
             0,
             gasLimit,
@@ -205,6 +210,7 @@ contract("OTPWallet", accounts => {
     it("should transfer between smartvaults via factory", async()=>{
         var tmpWallet = web3.eth.accounts.create();
         var tmpWallet2 = web3.eth.accounts.create();
+        const chainId = await web3.eth.getChainId();
 
         var wallet1 = await createFactoryWallet(tmpWallet.address, 0);
         var wallet2 = await createFactoryWallet(tmpWallet2.address, 0);
@@ -222,7 +228,7 @@ contract("OTPWallet", accounts => {
             wallet.address,
             0,
             methodData,
-            0,
+            chainId,
             nonce,
             0,
             gasLimit,

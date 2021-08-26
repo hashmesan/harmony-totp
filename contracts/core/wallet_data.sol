@@ -61,6 +61,6 @@ library Core {
 
         //
         address resolver;
-
+        uint nonce;
     }
 }

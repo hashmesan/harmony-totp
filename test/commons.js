@@ -154,8 +154,7 @@ async function getNonceForRelay() {
   }
 
 function getMessageHash2(from, value, data, chainId, nonce, gasPrice, gasLimit, refundToken, refundAddress) {
-  //console.log(from, value, data, chainId, nonce, gasPrice, gasLimit, refundToken, refundAddress)
-
+  console.log("chainId", ethers.utils.hexZeroPad(ethers.utils.hexlify(chainId), 32));
   const message = `0x${[
     "0x19",
     "0x00",

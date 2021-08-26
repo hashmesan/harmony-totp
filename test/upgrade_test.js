@@ -15,6 +15,8 @@ contract("Upgrade", accounts => {
 
     async function createFactoryWallet(owner, salt) {
 		const blockNumber = await web3.eth.getBlockNumber();
+		const resolverAddr = "0x9590030b26dE3A037Cd679b33A177A645BFaC114";
+        const chainId = await web3.eth.getChainId();
 
 		var merkelHeight = 6;
 		var dailyLimit = web3.utils.toWei("1000");
@@ -70,7 +72,7 @@ contract("Upgrade", accounts => {
             walletAddrComputed,
             0,
             methodData,
-            0,
+            chainId,
             nonce,
             0,
             gasLimit,
@@ -90,18 +92,18 @@ contract("Upgrade", accounts => {
 		var feeWallet = web3.eth.accounts.create();
 		methodData = wallet.contract.methods.makeTransfer(dest.address, web3.utils.toWei("0.0012345", "ether")).encodeABI();
                 
-		var sigs = await commons.signOffchain2(
-				[tmpWallet],
-				wallet.address,
-				0,
-				methodData,
-				0,
-				nonce,
-				Number(web3.utils.toWei("1", "gwei")),
-				gasLimit,
-				ethers.constants.AddressZero,
-				feeWallet.address
-		);
+        var sigs = await commons.signOffchain2(
+            [tmpWallet],
+            wallet.address,
+            0,
+            methodData,
+            chainId,
+            nonce,
+            Number(web3.utils.toWei("1", "gwei")),
+            gasLimit,
+            ethers.constants.AddressZero,
+            feeWallet.address
+        );
 
 		const tx = await wallet.executeMetaTx(methodData, sigs, nonce, Number(web3.utils.toWei("1", "gwei")), gasLimit, ethers.constants.AddressZero, feeWallet.address);
 		console.log("method=", methodData);
