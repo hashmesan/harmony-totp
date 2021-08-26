@@ -75,7 +75,7 @@ class AssetPage extends Component {
                         <b>ONE</b>
                         <div className="float-right">
                             <span className="mr-4">{this.state.balance && Number(web3utils.fromWei(this.state.balance+"")).toFixed(4)}</span>
-                            <Link to="/wallet/send_one">Send</Link>
+                            <Link to="/wallet/send_one">Send</Link> | <Link to={"/wallet/viper?token=ONE"}>Swap</Link>
                         </div>
                     </div>
                     {this.state.erc20 && this.state.erc20.map(token=>{
@@ -84,7 +84,7 @@ class AssetPage extends Component {
                             <b>{token.symbol}</b>
                             <div className="float-right">
                             <span className="mr-4">{token.balance && Number(web3utils.fromWei(token.balance+"")).toFixed(4)}</span>
-                                <Link to={"/wallet/send_hrc20/" + token.contractAddress}>Send</Link>
+                                <Link to={"/wallet/send_hrc20/" + token.contractAddress}>Send</Link> | <Link to={"/wallet/viper?token=" + token.contractAddress}>Swap</Link>
                             </div>
                         </div>                                
                         )

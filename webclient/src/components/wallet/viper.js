@@ -35,10 +35,8 @@ class Stats extends Component {
     }
 
     updateData() {
-        var self = this;
-
         this.context.smartvault.harmonyClient.getNetworkId().then(networkId =>{
-            self.setState({networkId: networkId});
+            this.setState({networkId: networkId});
 
             axios.get(default_list).then(e=>{
                 const tokens = e.data.tokens.filter(e=>{
@@ -48,14 +46,15 @@ class Stats extends Component {
                         return e.chainId == networkId;
                     }
                 })
-                self.setState({tokens: tokens, to: tokens.length > 0 ? tokens[0]: {symbol: "ETH"}}, ()=>{
-                    self.updateTokenAmount('to');
+                this.setState({tokens: tokens, to: tokens.length > 0 ? tokens[0]: {symbol: "ETH"}}, ()=>{
+                    this.updateTokenAmount('to');
                 })
             })    
         });
 
         this.updateTokenAmount('from');
     }
+
     componentDidMount() {
         this.updateData();
     }
@@ -69,7 +68,6 @@ class Stats extends Component {
 
     swap(e) {
         e.preventDefault();
-        var self = this;
 
         this.setState({submitting: true})
         swapToken(this.context.smartvault, 
@@ -78,11 +76,13 @@ class Stats extends Component {
             web3utils.toWei(this.state.fromAmount),
             web3utils.toWei(this.state.toAmount)).then(res=>{
                 console.log("res", res)
-                window.location.reload()
+                this.updateTokenAmount('from');
+                this.updateTokenAmount('to');
+                this.setState({fromAmount: "", toAmount: "", submitting: false});
             })
             .catch(ex=>{
                 console.log("ex:", ex)
-                self.setState({error: ex, submitting: false});
+                this.setState({error: ex, submitting: false});
             })
     }
 
@@ -93,27 +93,25 @@ class Stats extends Component {
 
     updateTokenAmount(source) {
         var token = this.state[source];
-        var self = this;
         if(token.symbol == "ONE") {
             this.context.smartvault.getDeposits().then(balance=>{
-                self.setState({[source + "_amount"]: balance})
+                this.setState({[source + "_amount"]: balance})
             });
         }
         else {
             if(token.address) {
                 this.context.smartvault.harmonyClient.getErc20Balance([token.address], this.context.smartvault.walletData.walletAddress).then(balances=>{
-                    self.setState({[source + "_amount"]: balances[0]})
+                    this.setState({[source + "_amount"]: balances[0]})
                 });
             }  
         }
     }
 
     chooseToken(token) {
-        var self = this;
         const showToken = this.state.showToken;
         this.setState({[showToken]: token},()=>{
-            self.updateFromAmount();
-            self.updateTokenAmount(showToken);
+            this.updateFromAmount();
+            this.updateTokenAmount(showToken);
         });
         $('#exampleModal').modal('hide');
 
@@ -131,39 +129,37 @@ class Stats extends Component {
     }
 
     updateFromAmount() {
-        var self = this;
-        if(!this.state.fromAmount || this.state.fromAmount == "") return;
+        if(!this.state.fromAmount || isNaN(parseFloat(this.state.fromAmount))) return;
+
         getBestAmountOut(this.context.smartvault, this.state.from, this.state.to, web3utils.toWei(this.state.fromAmount)).then(amount=>{
-            self.setState({toAmount: Number(web3utils.fromWei(amount)).toFixed(6), toAmountRaw: amount})
+            this.setState({toAmount: Number(web3utils.fromWei(amount)).toFixed(6), toAmountRaw: amount})
         })
 
         if(Number(this.state.fromAmount) > Number(web3utils.fromWei(this.state.from_amount || '0'))) {
-            self.setState({insufficient: true})
+            console.log(web3utils.fromWei(this.state.from_amount))
+            this.setState({insufficient: true})
         } else {
-            self.setState({insufficient: false})            
+            this.setState({insufficient: false})            
         }
     }
 
     updateToAmount() {
-        var self = this;
-        if(this.state.toAmount == "") return;
+        if(this.state.toAmount == "" || isNaN(parseFloat(this.state.toAmount))) return;
         
         getBestAmountOut(this.context.smartvault, this.state.to, this.state.from, web3utils.toWei(this.state.toAmount)).then(amount=>{
-            self.setState({fromAmount: Number(web3utils.fromWei(amount)).toFixed(6)})
+            this.setState({fromAmount: Number(web3utils.fromWei(amount)).toPrecision(6)})
         })
     }
 
     changeFromAmount(e) {
-        var self = this;
         this.setState({fromAmount: e.target.value}, ()=>{
-            self.updateFromAmount();
+            this.updateFromAmount();
         });
     }
 
     changeToAmount(e) {
-        var self = this;
         this.setState({toAmount: e.target.value}, ()=>{
-            self.updateToAmount();
+            this.updateToAmount();
         });
     }
 
@@ -174,7 +170,7 @@ class Stats extends Component {
                 <div className="card-body text-secondary p-5">
                     <form>
 						<div className="form-group">
-							<label htmlFor="inputEmail3" className="col-form-label">From</label><span className="float-right p-2">Balance: {this.state.from_amount && Number(web3utils.fromWei(this.state.from_amount)).toFixed(4)}</span>
+							<label htmlFor="inputEmail3" className="col-form-label">From</label><span className="float-right p-2">Balance: {this.state.from_amount && Number(web3utils.fromWei(this.state.from_amount)).toFixedNoRounding(4)}</span>
 							<div className="input-group">
                                 <input type="text" className="form-control" id="inputEmail3" placeholder="0.0"  value={this.state.fromAmount} onChange={this.changeFromAmount.bind(this)} />
                                 <div className="input-group-append">
@@ -189,7 +185,7 @@ class Stats extends Component {
                             <a href="#" onClick={this.reverseToken.bind(this)}><i class="fa fa-arrow-down"></i></a>
                         </div>
 						<div className="form-group">
-							<label htmlFor="inputEmail3" className="col-form-label">To</label><span className="float-right p-2">Balance: {this.state.to_amount && Number(web3utils.fromWei(this.state.to_amount)).toFixed(4)}</span>
+							<label htmlFor="inputEmail3" className="col-form-label">To</label><span className="float-right p-2">Balance: {this.state.to_amount && Number(web3utils.fromWei(this.state.to_amount)).toFixedNoRounding(4)}</span>
 							<div className="input-group">
 								<input type="text" className="form-control" id="inputEmail3" placeholder="0.0" value={this.state.toAmount} onChange={this.changeToAmount.bind(this)} />
                                 <div className="input-group-append">
