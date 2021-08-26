@@ -20,7 +20,11 @@ library MetaTx {
                         address refundAddress,
                         Core.SignatureRequirement memory sigRequirement
                         ) public view {
+        
         require(sigRequirement.requiredSignatures * 65 == signatures.length, "Wrong number of signatures");
+        require(nonce > _wallet.nonce, "Expect nonce to be greater than last");
+
+
         StackExtension memory ex;
 
         ex.signHash = getSignHash(
@@ -47,7 +51,7 @@ library MetaTx {
         address _refundAddress
     )
         internal
-        pure
+        view
         returns (bytes32)
     {
         return keccak256(
@@ -59,7 +63,7 @@ library MetaTx {
                     _from,
                     _value,
                     _data,
-                    uint(0), //block.chainid,
+                    uint(block.chainid),
                     _nonce,
                     _gasPrice,
                     _gasLimit,

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-pragma solidity ^0.7.6;
+pragma solidity >=0.7.6;
 pragma experimental ABIEncoderV2;
 
-import "openzeppelin-solidity/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "../wallet_factory.sol";
 import "./forwarder.sol";
 
@@ -141,7 +141,7 @@ contract Relayer is Ownable
 
     function deployForwarder(uint salt_) internal returns (Forwarder) {
         Forwarder forwarder = _deployForwarder(salt_);
-        forwarder.init(address(this));
+        forwarder.init(payable(address(this)));
         return forwarder;
     }
 

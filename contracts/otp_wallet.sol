@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-pragma solidity ^0.7.6;
+pragma solidity >=0.7.6;
 pragma experimental ABIEncoderV2;
 
-import "openzeppelin-solidity/contracts/utils/Address.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
 import "./core/wallet_data.sol";
 import "./features/guardians.sol";
 import "./features/daily_limit.sol";

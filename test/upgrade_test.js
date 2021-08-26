@@ -13,6 +13,7 @@ contract("Upgrade", accounts => {
 		
 		const blockNumber = await web3.eth.getBlockNumber();
 		const resolverAddr = "0x9590030b26dE3A037Cd679b33A177A645BFaC114";
+        const chainId = await web3.eth.getChainId();
 
 		var merkelHeight = 6;
 		var salt = 100;
@@ -71,7 +72,7 @@ contract("Upgrade", accounts => {
             walletAddrComputed,
             0,
             methodData,
-            0,
+            chainId,
             nonce,
             0,
             gasLimit,
@@ -96,7 +97,7 @@ contract("Upgrade", accounts => {
             wallet.address,
             0,
             methodData,
-            0,
+            chainId,
             nonce,
             Number(web3.utils.toWei("1", "gwei")),
             gasLimit,

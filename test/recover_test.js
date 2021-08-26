@@ -18,7 +18,8 @@ contract("Recovery", accounts => {
         var tmpWallet = web3.eth.accounts.create();
         var feeWallet = web3.eth.accounts.create();
         var newOwnerWallet = web3.eth.accounts.create();
-        
+        const chainId = await web3.eth.getChainId();
+
         //createWallet(resolver, domain,owner, depth, spendingLimit, drainAddr, feeAddress, feeAmount) {
         var {root_arr, leaves_arr, wallet} = await commons.createWallet(
                     ethers.constants.AddressZero,  //resolver
@@ -54,7 +55,7 @@ contract("Recovery", accounts => {
             wallet.address,
             0,
             methodData,
-            0,
+            chainId,
             nonce,
             0,
             gasLimit,
@@ -70,7 +71,7 @@ contract("Recovery", accounts => {
             wallet.address,
             0,
             methodData2,
-            0,
+            chainId,
             nonce,
             0,
             gasLimit,
@@ -113,7 +114,7 @@ contract("Recovery", accounts => {
             wallet.address,
             0,
             methodData3,
-            0,
+            chainId,
             nonce,
             0,
             gasLimit,
@@ -129,7 +130,7 @@ contract("Recovery", accounts => {
             wallet.address,
             0,
             methodData4,
-            0,
+            chainId,
             nonce,
             0,
             gasLimit,
@@ -145,6 +146,7 @@ contract("Recovery", accounts => {
     })
     it("should start recovery with HOTP with 3 offsets", async () => {
         const gasLimit = 100000;
+        const chainId = await web3.eth.getChainId();
         const nonce = await commons.getNonceForRelay();
         var tmpWallet = web3.eth.accounts.create();
         var newOwnerWallet = web3.eth.accounts.create();
@@ -177,7 +179,7 @@ contract("Recovery", accounts => {
             wallet.address,
             0,
             methodData,
-            0,
+            chainId,
             nonce,
             0,
             gasLimit,
@@ -193,7 +195,7 @@ contract("Recovery", accounts => {
             wallet.address,
             0,
             methodData2,
-            0,
+            chainId,
             nonce,
             0,
             gasLimit,
@@ -209,6 +211,7 @@ contract("Recovery", accounts => {
 
     it("should not allow old commits", async () => {
         const gasLimit = 100000;
+        const chainId = await web3.eth.getChainId();
         const nonce = await commons.getNonceForRelay();
         var tmpWallet = web3.eth.accounts.create();
         var newOwnerWallet = web3.eth.accounts.create();
@@ -241,7 +244,7 @@ contract("Recovery", accounts => {
             wallet.address,
             0,
             methodData,
-            0,
+            chainId,
             nonce,
             0,
             gasLimit,
@@ -261,7 +264,7 @@ contract("Recovery", accounts => {
             wallet.address,
             0,
             methodData2,
-            0,
+            chainId,
             nonce,
             0,
             gasLimit,

@@ -42,6 +42,9 @@ contract("OTPWallet", accounts => {
         const gasLimit = 100000;
         const nonce = await commons.getNonceForRelay();
         const blockNumber = await web3.eth.getBlockNumber();
+        const chainId = await web3.eth.getChainId();
+
+        console.log("nonce", nonce, "chainId", chainId);
 
         var feeWallet = web3.eth.accounts.create();
         var tmpWallet = web3.eth.accounts.create();
@@ -63,7 +66,7 @@ contract("OTPWallet", accounts => {
             wallet.address,
             0,
             methodData,
-            0,
+            chainId,
             nonce,
             0,
             gasLimit,
@@ -81,13 +84,15 @@ contract("OTPWallet", accounts => {
 
     it("should transfer between smartvaults", async () => {
         const blockNumber = await web3.eth.getBlockNumber();
+        const chainId = await web3.eth.getChainId();
+
         var tmpWallet = web3.eth.accounts.create();
         var feeWallet = web3.eth.accounts.create();
 
         var {root, leaves, wallet} = await commons.createWallet(
             ethers.constants.AddressZero,
             ["",""],
-            accounts[0] ,
+            tmpWallet.address,
             8, 
             web3.utils.toWei("100", "ether"),
             tmpWallet.address, 
@@ -97,7 +102,7 @@ contract("OTPWallet", accounts => {
         var wallet2 = await commons.createWallet(
             ethers.constants.AddressZero,
             ["",""],
-            accounts[0] ,
+            tmpWallet.address,
             8, 
             web3.utils.toWei("100", "ether"),
             tmpWallet.address, 
@@ -106,13 +111,7 @@ contract("OTPWallet", accounts => {
 
         await web3.eth.sendTransaction({from: accounts[0], to: wallet.address, value: web3.utils.toWei("2", "ether")});
 
-        // send to the other smart wallet
-        await wallet.makeTransfer(wallet2.wallet.address, web3.utils.toWei("0.5", "ether"));
-        var newBalance = await web3.eth.getBalance(wallet2.wallet.address);
-        console.log("Balance 1=", newBalance);
-        assert.equal(newBalance, web3.utils.toWei(".5", "ether"), "transfer is correct");        
-
-
+        // send to the other smart wallet        
         const methodData = wallet.contract.methods.makeTransfer(wallet2.wallet.address, web3.utils.toWei("0.1234", "ether")).encodeABI();
         const nonce = await commons.getNonceForRelay();
         const gasLimit = 100000;
@@ -121,7 +120,7 @@ contract("OTPWallet", accounts => {
             wallet.address,
             0,
             methodData,
-            0,
+            chainId,
             nonce,
             0,
             gasLimit,
@@ -130,8 +129,27 @@ contract("OTPWallet", accounts => {
         );
 
         await wallet.executeMetaTx(methodData, sigs, nonce, 0, gasLimit, ethers.constants.AddressZero, feeWallet.address);       
-        newBalance = await web3.eth.getBalance(wallet2.wallet.address);
+        var newBalance = await web3.eth.getBalance(wallet2.wallet.address);
+        assert.strictEqual(newBalance, web3.utils.toWei("0.1234", "ether"))                  
         console.log("Balance 2 =", newBalance);
+
+        // try with wrong key
+        var sigs = await commons.signOffchain2(
+            [feeWallet],
+            wallet.address,
+            0,
+            methodData,
+            chainId,
+            nonce,
+            0,
+            gasLimit,
+            ethers.constants.AddressZero,
+            feeWallet.address
+        );
+
+        var tx = wallet.executeMetaTx(methodData, sigs, nonce, 0, gasLimit, ethers.constants.AddressZero, feeWallet.address);
+        await truffleAssert.reverts(tx, "RM: Invalid signatures -- Reason given: RM: Invalid signatures");       
+
     });
 
     async function createFactoryWallet(owner, salt) {
@@ -171,6 +189,7 @@ contract("OTPWallet", accounts => {
     it("should transfer between smartvaults via factory", async()=>{
         var tmpWallet = web3.eth.accounts.create();
         var tmpWallet2 = web3.eth.accounts.create();
+        const chainId = await web3.eth.getChainId();
 
         var wallet1 = await createFactoryWallet(tmpWallet.address, 0);
         var wallet2 = await createFactoryWallet(tmpWallet2.address, 0);
@@ -188,7 +207,7 @@ contract("OTPWallet", accounts => {
             wallet.address,
             0,
             methodData,
-            0,
+            chainId,
             nonce,
             0,
             gasLimit,
