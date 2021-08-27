@@ -43,6 +43,20 @@ export async function getBestAmountOut(client, from, to, amountOut) {
     return amountIn;
 }
 
+export async function getBestAmountIn(client, from, to, amountIn) {
+    const provider = new JsonRpcProvider(client.config.RPC_URL);
+
+    const fromToken = getToken(client.config.ENV, from);
+    const toToken = getToken(client.config.ENV, to);
+    const pairData = await Fetcher.fetchPairData(fromToken, toToken, provider)
+
+    const ONE_BIPS = new Percent(JSBI.BigInt(100), JSBI.BigInt(10000))
+    const tokenIn = new TokenAmount(fromToken, amountIn);
+    const res = Trade.bestTradeExactOut([pairData], toToken, tokenIn, { maxHops: 1, maxNumResults: 1 });
+    const amountOut = res[0].maximumAmountIn(ONE_BIPS).raw.toString()
+    return amountOut;
+}
+
 export async function swapToken(client, from, to, amountIn, amountOut) {
     console.log("SWAPToken", from, to, amountIn, amountOut);
     var uniswapContract = new Contract(uniswapJSON.abi)    
