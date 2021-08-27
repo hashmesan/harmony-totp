@@ -39,13 +39,11 @@ class AssetPage extends Component {
         })
 
         let erc20 = this.context.smartvault.walletData.erc20 ? this.context.smartvault.walletData.erc20.slice() : [];
-        console.log(erc20);
         this.context.smartvault.harmonyClient.getErc20Balance(erc20.filter(e=>e.contractAddress).map(e=>e.contractAddress), this.context.smartvault.walletData.walletAddress).then(balances=>{
             self.setState({erc20: balances})
             balances.forEach((b, i) =>{
               erc20[i].balance = b;
             })
-            console.log("ERC20", erc20);
             self.setState({erc20: erc20});    
         })
     }
@@ -90,7 +88,7 @@ class AssetPage extends Component {
 	render() {
         
 		return (
-			<SmartVaultConsumer>
+            <SmartVaultConsumer>
                 {({smartvault}) => (				
 			<div className="card">
                 <div className="card-header">Assets</div>
@@ -117,7 +115,7 @@ class AssetPage extends Component {
                        <a href="#"  data-toggle="modal" data-target="#exampleModal">Add Token</a>
                     </div>
                     
-                    <div className="modal fade " tabindex="-1" id="exampleModal" >
+                    <div className="modal fade " tabIndex="-1" id="exampleModal" >
                         <div className="modal-dialog modal-lg modal-dialog-centered">
                             <div className="modal-content">
                             <div className="modal-header">

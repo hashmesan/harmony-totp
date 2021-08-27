@@ -23,7 +23,7 @@ import Upgrade from "./wallet/upgrade";
 import Assets from "./wallet/assets";
 import Dapps from "./wallet/dapps";
 import Viper from "./wallet/viper";
-
+import Address from "./common/address";
 import AccountProvider from "./smartvault_provider";
 import { SmartVaultContext, SmartVaultConsumer } from "./smartvault_provider";
 
@@ -34,13 +34,13 @@ class Wallet extends Component {
     }
 
     loadHistory() {
-        var self = this;
         this.context.smartvault.getDeposits().then(balance=>{
-            self.setState({balance: balance})
+            this.setState({balance: balance})
         })
 
         this.context.smartvault.getTransactions().then(data=>{
-            self.setState({transactionsData: data})
+            console.log("tx=", data)
+            this.setState({transactionsData: data})
         })
     }
     componentDidMount() {
@@ -64,8 +64,7 @@ class Wallet extends Component {
                             <div className="row">
                                 <div className="col-9">
                                     <h3>{walletData.name}</h3>
-                                    {walletData.walletAddress} [copy]<br/>
-                                    {toBech32(walletData.walletAddress)}                        
+                                    <Address walletAddress={walletData.walletAddress}/>
                                 </div>
                                 <div className="col-3 text-right">
                                     <div className="lead">
