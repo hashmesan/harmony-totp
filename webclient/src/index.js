@@ -8,6 +8,8 @@ import {
   Redirect,
 } from "react-router-dom";
 
+import "./custom.scss";
+
 import { Provider, connect } from "redux-zero/react";
 import { getLocalWallet } from "./config";
 
