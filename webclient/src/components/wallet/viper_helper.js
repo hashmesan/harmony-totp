@@ -4,6 +4,8 @@ const Web3 = require("web3");
 const {JsonRpcProvider} = require("@ethersproject/providers");
 const uniswapJSON = require("../../../../build/contracts/IUniswapRouter.json")
 const erc20JSON = require("../../../../build/contracts/ERC20.json")
+const web3utils = require("web3-utils");
+import axios from "axios";
 
 const Contract = require('web3-eth-contract');
 import RelayerClient from '../../../../lib/relayer_client';
@@ -18,6 +20,19 @@ function getChainId(env) {
     } else {
         return ChainId.HARMONY_MAINNET
     }
+}
+
+export async function getTokenList(tokenList, networkId) {
+    return axios.get(tokenList).then(e => {
+        const tokens = e.data.tokens.filter(e => {
+            if (networkId == "1666600000") {
+                return e.chainId == null || e.chainId == "1666600000";
+            } else {
+                return e.chainId == networkId;
+            }
+        });
+        return tokens;
+    });
 }
 
 function getToken(env, token) {
@@ -94,5 +109,28 @@ export async function swapToken(client, from, to, amountIn, amountOut) {
         ]).encodeABI()
 		var res2 = await client.submitTransaction(methodData, 1000000000, 1000000)
         return res;    
+    }
+}
+
+export async function getDescription(tx, me, client) {
+    async function getTokenInfo(token) {
+        var indexIn = tx.events.indexOf(token)
+        var address = tx.logs[indexIn].address
+        return await client.getERC20Info(address);
+    }
+    // transfer from router means going out
+    var inToken = tx.events.filter(e=> e.name == "Transfer" && (e.args.from == me || Object.values(UNISWAP_ADDRESS).includes(e.args.from)));
+    var outToken = tx.events.filter(e=> e.name == "Transfer" && (e.args.to == me || Object.values(UNISWAP_ADDRESS).includes(e.args.to)));
+    console.log(inToken, outToken);
+    if(inToken.length > 0 && outToken.length > 0) {
+        var tokenIn = await getTokenInfo(inToken[0])
+        var tokenOut = await getTokenInfo(outToken[0])
+
+        return "Sent: " + Number(web3utils.fromWei(inToken[0].args.value.toString() || '0')).toFixedNoRounding(4) + " " + tokenIn.symbol 
+            + " Received: " + Number(web3utils.fromWei(outToken[0].args.value.toString() || '0')).toFixedNoRounding(4) + " " + tokenOut.symbol
+    }
+
+    if(tx.status == 0) {
+        return "Failed"
     }
 }
