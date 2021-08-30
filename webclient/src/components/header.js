@@ -19,11 +19,20 @@ class Header extends Component {
 
     return (
       <React.Fragment>
-        <nav className="navbar navbar-expand-lg bg-dark navbar-dark py-3 sticky-top">
-          <div className="container">
+        <nav className="navbar navbar-expand-lg bg-dark navbar-dark py-3 sticky-top d-flex">
+          <div className="container-fluid">
             <Link to="/" className="navbar-brand">
-              The R Bank
+              <img
+                src="logo_R.svg"
+                alt=""
+                className="img-fluid m-1"
+                width="40px"
+              />
             </Link>
+            <Link to="/" className="navbar-brand">
+              <h1 className="text-light mb-0">The R Bank</h1>
+            </Link>
+
             <button
               className="navbar-toggler"
               type="button"
@@ -33,50 +42,26 @@ class Header extends Component {
               <span className="navbar-toggler-icon"></span>
             </button>
             <div className="collapse navbar-collapse" id="navbar">
-              <ul className="navbar-nav">
+              <ul className="navbar-nav ms-auto px-5">
                 <li className="nav-item">
-                  <Link to="/create" className="nav-link">
-                    Products
+                  <Link to="/" className="nav-link">
+                    Mission & Vision
                   </Link>
                 </li>
-                <li className="nav-item">
-                  <Link to="/recover" className="nav-link">
-                    Client Benefits
+                <li className="nav-item ">
+                  <Link to="/" className="nav-link">
+                    Team
                   </Link>
                 </li>
                 <li className="nav-item">
                   <Link to="/" className="nav-link">
-                    Resources
+                    Whatever
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link to="/" className="nav-link">
-                    About
+                  <Link to="/login" className="nav-link active">
+                    Login
                   </Link>
-                </li>
-              </ul>
-              <ul className="navbar-nav ms-auto">
-                <li className="nav-item">
-                  <Link to="/" className="nav-link">
-                    Log In
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link to="" className="nav-link">
-                    Find My Rate
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <select
-                    className="form-select"
-                    aria-label="Network selection"
-                    value={this.props.environment}
-                    onChange={this.handleChange.bind(this)}
-                  >
-                    <option value="mainnet0">Mainnet</option>
-                    <option value="testnet0">Testnet</option>
-                    <option value="development">Local</option>
-                  </select>
                 </li>
               </ul>
             </div>
@@ -89,3 +74,19 @@ class Header extends Component {
 
 const mapToProps = ({ environment }) => ({ environment });
 export default connect(mapToProps, actions)(Header);
+
+/*
+<li className="nav-item">
+                  <select
+                    className="form-select"
+                    aria-label="Network selection"
+                    value={this.props.environment}
+                    onChange={this.handleChange.bind(this)}
+                  >
+                    <option value="mainnet0">Mainnet</option>
+                    <option value="testnet0">Testnet</option>
+                    <option value="development">Local</option>
+                  </select>
+                </li>
+
+*/
