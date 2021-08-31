@@ -1,17 +1,59 @@
-// Override default background color for body
-// $body-bg: #000;
+// Settings
+// $enable-gradients: true;
 
-// Override default h1 font size
-//$h1-font-size: 36px;
-
+// Default & New variables (fonts & colors)
 $font-size-base: 1.1rem;
-
-// Override default font family
-// $font-family-base: "Open Sans", sans-serif !important;
 $font-family-base: "Spectral";
 
-$dark: #00042c;
-//$light: #e5e5e5;
+// First override some or all individual color variables
+// $primary: #fdb90d;
+// $secondary: #6c757d;
+// $success: #198754;
+// $info: #0dcaf0;
+// $warning: #ffc107;
+// $danger: #dc3545;
+// $light: #f8f9fa;
+// $dark: #212529;
 
-// Import Bootstrap and its default variables
+// add custom color
+$r-bank-blue: #00042c;
+$r-bank-black: #000;
+$r-bank-silver: #bbb;
+$r-bank-white: #fff;
+
+$custom-colors: (
+  "r-bank-blue": $r-bank-blue,
+  "r-bank-black": $r-bank-black,
+  "r-bank-silver": $r-bank-silver,
+  "r-bank-white": $r-bank-white,
+);
+
+// Helpers import
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+
+// merge theme colors with custom colors
+$theme-colors: map-merge($custom-colors, $theme-colors);
+$theme-colors-rgb: map-loop($theme-colors, to-rgb, "$value");
+$utilities-colors: map-merge($utilities-colors, $theme-colors-rgb);
+$utilities-text-colors: map-loop(
+  $utilities-colors,
+  rgba-css-var,
+  "$key",
+  "text"
+);
+$utilities-bg-colors: map-loop($utilities-colors, rgba-css-var, "$key", "bg");
+
+// New classes
+@each $key, $value in $grays {
+  .bg-gray-#{$key} {
+    background-color: $value !important;
+  }
+
+  .text-gray-#{$key} {
+    color: $value !important;
+  }
+}
+
+// Finish
 @import "~bootstrap/scss/bootstrap.scss";

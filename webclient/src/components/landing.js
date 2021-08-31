@@ -44,7 +44,7 @@ class Landing extends Component {
           </div>
         </section>
 
-        <section className="bg-dark text-light p-5">
+        <section className="bg-r-bank-blue text-light p-5">
           <div className="container">
             <div className="d-md-flex justify-content-between align-items-center">
               <div>
