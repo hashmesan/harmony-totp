@@ -154,6 +154,7 @@ async function getNonceForRelay() {
   }
 
 function getMessageHash2(from, value, data, chainId, nonce, gasPrice, gasLimit, refundToken, refundAddress) {
+  console.log("chainId", ethers.utils.hexZeroPad(ethers.utils.hexlify(chainId), 32));
   const message = `0x${[
     "0x19",
     "0x00",
@@ -212,6 +213,32 @@ async function web3GetClient () {
   })
 }
 
+async function mineBlock () {
+  const client = await web3GetClient();
+  const p = new Promise((resolve, reject) => {
+    if (client.indexOf("TestRPC") === -1) {
+      console.warning("Client is not ganache-cli and cannot forward time");
+    } else {
+          return web3.currentProvider.send(
+            {
+              jsonrpc: "2.0",
+              method: "evm_mine",
+              params: [],
+              id: 0,
+            },
+            (err2, res) => {
+              if (err2) {
+                return reject(err2);
+              }
+              return resolve(res);
+            }
+          );
+        }
+     
+  });
+  return p;
+}
+
 async function increaseTime (seconds) {
     const client = await web3GetClient();
     const p = new Promise((resolve, reject) => {
@@ -262,5 +289,6 @@ module.exports = {
     getNonceForRelay,
     createWalletFactory,
     walletWithAddress,
-    createNewImplementation
+    createNewImplementation,
+    mineBlock
 }

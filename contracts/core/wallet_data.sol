@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-pragma solidity ^0.7.6;
+pragma solidity >=0.7.6;
 pragma experimental ABIEncoderV2;
 
 library Core {
@@ -12,6 +12,12 @@ library Core {
     struct RecoveryInfo {
         address newOwner;
         uint expiration;
+    }
+
+    struct CommitInfo {
+        bytes32 dataHash;
+        uint blockNumber;
+        bool revealed;
     }
 
     enum OwnerSignature {
@@ -51,10 +57,10 @@ library Core {
         // recovery
         string hashStorageID;
         RecoveryInfo pendingRecovery;
-        mapping(bytes32 => bool) commitHash;
+        mapping(bytes32 => CommitInfo) commitHash;
 
         //
         address resolver;
-
+        uint nonce;
     }
 }
