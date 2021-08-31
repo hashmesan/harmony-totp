@@ -70,6 +70,9 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
         uint8               merkelHeight_, 
         address payable     drainAddr_, 
         uint                dailyLimit_,
+        string calldata     password_,
+        string calldata     email_,
+        string calldata     countryOfResidence_,
         address             feeRecipient,
         uint                feeAmount                
         ) external 
@@ -88,6 +91,10 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
         wallet.merkelHeight = merkelHeight_;
         wallet.drainAddr = drainAddr_;
         wallet.dailyLimit = dailyLimit_;
+
+        wallet.password = password_;
+        wallet.email = email_;
+        wallet.countryOfResidence = countryOfResidence_;
 
         // STACK TOO DEEP
         if(bytes(domain_[0]).length > 0) {

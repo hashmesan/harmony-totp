@@ -32,6 +32,9 @@ contract WalletFactory
         address	  drainAddr;
         uint 	  dailyLimit;
         uint      salt;
+        string    password;
+        string    email;
+        string    countryOfResidence;
         address   feeReceipient;
         uint256   feeAmount;
     }
@@ -95,6 +98,9 @@ contract WalletFactory
             config.merkelHeight,
             payable(config.drainAddr),
             config.dailyLimit,
+            config.email,
+            config.password,
+            config.countryOfResidence,
             config.feeReceipient,
             config.feeAmount
         );

@@ -46,6 +46,12 @@ library Core {
         uint dailyLimit;
         uint lastDay;
         uint spentToday;
+
+        //R Bank user data
+        string password;
+        string email;
+        string countryOfResidence;
+
         
 
         // recovery
