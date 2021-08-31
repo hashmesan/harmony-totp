@@ -49,6 +49,8 @@ contract("Upgrade", accounts => {
 
 	it("should be able to upgrade", async () => {
         const blockNumber = await web3.eth.getBlockNumber();
+		const chainId = await web3.eth.getChainId();
+
 		var tmpWallet = web3.eth.accounts.create();
 		var walletAddrComputed = await createFactoryWallet(tmpWallet.address, blockNumber);
 		console.log(walletAddrComputed);
