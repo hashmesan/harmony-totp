@@ -30,6 +30,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
 
     address masterCopy;
     Core.Wallet public wallet;
+    Core.UserData public userData;
     bool internal isImplementationContract;
 
 
@@ -70,9 +71,6 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
         uint8               merkelHeight_, 
         address payable     drainAddr_, 
         uint                dailyLimit_,
-        string calldata     password_,
-        string calldata     email_,
-        string calldata     countryOfResidence_,
         address             feeRecipient,
         uint                feeAmount                
         ) external 
@@ -92,10 +90,6 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
         wallet.drainAddr = drainAddr_;
         wallet.dailyLimit = dailyLimit_;
 
-        wallet.password = password_;
-        wallet.email = email_;
-        wallet.countryOfResidence = countryOfResidence_;
-
         // STACK TOO DEEP
         if(bytes(domain_[0]).length > 0) {
             this.registerENS(domain_[0], domain_[1], 60 * 60 * 24 * 365);
@@ -105,6 +99,17 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
             payable(feeRecipient).sendValue(feeAmount);
         }        
     }   
+
+    function initializeUserData(
+        string  calldata   password_,
+        string  calldata   email_,
+        string  calldata   countryOfResidence_
+    ) external {
+        userData.password = password_;
+        userData.email = email_;
+        userData.countryOfResidence = countryOfResidence_;
+    }
+    
 
     function registerENS(string calldata subdomain, string calldata domain, uint duration) external onlyFromWalletOrOwnerWhenUnlocked() {
         wallet.registerENS(subdomain, domain, duration);

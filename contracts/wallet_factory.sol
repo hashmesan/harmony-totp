@@ -98,13 +98,16 @@ contract WalletFactory
             config.merkelHeight,
             payable(config.drainAddr),
             config.dailyLimit,
-            config.email,
-            config.password,
-            config.countryOfResidence,
             config.feeReceipient,
             config.feeAmount
         );
-
+        
+        TOTPWallet(payable(wallet)).initializeUserData(
+            config.email,
+            config.password,
+            config.countryOfResidence
+        );
+        
         //TOTPWallet(payable(wallet)).registerENS(config.subdomain, config.domain, config.duration);
     }
 
