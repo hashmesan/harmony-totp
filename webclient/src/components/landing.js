@@ -7,7 +7,7 @@ class Landing extends Component {
   render() {
     return (
       <div>
-        <section className="bg-light text-dark p5 text-center text-sm-start">
+        <section className=" text-dark p5 text-center text-sm-start">
           <div className="container">
             <div className="card my-5 p-3">
               <div className=" d-flex align-items-start justify-content-between">
@@ -49,10 +49,10 @@ class Landing extends Component {
             <div className="d-md-flex justify-content-between align-items-center">
               <div>
                 <h3 className="">Get your account today!</h3>
-                <p className="h6">
+                <p className="fs-6 fw-lighter">
                   {" "}
                   Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                  Modi, quod!
+                  Modi, quod! Lorem ipsum dolor, sit amet consectetur
                 </p>
               </div>
 
