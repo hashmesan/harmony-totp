@@ -121,8 +121,10 @@ export async function getDescription(tx, me, client) {
     // transfer from router means going out
     var inToken = tx.events.filter(e=> e.name == "Transfer" && (e.args.from == me || Object.values(UNISWAP_ADDRESS).includes(e.args.from)));
     var outToken = tx.events.filter(e=> e.name == "Transfer" && (e.args.to == me || Object.values(UNISWAP_ADDRESS).includes(e.args.to)));
-    console.log(inToken, outToken);
+
     if(inToken.length > 0 && outToken.length > 0) {
+        //console.log(inToken, outToken);
+
         var tokenIn = await getTokenInfo(inToken[0])
         var tokenOut = await getTokenInfo(outToken[0])
 

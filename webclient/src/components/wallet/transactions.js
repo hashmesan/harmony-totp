@@ -56,7 +56,7 @@ const TransactionRow = ({environment, data, me, harmonyClient})=> {
         return (<div className="mb-3">
             <div>
                 <div><b>{data.function.map(e=>formatFunction(e)).join(" -> ")}</b> <span className="float-right">{formatDate(new Date(data.timestamp*1000))}</span></div>
-                <div className="">{desc}<span className="float-right"><small>Status: {Number(data.returnData.success)}</small></span></div>                
+                <div className="">{desc}&nbsp;<span className="float-right"><small>Status: {Number(data.returnData.success)}</small></span></div>                
             </div> 
         </div>)        
 
@@ -72,7 +72,6 @@ class Transactions extends Component {
 
     render() {
         //console.log(this.props.data)
-        console.log(this.props.data)
         return (
                 <div className="card mb-3 mt-3">
                     <div className="card-header">Transactions</div>

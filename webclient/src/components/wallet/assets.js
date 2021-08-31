@@ -96,16 +96,16 @@ class AssetPage extends Component {
                     <div className="bg-light text-dark p-3 mb-2">
                         <b>ONE</b>
                         <div className="float-right">
-                            <span className="mr-4">{this.state.balance && Number(web3utils.fromWei(this.state.balance+"")).toFixed(4)}</span>
+                            <span className="mr-4">{this.state.balance && Number(web3utils.fromWei(this.state.balance+"")).toFixedNoRounding(4)} ONE</span>
                             <Link to="/wallet/send_one">Send</Link> | <Link to={"/wallet/viper?token=ONE"}>Swap</Link>
                         </div>
                     </div>
                     {this.state.erc20 && this.state.erc20.map((token, index)=>{
                         return (
                         <div className="bg-light text-dark p-3 mb-2" key={token.name}>
-                            <StyledHoverBox><span><b>{token.symbol}</b><a href="#" className="ml-1" onClick={(e)=>this.removeToken(e, index)}><i className="fa fa-trash"></i></a></span></StyledHoverBox>
+                            <StyledHoverBox><span><b>{token.name}</b><a href="#" className="ml-1" onClick={(e)=>this.removeToken(e, index)}><i className="fa fa-trash"></i></a></span></StyledHoverBox>
                             <div className="float-right">
-                            <span className="mr-4">{token.balance && Number(web3utils.fromWei(token.balance+"")).toFixed(4)}</span>
+                            <span className="mr-4">{token.balance && Number(web3utils.fromWei(token.balance+"")).toFixedNoRounding(4)} {token.symbol}</span>
                                 <Link to={"/wallet/send_hrc20/" + token.contractAddress}>Send</Link> | <Link to={"/wallet/viper?token=" + token.contractAddress}>Swap</Link>
                             </div>
                         </div>                                
