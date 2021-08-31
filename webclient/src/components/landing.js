@@ -3,11 +3,6 @@ import { Link } from "react-router-dom";
 import { connect } from "redux-zero/react";
 import styled from "@emotion/styled";
 
-const InputWrapper = styled.div`
-  @media (min-width: 768px) {
-    width: 50%;
-  }
-`;
 class Landing extends Component {
   render() {
     return (
@@ -62,7 +57,7 @@ class Landing extends Component {
               </div>
 
               <Link
-                to="/create"
+                to="/onboarding1"
                 className="btn btn-default btn-secondary"
                 style={{ borderRadius: "2rem" }}
                 type="button"

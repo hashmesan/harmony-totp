@@ -19,6 +19,7 @@ import Create from "./components/create";
 import Wallet from "./components/wallet";
 import Recover from "./components/recover";
 import Landing from "./components/landing";
+import Onboarding1 from "./components/onboard_1";
 
 const mapToProps = ({ environment }) => ({ environment });
 const App = connect(mapToProps)(({ environment }) => (
@@ -37,6 +38,9 @@ const App = connect(mapToProps)(({ environment }) => (
       </Route>
       <Route path="/create">
         <Create />
+      </Route>
+      <Route path="/onboarding1">
+        <Onboarding1 />
       </Route>
       <Route path="/wallet">
         <Wallet />
