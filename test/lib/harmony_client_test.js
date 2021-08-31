@@ -4,11 +4,12 @@ const chai = require('chai')
 const expect = chai.expect
 chai.use(require('chai-as-promised'))
 var assert = require('assert');
+const web3utils = require("web3-utils");
 
 describe("Library test", (accounts) => {
   it("checks for name available", async () => {
     var client = new HarmonyClient("https://api.s3.b.hmny.io", "0x4fb1C434101ced0773a3bc77D541B3465023639f");
-    var available = await client.isNameAvailable("hashmesan000.crazy.one", 31536000);
+    var available = await client.isNameAvailable("ha00.crazy.one", 31536000);
     console.log("Available?", available);
     return true;
   });
@@ -28,5 +29,34 @@ describe("Library test", (accounts) => {
   it("error when wallet doesn't exist", async () => {
     var client = new HarmonyClient("https://api.s3.b.hmny.io", "0x4fb1C434101ced0773a3bc77D541B3465023639f","https://explorer.pops.one:8888");
     await expect(client.getSmartVaultInfo("0x1727adcce8f11e7b9cbdd065e5ab64158f8bce3b")).to.rejectedWith("Bad smartvault address")
+  });
+
+  it("precision test", async() => {
+
+    var v = '1000000001010000047168000';
+    //var targetvalue = new web3utils.BN(web3utils.fromWei(v))
+
+    function roundWei(wei, unit) {
+      unit = unit || 'milli';
+      len = web3utils.unitMap[unit].length - 1;
+      var threshold = new web3utils.BN(web3utils.toWei('1', unit));
+      var smallfinny = web3utils.fromWei(v, unit).split(".")[1];  
+      if(web3utils.toBN(smallfinny).gt(0)) {
+        var zeroOut = v.substr(0,v.length-len) + web3utils.padRight('0', len);
+        var roundedUp = web3utils.toBN(zeroOut).add(threshold);
+        return roundedUp.toString()
+      }
+      return wei        
+    }
+
+    console.log('original', web3utils.fromWei(v, 'ether'))
+    console.log('rounded:',roundWei(v))
+  });
+
+  it.only("checks for erc20 metas", async () => {
+    var client = new HarmonyClient("https://api.s0.b.hmny.io", "0x4fb1C434101ced0773a3bc77D541B3465023639f");
+    var res = await client.getERC20Info("0x0e80905676226159cc3ff62b1876c907c91f7395");
+    console.log("Result?", res);
+    return true;
   });
 });

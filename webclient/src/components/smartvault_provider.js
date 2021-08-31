@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {CONFIG, getStorageKey, getLocalWallet, setLocalWallet} from "../config";
+import {CONFIG, DEFAULT_TOKEN_LIST, getStorageKey, getLocalWallet, setLocalWallet} from "../config";
 import SmartVault from "../../../lib/smartvault_lib";
 import { connect } from "redux-zero/react";
 
@@ -22,16 +22,27 @@ class AccountProvider extends Component {
                 this.smartvault.loadFromWalletData(data);    
             }
         }
+        this.state = {}
     }
 
+    componentDidMount() {
+        // getTokenList(DEFAULT_TOKEN_LIST, CONFIG[this.props.environment].chainId).then(tokens => {
+        //     this.setState({tokens})
+        // })
+    }
     savePending() {
         console.log("Save pending data...");
         setLocalWallet(this.props.environment, JSON.stringify(this.smartvault.walletData), true);
     }
 
+    saveWallet() {
+        console.log("Save data...");
+        setLocalWallet(this.props.environment, JSON.stringify(this.smartvault.walletData), false);
+    }
+
     render () {
         return (
-           <SmartVaultContext.Provider value={{smartvault: this.smartvault, savePending: this.savePending.bind(this)}}>
+           <SmartVaultContext.Provider value={{smartvault: this.smartvault, saveWallet: this.saveWallet.bind(this), savePending: this.savePending.bind(this)}}>
             {this.props.children}
           </SmartVaultContext.Provider>
         )

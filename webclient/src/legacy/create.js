@@ -10,8 +10,8 @@ class Create extends Component {
     constructor(props) {
         super(props);
 
-        this.worker = new Worker("worker.js");
-        this.worker.onmessage = this.receivedWorkerMessage.bind(this);
+        //this.worker = new Worker("worker.js");
+        //this.worker.onmessage = this.receivedWorkerMessage.bind(this);
 
         var time = Math.floor((Date.now() / 1000));
         var timeOffset = time - (time% 30);        

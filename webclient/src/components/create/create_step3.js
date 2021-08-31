@@ -16,6 +16,7 @@ class FirstDeposit extends Component {
         super(props)
         this.state = {
           balance: 0,
+          deposits: '0',
           continue: false,
           showQR: false,
           busy: false,
@@ -29,11 +30,12 @@ class FirstDeposit extends Component {
         this.context.smartvault.getDeposits()
         .then(balance=>{
             console.log("Balance=", balance)
-            if(balance == '0') {
-                setTimeout(self.checkBalance.bind(self), 3000);
-            }
+
             if(new web3utils.BN(balance).gte(new web3utils.BN(depositInfo.totalFee))) {
                 self.setState({deposits: balance, continue: true});
+            } else {
+                self.setState({deposits: balance, continue: false});
+                setTimeout(self.checkBalance.bind(self), 3000);
             }
         }).catch(e=>{
             console.log(e);
@@ -90,6 +92,8 @@ class FirstDeposit extends Component {
     render() {
         const walletData = this.context.smartvault.walletData;
         const depositInfo = this.context.smartvault.getDepositInfo();
+        const remainFee = (new web3utils.BN(depositInfo.totalFee)).sub(new web3utils.BN(this.state.deposits));
+        console.log(depositInfo);
 
         return (
             <SmartVaultConsumer>
@@ -104,12 +108,12 @@ class FirstDeposit extends Component {
                         {this.state.showQR && <div><img src={"https://chart.googleapis.com/chart?chs=200x200&chld=L|0&cht=qr&chl=" + toBech32(walletData.walletAddress)} width="200" height="200"/></div>}
                     </p>
                     <p>
-                        <b>Name Service Fee:</b> {depositInfo.rentPrice && web3utils.fromWei(depositInfo.rentPrice).split(".")[0]} ONE<br/>
+                        <b>Name Service Fee:</b> {depositInfo.rentPrice && web3utils.fromWei(depositInfo.rentPrice)} ONE<br/>
                         <b>Network Fee:</b> {depositInfo.createFee && web3utils.fromWei(depositInfo.createFee)} ONE<br/>
-                        <b>TOTAL FEE:</b> {web3utils.fromWei(depositInfo.totalFee)}
+                        <b>TOTAL FEE:</b> {web3utils.fromWei(depositInfo.totalFee)} ONE
                     </p>
                     
-                    {!this.state.continue ? 
+                    {this.state.deposits == '0' ? 
                     <div className="text-center">
                         <p><b>Status:</b> Waiting for deposit...</p>
                         <div className="spinner-grow text-primary" role="status">
@@ -118,6 +122,9 @@ class FirstDeposit extends Component {
                     </div>
                     : <div className="text-center">
                             <p><b>Status:</b> Received deposit of  {web3utils.fromWei(this.state.deposits)} ONE</p> 
+                            {new web3utils.BN(this.state.deposits).lt(new web3utils.BN(depositInfo.totalFee)) &&
+                                <p>Expecting remaining deposit of {web3utils.fromWei(remainFee)}</p>
+                            }
                         </div>
                         }
 

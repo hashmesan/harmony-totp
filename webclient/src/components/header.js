@@ -30,10 +30,12 @@ class Header extends Component {
                 :
                 <nav className="my-2 my-md-0 mr-md-3">
                     <Link className="p-2 text-dark"  to="/wallet">My Wallet</Link>                    
+                    <Link className="p-2 text-dark"  to="/wallet/dapps">Dapps</Link>                    
                     <Link className="p-2 text-dark"  to="/settings">Settings</Link>                    
                 </nav>}
                 <select className="" value={this.props.environment} onChange={this.handleChange.bind(this)} >
                     <option value="mainnet0">Mainnet(Shard 0)</option>
+                    <option value="testnet0">Testnet(Shard 0)</option>
                     <option value="testnet3">Testnet(Shard 3)</option>
                     <option value="development">Development</option>
                 </select>

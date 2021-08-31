@@ -6,10 +6,12 @@ const walletLib = require("../lib/wallet.js");
 const web3utils = require("web3-utils");
 
 contract("OTPWallet", accounts => {
+    var falseWallet = web3.eth.accounts.create();
 
     it("should transfer with direct signed requests", async () => {
         const blockNumber = await web3.eth.getBlockNumber();
         var tmpWallet = web3.eth.accounts.create();
+
         var {root, leaves, wallet} = await commons.createWallet(
             ethers.constants.AddressZero,
             ["",""],
@@ -38,7 +40,7 @@ contract("OTPWallet", accounts => {
 
     })
 
-    it("should transfer with meta request from relayer", async () => {
+    it.only("should transfer with meta request from relayer", async () => {
         const gasLimit = 100000;
         const nonce = await commons.getNonceForRelay();
         const blockNumber = await web3.eth.getBlockNumber();
@@ -59,9 +61,28 @@ contract("OTPWallet", accounts => {
              0);
 
         await web3.eth.sendTransaction({from: accounts[0], to: wallet.address, value: web3.utils.toWei("2", "ether")});
+
+        const methodData0 = wallet.contract.methods.setHashStorageId("BLAH").encodeABI();
+                
+        var sigs = await walletLib.signOffchain2(
+            [tmpWallet],
+            wallet.address,
+            0,
+            methodData0,
+            0,
+            nonce,
+            0,
+            gasLimit,
+            ethers.constants.AddressZero,
+            feeWallet.address
+        );
+
+        await wallet.executeMetaTx(methodData0, sigs, nonce, 0, gasLimit, ethers.constants.AddressZero, feeWallet.address);
+
+    
         const methodData = wallet.contract.methods.makeTransfer(tmpWallet.address, web3.utils.toWei("0.0012345", "ether")).encodeABI();
                 
-        var sigs = await commons.signOffchain2(
+        var sigs = await walletLib.signOffchain2(
             [tmpWallet],
             wallet.address,
             0,

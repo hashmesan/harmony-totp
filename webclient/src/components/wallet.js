@@ -16,10 +16,14 @@ import SideMenu from "./wallet/side_menu";
 import Transactions from "./wallet/transactions";
 import WalletInfo from "./wallet/wallet_info";
 import SendPayment from "./wallet/send_payment";
+import SendHRC20 from "./wallet/send_erc20";
 import SetDailyLimit from "./wallet/set_daily_limit";
 import SetDrainAddress from "./wallet/set_drain_address";
 import Upgrade from "./wallet/upgrade";
-
+import Assets from "./wallet/assets";
+import Dapps from "./wallet/dapps";
+import Viper from "./wallet/viper";
+import Address from "./common/address";
 import AccountProvider from "./smartvault_provider";
 import { SmartVaultContext, SmartVaultConsumer } from "./smartvault_provider";
 
@@ -30,13 +34,13 @@ class Wallet extends Component {
     }
 
     loadHistory() {
-        var self = this;
         this.context.smartvault.getDeposits().then(balance=>{
-            self.setState({balance: balance})
+            this.setState({balance: balance})
         })
 
         this.context.smartvault.getTransactions().then(data=>{
-            self.setState({transactionsData: data})
+            console.log("tx=", data)
+            this.setState({transactionsData: data})
         })
     }
     componentDidMount() {
@@ -60,8 +64,7 @@ class Wallet extends Component {
                             <div className="row">
                                 <div className="col-9">
                                     <h3>{walletData.name}</h3>
-                                    {walletData.walletAddress} [copy]<br/>
-                                    {toBech32(walletData.walletAddress)}                        
+                                    <Address walletAddress={walletData.walletAddress}/>
                                 </div>
                                 <div className="col-3 text-right">
                                     <div className="lead">
@@ -74,6 +77,20 @@ class Wallet extends Component {
                             <Router>
                                 <Switch>
                                     <Route exact path="/wallet">
+                                        <Assets/>
+                                        <Transactions data={this.state.transactionsData}/>                                    
+                                    </Route>
+                                    <Route exact path="/wallet/dapps">
+                                        <Dapps/>
+                                    </Route>                                  
+                                    <Route exact path="/wallet/viper">
+                                        <Viper/>
+                                    </Route>                                      
+                                    <Route path="/wallet/send_hrc20/:address">
+                                        <SendHRC20/>
+                                        <Transactions data={this.state.transactionsData}/>                                    
+                                    </Route>
+                                    <Route path="/wallet/send_one">
                                         <SendPayment/>
                                         <Transactions data={this.state.transactionsData}/>                                    
                                     </Route>

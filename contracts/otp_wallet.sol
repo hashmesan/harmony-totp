@@ -38,6 +38,7 @@ contract TOTPWallet {
     event Deposit(address indexed sender, uint value);
     event WalletUpgraded(address newImpl);
     event TransactionExecuted(bool indexed success, bytes returnData, bytes32 signedHash);
+    event Invoked(address indexed target, uint indexed value, bytes data, bool success, bytes returnData);
 
     constructor() {
         isImplementationContract = true;
@@ -186,6 +187,14 @@ contract TOTPWallet {
             refundAddress.transfer(gasUsed);
         }
         emit TransactionExecuted(success, returnData, 0x0);        
+    }
+
+    function multiCall(Call[] calldata _transactions) external onlyFromWalletOrOwnerWhenUnlocked() returns (bytes[] memory) {
+        bytes[] memory results = new bytes[](_transactions.length);
+        for(uint i = 0; i < _transactions.length; i++) {
+            results[i] = invoke(_transactions[i].to, _transactions[i].value, _transactions[i].data);
+        }
+        return results;
     }
 
     function makeTransfer(address payable to, uint amount) external onlyFromWalletOrOwnerWhenUnlocked() 
@@ -358,4 +367,24 @@ contract TOTPWallet {
         }
     }
 
+    /**
+     * @notice Performs a generic transaction.
+     * @param _target The address for the transaction.
+     * @param _value The value of the transaction.
+     * @param _data The data of the transaction.
+     */
+    function invoke(address _target, uint _value, bytes calldata _data) internal returns (bytes memory _result) {
+        bool success;
+        (success, _result) = _target.call{value: _value}(_data);
+
+        emit Invoked(_target, _value, _data, success, _result);
+
+        if (!success) {
+            // solhint-disable-next-line no-inline-assembly
+            assembly {
+                returndatacopy(0, 0, returndatasize())
+                revert(0, returndatasize())
+            }
+        }
+    }
 }
