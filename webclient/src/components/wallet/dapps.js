@@ -7,34 +7,13 @@ import {
   } from "react-router-dom";
 import { connect } from "redux-zero/react";
 import actions from "../../redux/actions";
-import {getLocalWallet} from "../../config";
-import RelayerClient from '../../../../lib/relayer_client';
-import {CONFIG} from "../../config";
 
-class Stats extends Component {
+class Dapp extends Component {
     constructor(props) {
         super(props)
         this.state = {
         }
     }
-
-    updateData() {
-        var self = this;
-        var client = new RelayerClient(CONFIG[this.props.environment].API_URL, this.props.environment)
-        client.getContractCreated().then(res=>{
-            self.setState({result: res.data.result})
-        })
-    }
-    componentDidMount() {
-        this.updateData();
-    }
-
-    componentDidUpdate(prevProps) {
-        if(this.props.environment != prevProps.environment)
-        {
-            this.updateData();
-        }
-      } 
 
     render() {
         console.log(this.props.environment)
@@ -59,4 +38,4 @@ class Stats extends Component {
 }
 
 const mapToProps = ({ environment }) => ({ environment });
-export default connect(mapToProps, actions)(Stats);
+export default connect(mapToProps, actions)(Dapp);

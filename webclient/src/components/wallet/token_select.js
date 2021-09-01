@@ -17,7 +17,7 @@ class TokenSelect extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		console.log(nextProps.networkId)
+		//console.log(nextProps.networkId)
 		axios.get(default_list).then(e => {
 			const tokens = e.data.tokens.filter(e => {
 				if (nextProps.networkId == "1666600000") {
