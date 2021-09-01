@@ -31,7 +31,7 @@ const CONFIG = {
     },
     "development" : {
         ENV: "development",
-        API_URL: "http://localhost:8989",
+        API_URL: "http://localhost:8080",
         EXPLORER_URL: "https://explorer.pops.one:8888",
         RPC_URL: "http://localhost:8545",
         ENS_ADDRESS: "0xD29154f92F4825202768961ca44d1ffE26C11F76",

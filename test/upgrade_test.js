@@ -118,4 +118,17 @@ contract("Upgrade", accounts => {
 		assert.isTrue(newBalance > tx.receipt.gasUsed);
 
 	});
+
+	it("should be able to upgrade", async () => {
+		const blockNumber = await web3.eth.getBlockNumber();
+		var tmpWallet = web3.eth.accounts.create();
+		var walletAddrComputed = await createFactoryWallet(tmpWallet.address, blockNumber);
+		var wallet = await commons.walletWithAddress(walletAddrComputed);
+		console.log("VERSION=", (await wallet.version()).toString());
+
+		// hit with a contract that doesn't have it like resolver
+		var walletAddrComputed = await createFactoryWallet(tmpWallet.address, blockNumber);
+		var wallet = await commons.walletWithAddress(resolverAddr);
+		await truffleAssert.reverts(wallet.version(), "revert");
+	});
 });

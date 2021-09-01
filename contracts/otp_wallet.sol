@@ -31,7 +31,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
     address masterCopy;
     Core.Wallet public wallet;
     bool internal isImplementationContract;
-
+    uint public constant version = 1;
 
     // END OF DATA LAYOUT
     struct Call {
