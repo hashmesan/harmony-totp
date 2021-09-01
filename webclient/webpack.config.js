@@ -25,7 +25,7 @@ module.exports = {
         exclude: /node_modules/,
       },
       {
-        test: /\.scss$/,
+        test: /\.(sa|sc|c)ss$/,
         use: [
           {
             loader: "style-loader", // creates style nodes from JS strings
@@ -37,6 +37,21 @@ module.exports = {
             loader: "sass-loader", // compiles Sass to CSS
           },
         ],
+      },
+      {
+        test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        include: path.resolve(
+          __dirname,
+          "./node_modules/bootstrap-icons/font/fonts"
+        ),
+        use: {
+          loader: "file-loader",
+          options: {
+            name: "[name].[ext]",
+            outputPath: "webfonts",
+            publicPath: "../webfonts",
+          },
+        },
       },
     ],
   },

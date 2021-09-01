@@ -7,15 +7,20 @@ import actions from "../redux/actions";
 import { getLocalWallet } from "../config";
 
 class Header extends Component {
-  handleChange(e) {
-    e.preventDefault();
-    this.props.setEnvironment(e.target.value);
+  constructor(props) {
+    super(props);
+    this.state = { showNav: false };
+    this.toggleNav = this.toggleNav.bind(this);
+  }
+
+  toggleNav() {
+    this.setState({
+      showNav: !this.state.showNav,
+    });
   }
 
   render() {
-    const hasWallet =
-      getLocalWallet(this.props.environment) &&
-      JSON.parse(getLocalWallet(this.props.environment)).created == true;
+    const { showNav } = this.state;
 
     return (
       <React.Fragment>
@@ -36,30 +41,31 @@ class Header extends Component {
             <button
               className="navbar-toggler"
               type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#navbar"
+              onClick={this.toggleNav}
             >
               <span className="navbar-toggler-icon"></span>
             </button>
-            <div className="collapse navbar-collapse" id="navbar">
-              <ul className="navbar-nav ms-auto px-5">
+            <div
+              className={(showNav ? "show" : "") + " collapse navbar-collapse"}
+            >
+              <ul className="navbar-nav ms-auto px-5 text-end">
                 <li className="nav-item">
-                  <Link to="/" className="nav-link">
+                  <Link to="/" className="nav-link fs-5">
                     Mission & Vision
                   </Link>
                 </li>
                 <li className="nav-item ">
-                  <Link to="/" className="nav-link">
+                  <Link to="/" className="nav-link fs-5">
                     Team
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link to="/" className="nav-link">
+                  <Link to="/" className="nav-link fs-5">
                     Whatever
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link to="/login" className="nav-link active">
+                  <Link to="/login" className="nav-link active fs-5">
                     Login
                   </Link>
                 </li>

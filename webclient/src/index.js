@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 
 import "./custom.scss";
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 import { Provider, connect } from "redux-zero/react";
 import { getLocalWallet } from "./config";

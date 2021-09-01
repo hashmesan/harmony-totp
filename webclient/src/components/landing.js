@@ -11,11 +11,11 @@ class Landing extends Component {
           <div className="container">
             <div className="card my-5 p-3">
               <div className=" d-flex align-items-start justify-content-between">
-                <div class="card-body">
+                <div className="card-body">
                   <h3 className="card-title">
                     Your access to decentralized finance
                   </h3>
-                  <p class="card-text">
+                  <p className="card-text">
                     Some quick example text to build on the card title and make
                     up the bulk of the card's content. Lorem ipsum dolor sit
                     amet consectetur adipisicing elit. Consectetur eos a labore,
@@ -30,9 +30,9 @@ class Landing extends Component {
             <div className="card my-5 p-3">
               <div className=" d-flex align-items-start justify-content-between">
                 <img src="undraw_wallet_aym5.svg" className="img-fluid w-25" />
-                <div class="card-body">
+                <div className="card-body">
                   <h3 className="card-title">Smart Wallet blabla </h3>
-                  <p class="card-text">
+                  <p className="card-text">
                     Some quick example text to build on the card title and make
                     up the bulk of the card's content. Lorem ipsum dolor sit
                     amet consectetur adipisicing elit. Consectetur eos a labore,
@@ -57,10 +57,10 @@ class Landing extends Component {
               </div>
 
               <Link
-                to="/onboarding1"
-                className="btn btn-default btn-secondary"
+                className="btn btn-light fs-3"
                 style={{ borderRadius: "2rem" }}
-                type="button"
+                role="button"
+                to="/onboarding1"
               >
                 Sign up now
               </Link>
