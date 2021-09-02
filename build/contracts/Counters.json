@@ -7,23 +7,23 @@
   "immutableReferences": {},
   "generatedSources": [],
   "deployedGeneratedSources": [],
-  "sourceMap": "370:971:35:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;",
-  "deployedSourceMap": "370:971:35:-:0;;;;;;;;",
+  "sourceMap": "370:971:36:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "370:971:36:-:0;;;;;;;;",
   "source": "// SPDX-License-Identifier: MIT\n\npragma solidity ^0.8.0;\n\n/**\n * @title Counters\n * @author Matt Condon (@shrugs)\n * @dev Provides counters that can only be incremented, decremented or reset. This can be used e.g. to track the number\n * of elements in a mapping, issuing ERC721 ids, or counting request ids.\n *\n * Include with `using Counters for Counters.Counter;`\n */\nlibrary Counters {\n    struct Counter {\n        // This variable should never be directly accessed by users of the library: interactions must be restricted to\n        // the library's function. As of Solidity v0.5.2, this cannot be enforced, though there is a proposal to add\n        // this feature: see https://github.com/ethereum/solidity/issues/4637\n        uint256 _value; // default: 0\n    }\n\n    function current(Counter storage counter) internal view returns (uint256) {\n        return counter._value;\n    }\n\n    function increment(Counter storage counter) internal {\n        unchecked {\n            counter._value += 1;\n        }\n    }\n\n    function decrement(Counter storage counter) internal {\n        uint256 value = counter._value;\n        require(value > 0, \"Counter: decrement overflow\");\n        unchecked {\n            counter._value = value - 1;\n        }\n    }\n\n    function reset(Counter storage counter) internal {\n        counter._value = 0;\n    }\n}\n",
   "sourcePath": "@openzeppelin/contracts/utils/Counters.sol",
   "ast": {
     "absolutePath": "@openzeppelin/contracts/utils/Counters.sol",
     "exportedSymbols": {
       "Counters": [
-        7320
+        7631
       ]
     },
-    "id": 7321,
+    "id": 7632,
     "license": "MIT",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 7248,
+        "id": 7559,
         "literals": [
           "solidity",
           "^",
@@ -31,7 +31,7 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "33:23:35"
+        "src": "33:23:36"
       },
       {
         "abstract": false,
@@ -39,31 +39,31 @@
         "contractDependencies": [],
         "contractKind": "library",
         "documentation": {
-          "id": 7249,
+          "id": 7560,
           "nodeType": "StructuredDocumentation",
-          "src": "58:311:35",
+          "src": "58:311:36",
           "text": " @title Counters\n @author Matt Condon (@shrugs)\n @dev Provides counters that can only be incremented, decremented or reset. This can be used e.g. to track the number\n of elements in a mapping, issuing ERC721 ids, or counting request ids.\n Include with `using Counters for Counters.Counter;`"
         },
         "fullyImplemented": true,
-        "id": 7320,
+        "id": 7631,
         "linearizedBaseContracts": [
-          7320
+          7631
         ],
         "name": "Counters",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "canonicalName": "Counters.Counter",
-            "id": 7252,
+            "id": 7563,
             "members": [
               {
                 "constant": false,
-                "id": 7251,
+                "id": 7562,
                 "mutability": "mutable",
                 "name": "_value",
                 "nodeType": "VariableDeclaration",
-                "scope": 7252,
-                "src": "732:14:35",
+                "scope": 7563,
+                "src": "732:14:36",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -71,10 +71,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 7250,
+                  "id": 7561,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "732:7:35",
+                  "src": "732:7:36",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -85,109 +85,109 @@
             ],
             "name": "Counter",
             "nodeType": "StructDefinition",
-            "scope": 7320,
-            "src": "393:374:35",
+            "scope": 7631,
+            "src": "393:374:36",
             "visibility": "public"
           },
           {
             "body": {
-              "id": 7263,
+              "id": 7574,
               "nodeType": "Block",
-              "src": "847:38:35",
+              "src": "847:38:36",
               "statements": [
                 {
                   "expression": {
                     "expression": {
-                      "id": 7260,
+                      "id": 7571,
                       "name": "counter",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 7255,
-                      "src": "864:7:35",
+                      "referencedDeclaration": 7566,
+                      "src": "864:7:36",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Counter_$7252_storage_ptr",
+                        "typeIdentifier": "t_struct$_Counter_$7563_storage_ptr",
                         "typeString": "struct Counters.Counter storage pointer"
                       }
                     },
-                    "id": 7261,
+                    "id": 7572,
                     "isConstant": false,
                     "isLValue": true,
                     "isPure": false,
                     "lValueRequested": false,
                     "memberName": "_value",
                     "nodeType": "MemberAccess",
-                    "referencedDeclaration": 7251,
-                    "src": "864:14:35",
+                    "referencedDeclaration": 7562,
+                    "src": "864:14:36",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "functionReturnParameters": 7259,
-                  "id": 7262,
+                  "functionReturnParameters": 7570,
+                  "id": 7573,
                   "nodeType": "Return",
-                  "src": "857:21:35"
+                  "src": "857:21:36"
                 }
               ]
             },
-            "id": 7264,
+            "id": 7575,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "current",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 7256,
+              "id": 7567,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7255,
+                  "id": 7566,
                   "mutability": "mutable",
                   "name": "counter",
                   "nodeType": "VariableDeclaration",
-                  "scope": 7264,
-                  "src": "790:23:35",
+                  "scope": 7575,
+                  "src": "790:23:36",
                   "stateVariable": false,
                   "storageLocation": "storage",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Counter_$7252_storage_ptr",
+                    "typeIdentifier": "t_struct$_Counter_$7563_storage_ptr",
                     "typeString": "struct Counters.Counter"
                   },
                   "typeName": {
-                    "id": 7254,
+                    "id": 7565,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 7253,
+                      "id": 7564,
                       "name": "Counter",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 7252,
-                      "src": "790:7:35"
+                      "referencedDeclaration": 7563,
+                      "src": "790:7:36"
                     },
-                    "referencedDeclaration": 7252,
-                    "src": "790:7:35",
+                    "referencedDeclaration": 7563,
+                    "src": "790:7:36",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Counter_$7252_storage_ptr",
+                      "typeIdentifier": "t_struct$_Counter_$7563_storage_ptr",
                       "typeString": "struct Counters.Counter"
                     }
                   },
                   "visibility": "internal"
                 }
               ],
-              "src": "789:25:35"
+              "src": "789:25:36"
             },
             "returnParameters": {
-              "id": 7259,
+              "id": 7570,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7258,
+                  "id": 7569,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 7264,
-                  "src": "838:7:35",
+                  "scope": 7575,
+                  "src": "838:7:36",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -195,10 +195,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 7257,
+                    "id": 7568,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "838:7:35",
+                    "src": "838:7:36",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -207,54 +207,54 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "837:9:35"
+              "src": "837:9:36"
             },
-            "scope": 7320,
-            "src": "773:112:35",
+            "scope": 7631,
+            "src": "773:112:36",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "internal"
           },
           {
             "body": {
-              "id": 7277,
+              "id": 7588,
               "nodeType": "Block",
-              "src": "944:70:35",
+              "src": "944:70:36",
               "statements": [
                 {
-                  "id": 7276,
+                  "id": 7587,
                   "nodeType": "UncheckedBlock",
-                  "src": "954:54:35",
+                  "src": "954:54:36",
                   "statements": [
                     {
                       "expression": {
-                        "id": 7274,
+                        "id": 7585,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftHandSide": {
                           "expression": {
-                            "id": 7270,
+                            "id": 7581,
                             "name": "counter",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 7267,
-                            "src": "978:7:35",
+                            "referencedDeclaration": 7578,
+                            "src": "978:7:36",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Counter_$7252_storage_ptr",
+                              "typeIdentifier": "t_struct$_Counter_$7563_storage_ptr",
                               "typeString": "struct Counters.Counter storage pointer"
                             }
                           },
-                          "id": 7272,
+                          "id": 7583,
                           "isConstant": false,
                           "isLValue": true,
                           "isPure": false,
                           "lValueRequested": true,
                           "memberName": "_value",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 7251,
-                          "src": "978:14:35",
+                          "referencedDeclaration": 7562,
+                          "src": "978:14:36",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
@@ -264,111 +264,111 @@
                         "operator": "+=",
                         "rightHandSide": {
                           "hexValue": "31",
-                          "id": 7273,
+                          "id": 7584,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
                           "kind": "number",
                           "lValueRequested": false,
                           "nodeType": "Literal",
-                          "src": "996:1:35",
+                          "src": "996:1:36",
                           "typeDescriptions": {
                             "typeIdentifier": "t_rational_1_by_1",
                             "typeString": "int_const 1"
                           },
                           "value": "1"
                         },
-                        "src": "978:19:35",
+                        "src": "978:19:36",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         }
                       },
-                      "id": 7275,
+                      "id": 7586,
                       "nodeType": "ExpressionStatement",
-                      "src": "978:19:35"
+                      "src": "978:19:36"
                     }
                   ]
                 }
               ]
             },
-            "id": 7278,
+            "id": 7589,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "increment",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 7268,
+              "id": 7579,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7267,
+                  "id": 7578,
                   "mutability": "mutable",
                   "name": "counter",
                   "nodeType": "VariableDeclaration",
-                  "scope": 7278,
-                  "src": "910:23:35",
+                  "scope": 7589,
+                  "src": "910:23:36",
                   "stateVariable": false,
                   "storageLocation": "storage",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Counter_$7252_storage_ptr",
+                    "typeIdentifier": "t_struct$_Counter_$7563_storage_ptr",
                     "typeString": "struct Counters.Counter"
                   },
                   "typeName": {
-                    "id": 7266,
+                    "id": 7577,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 7265,
+                      "id": 7576,
                       "name": "Counter",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 7252,
-                      "src": "910:7:35"
+                      "referencedDeclaration": 7563,
+                      "src": "910:7:36"
                     },
-                    "referencedDeclaration": 7252,
-                    "src": "910:7:35",
+                    "referencedDeclaration": 7563,
+                    "src": "910:7:36",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Counter_$7252_storage_ptr",
+                      "typeIdentifier": "t_struct$_Counter_$7563_storage_ptr",
                       "typeString": "struct Counters.Counter"
                     }
                   },
                   "visibility": "internal"
                 }
               ],
-              "src": "909:25:35"
+              "src": "909:25:36"
             },
             "returnParameters": {
-              "id": 7269,
+              "id": 7580,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "944:0:35"
+              "src": "944:0:36"
             },
-            "scope": 7320,
-            "src": "891:123:35",
+            "scope": 7631,
+            "src": "891:123:36",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "internal"
           },
           {
             "body": {
-              "id": 7305,
+              "id": 7616,
               "nodeType": "Block",
-              "src": "1073:176:35",
+              "src": "1073:176:36",
               "statements": [
                 {
                   "assignments": [
-                    7285
+                    7596
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 7285,
+                      "id": 7596,
                       "mutability": "mutable",
                       "name": "value",
                       "nodeType": "VariableDeclaration",
-                      "scope": 7305,
-                      "src": "1083:13:35",
+                      "scope": 7616,
+                      "src": "1083:13:36",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
@@ -376,10 +376,10 @@
                         "typeString": "uint256"
                       },
                       "typeName": {
-                        "id": 7284,
+                        "id": 7595,
                         "name": "uint256",
                         "nodeType": "ElementaryTypeName",
-                        "src": "1083:7:35",
+                        "src": "1083:7:36",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -388,36 +388,36 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 7288,
+                  "id": 7599,
                   "initialValue": {
                     "expression": {
-                      "id": 7286,
+                      "id": 7597,
                       "name": "counter",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 7281,
-                      "src": "1099:7:35",
+                      "referencedDeclaration": 7592,
+                      "src": "1099:7:36",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Counter_$7252_storage_ptr",
+                        "typeIdentifier": "t_struct$_Counter_$7563_storage_ptr",
                         "typeString": "struct Counters.Counter storage pointer"
                       }
                     },
-                    "id": 7287,
+                    "id": 7598,
                     "isConstant": false,
                     "isLValue": true,
                     "isPure": false,
                     "lValueRequested": false,
                     "memberName": "_value",
                     "nodeType": "MemberAccess",
-                    "referencedDeclaration": 7251,
-                    "src": "1099:14:35",
+                    "referencedDeclaration": 7562,
+                    "src": "1099:14:36",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
                   "nodeType": "VariableDeclarationStatement",
-                  "src": "1083:30:35"
+                  "src": "1083:30:36"
                 },
                 {
                   "expression": {
@@ -427,18 +427,18 @@
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         },
-                        "id": 7292,
+                        "id": 7603,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
-                          "id": 7290,
+                          "id": 7601,
                           "name": "value",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 7285,
-                          "src": "1131:5:35",
+                          "referencedDeclaration": 7596,
+                          "src": "1131:5:36",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
@@ -448,21 +448,21 @@
                         "operator": ">",
                         "rightExpression": {
                           "hexValue": "30",
-                          "id": 7291,
+                          "id": 7602,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
                           "kind": "number",
                           "lValueRequested": false,
                           "nodeType": "Literal",
-                          "src": "1139:1:35",
+                          "src": "1139:1:36",
                           "typeDescriptions": {
                             "typeIdentifier": "t_rational_0_by_1",
                             "typeString": "int_const 0"
                           },
                           "value": "0"
                         },
-                        "src": "1131:9:35",
+                        "src": "1131:9:36",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bool",
                           "typeString": "bool"
@@ -470,14 +470,14 @@
                       },
                       {
                         "hexValue": "436f756e7465723a2064656372656d656e74206f766572666c6f77",
-                        "id": 7293,
+                        "id": 7604,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
                         "kind": "string",
                         "lValueRequested": false,
                         "nodeType": "Literal",
-                        "src": "1142:29:35",
+                        "src": "1142:29:36",
                         "typeDescriptions": {
                           "typeIdentifier": "t_stringliteral_1dfd0d5389474d871b8e8929aab9d4def041f55f90f625754fb5f9a9ba08af6f",
                           "typeString": "literal_string \"Counter: decrement overflow\""
@@ -496,7 +496,7 @@
                           "typeString": "literal_string \"Counter: decrement overflow\""
                         }
                       ],
-                      "id": 7289,
+                      "id": 7600,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -504,13 +504,13 @@
                         4294967278
                       ],
                       "referencedDeclaration": 4294967278,
-                      "src": "1123:7:35",
+                      "src": "1123:7:36",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 7294,
+                    "id": 7605,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -518,51 +518,51 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "1123:49:35",
+                    "src": "1123:49:36",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 7295,
+                  "id": 7606,
                   "nodeType": "ExpressionStatement",
-                  "src": "1123:49:35"
+                  "src": "1123:49:36"
                 },
                 {
-                  "id": 7304,
+                  "id": 7615,
                   "nodeType": "UncheckedBlock",
-                  "src": "1182:61:35",
+                  "src": "1182:61:36",
                   "statements": [
                     {
                       "expression": {
-                        "id": 7302,
+                        "id": 7613,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftHandSide": {
                           "expression": {
-                            "id": 7296,
+                            "id": 7607,
                             "name": "counter",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 7281,
-                            "src": "1206:7:35",
+                            "referencedDeclaration": 7592,
+                            "src": "1206:7:36",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Counter_$7252_storage_ptr",
+                              "typeIdentifier": "t_struct$_Counter_$7563_storage_ptr",
                               "typeString": "struct Counters.Counter storage pointer"
                             }
                           },
-                          "id": 7298,
+                          "id": 7609,
                           "isConstant": false,
                           "isLValue": true,
                           "isPure": false,
                           "lValueRequested": true,
                           "memberName": "_value",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 7251,
-                          "src": "1206:14:35",
+                          "referencedDeclaration": 7562,
+                          "src": "1206:14:36",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
@@ -575,18 +575,18 @@
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
                           },
-                          "id": 7301,
+                          "id": 7612,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "leftExpression": {
-                            "id": 7299,
+                            "id": 7610,
                             "name": "value",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 7285,
-                            "src": "1223:5:35",
+                            "referencedDeclaration": 7596,
+                            "src": "1223:5:36",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
@@ -596,133 +596,133 @@
                           "operator": "-",
                           "rightExpression": {
                             "hexValue": "31",
-                            "id": 7300,
+                            "id": 7611,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
                             "kind": "number",
                             "lValueRequested": false,
                             "nodeType": "Literal",
-                            "src": "1231:1:35",
+                            "src": "1231:1:36",
                             "typeDescriptions": {
                               "typeIdentifier": "t_rational_1_by_1",
                               "typeString": "int_const 1"
                             },
                             "value": "1"
                           },
-                          "src": "1223:9:35",
+                          "src": "1223:9:36",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
                           }
                         },
-                        "src": "1206:26:35",
+                        "src": "1206:26:36",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         }
                       },
-                      "id": 7303,
+                      "id": 7614,
                       "nodeType": "ExpressionStatement",
-                      "src": "1206:26:35"
+                      "src": "1206:26:36"
                     }
                   ]
                 }
               ]
             },
-            "id": 7306,
+            "id": 7617,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "decrement",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 7282,
+              "id": 7593,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7281,
+                  "id": 7592,
                   "mutability": "mutable",
                   "name": "counter",
                   "nodeType": "VariableDeclaration",
-                  "scope": 7306,
-                  "src": "1039:23:35",
+                  "scope": 7617,
+                  "src": "1039:23:36",
                   "stateVariable": false,
                   "storageLocation": "storage",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Counter_$7252_storage_ptr",
+                    "typeIdentifier": "t_struct$_Counter_$7563_storage_ptr",
                     "typeString": "struct Counters.Counter"
                   },
                   "typeName": {
-                    "id": 7280,
+                    "id": 7591,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 7279,
+                      "id": 7590,
                       "name": "Counter",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 7252,
-                      "src": "1039:7:35"
+                      "referencedDeclaration": 7563,
+                      "src": "1039:7:36"
                     },
-                    "referencedDeclaration": 7252,
-                    "src": "1039:7:35",
+                    "referencedDeclaration": 7563,
+                    "src": "1039:7:36",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Counter_$7252_storage_ptr",
+                      "typeIdentifier": "t_struct$_Counter_$7563_storage_ptr",
                       "typeString": "struct Counters.Counter"
                     }
                   },
                   "visibility": "internal"
                 }
               ],
-              "src": "1038:25:35"
+              "src": "1038:25:36"
             },
             "returnParameters": {
-              "id": 7283,
+              "id": 7594,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1073:0:35"
+              "src": "1073:0:36"
             },
-            "scope": 7320,
-            "src": "1020:229:35",
+            "scope": 7631,
+            "src": "1020:229:36",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "internal"
           },
           {
             "body": {
-              "id": 7318,
+              "id": 7629,
               "nodeType": "Block",
-              "src": "1304:35:35",
+              "src": "1304:35:36",
               "statements": [
                 {
                   "expression": {
-                    "id": 7316,
+                    "id": 7627,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "expression": {
-                        "id": 7312,
+                        "id": 7623,
                         "name": "counter",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 7309,
-                        "src": "1314:7:35",
+                        "referencedDeclaration": 7620,
+                        "src": "1314:7:36",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Counter_$7252_storage_ptr",
+                          "typeIdentifier": "t_struct$_Counter_$7563_storage_ptr",
                           "typeString": "struct Counters.Counter storage pointer"
                         }
                       },
-                      "id": 7314,
+                      "id": 7625,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": true,
                       "memberName": "_value",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 7251,
-                      "src": "1314:14:35",
+                      "referencedDeclaration": 7562,
+                      "src": "1314:14:36",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -732,110 +732,110 @@
                     "operator": "=",
                     "rightHandSide": {
                       "hexValue": "30",
-                      "id": 7315,
+                      "id": 7626,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
                       "kind": "number",
                       "lValueRequested": false,
                       "nodeType": "Literal",
-                      "src": "1331:1:35",
+                      "src": "1331:1:36",
                       "typeDescriptions": {
                         "typeIdentifier": "t_rational_0_by_1",
                         "typeString": "int_const 0"
                       },
                       "value": "0"
                     },
-                    "src": "1314:18:35",
+                    "src": "1314:18:36",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "id": 7317,
+                  "id": 7628,
                   "nodeType": "ExpressionStatement",
-                  "src": "1314:18:35"
+                  "src": "1314:18:36"
                 }
               ]
             },
-            "id": 7319,
+            "id": 7630,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "reset",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 7310,
+              "id": 7621,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7309,
+                  "id": 7620,
                   "mutability": "mutable",
                   "name": "counter",
                   "nodeType": "VariableDeclaration",
-                  "scope": 7319,
-                  "src": "1270:23:35",
+                  "scope": 7630,
+                  "src": "1270:23:36",
                   "stateVariable": false,
                   "storageLocation": "storage",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Counter_$7252_storage_ptr",
+                    "typeIdentifier": "t_struct$_Counter_$7563_storage_ptr",
                     "typeString": "struct Counters.Counter"
                   },
                   "typeName": {
-                    "id": 7308,
+                    "id": 7619,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 7307,
+                      "id": 7618,
                       "name": "Counter",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 7252,
-                      "src": "1270:7:35"
+                      "referencedDeclaration": 7563,
+                      "src": "1270:7:36"
                     },
-                    "referencedDeclaration": 7252,
-                    "src": "1270:7:35",
+                    "referencedDeclaration": 7563,
+                    "src": "1270:7:36",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Counter_$7252_storage_ptr",
+                      "typeIdentifier": "t_struct$_Counter_$7563_storage_ptr",
                       "typeString": "struct Counters.Counter"
                     }
                   },
                   "visibility": "internal"
                 }
               ],
-              "src": "1269:25:35"
+              "src": "1269:25:36"
             },
             "returnParameters": {
-              "id": 7311,
+              "id": 7622,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1304:0:35"
+              "src": "1304:0:36"
             },
-            "scope": 7320,
-            "src": "1255:84:35",
+            "scope": 7631,
+            "src": "1255:84:36",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "internal"
           }
         ],
-        "scope": 7321,
-        "src": "370:971:35"
+        "scope": 7632,
+        "src": "370:971:36"
       }
     ],
-    "src": "33:1309:35"
+    "src": "33:1309:36"
   },
   "legacyAST": {
     "absolutePath": "@openzeppelin/contracts/utils/Counters.sol",
     "exportedSymbols": {
       "Counters": [
-        7320
+        7631
       ]
     },
-    "id": 7321,
+    "id": 7632,
     "license": "MIT",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 7248,
+        "id": 7559,
         "literals": [
           "solidity",
           "^",
@@ -843,7 +843,7 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "33:23:35"
+        "src": "33:23:36"
       },
       {
         "abstract": false,
@@ -851,31 +851,31 @@
         "contractDependencies": [],
         "contractKind": "library",
         "documentation": {
-          "id": 7249,
+          "id": 7560,
           "nodeType": "StructuredDocumentation",
-          "src": "58:311:35",
+          "src": "58:311:36",
           "text": " @title Counters\n @author Matt Condon (@shrugs)\n @dev Provides counters that can only be incremented, decremented or reset. This can be used e.g. to track the number\n of elements in a mapping, issuing ERC721 ids, or counting request ids.\n Include with `using Counters for Counters.Counter;`"
         },
         "fullyImplemented": true,
-        "id": 7320,
+        "id": 7631,
         "linearizedBaseContracts": [
-          7320
+          7631
         ],
         "name": "Counters",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "canonicalName": "Counters.Counter",
-            "id": 7252,
+            "id": 7563,
             "members": [
               {
                 "constant": false,
-                "id": 7251,
+                "id": 7562,
                 "mutability": "mutable",
                 "name": "_value",
                 "nodeType": "VariableDeclaration",
-                "scope": 7252,
-                "src": "732:14:35",
+                "scope": 7563,
+                "src": "732:14:36",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -883,10 +883,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 7250,
+                  "id": 7561,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "732:7:35",
+                  "src": "732:7:36",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -897,109 +897,109 @@
             ],
             "name": "Counter",
             "nodeType": "StructDefinition",
-            "scope": 7320,
-            "src": "393:374:35",
+            "scope": 7631,
+            "src": "393:374:36",
             "visibility": "public"
           },
           {
             "body": {
-              "id": 7263,
+              "id": 7574,
               "nodeType": "Block",
-              "src": "847:38:35",
+              "src": "847:38:36",
               "statements": [
                 {
                   "expression": {
                     "expression": {
-                      "id": 7260,
+                      "id": 7571,
                       "name": "counter",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 7255,
-                      "src": "864:7:35",
+                      "referencedDeclaration": 7566,
+                      "src": "864:7:36",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Counter_$7252_storage_ptr",
+                        "typeIdentifier": "t_struct$_Counter_$7563_storage_ptr",
                         "typeString": "struct Counters.Counter storage pointer"
                       }
                     },
-                    "id": 7261,
+                    "id": 7572,
                     "isConstant": false,
                     "isLValue": true,
                     "isPure": false,
                     "lValueRequested": false,
                     "memberName": "_value",
                     "nodeType": "MemberAccess",
-                    "referencedDeclaration": 7251,
-                    "src": "864:14:35",
+                    "referencedDeclaration": 7562,
+                    "src": "864:14:36",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "functionReturnParameters": 7259,
-                  "id": 7262,
+                  "functionReturnParameters": 7570,
+                  "id": 7573,
                   "nodeType": "Return",
-                  "src": "857:21:35"
+                  "src": "857:21:36"
                 }
               ]
             },
-            "id": 7264,
+            "id": 7575,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "current",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 7256,
+              "id": 7567,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7255,
+                  "id": 7566,
                   "mutability": "mutable",
                   "name": "counter",
                   "nodeType": "VariableDeclaration",
-                  "scope": 7264,
-                  "src": "790:23:35",
+                  "scope": 7575,
+                  "src": "790:23:36",
                   "stateVariable": false,
                   "storageLocation": "storage",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Counter_$7252_storage_ptr",
+                    "typeIdentifier": "t_struct$_Counter_$7563_storage_ptr",
                     "typeString": "struct Counters.Counter"
                   },
                   "typeName": {
-                    "id": 7254,
+                    "id": 7565,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 7253,
+                      "id": 7564,
                       "name": "Counter",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 7252,
-                      "src": "790:7:35"
+                      "referencedDeclaration": 7563,
+                      "src": "790:7:36"
                     },
-                    "referencedDeclaration": 7252,
-                    "src": "790:7:35",
+                    "referencedDeclaration": 7563,
+                    "src": "790:7:36",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Counter_$7252_storage_ptr",
+                      "typeIdentifier": "t_struct$_Counter_$7563_storage_ptr",
                       "typeString": "struct Counters.Counter"
                     }
                   },
                   "visibility": "internal"
                 }
               ],
-              "src": "789:25:35"
+              "src": "789:25:36"
             },
             "returnParameters": {
-              "id": 7259,
+              "id": 7570,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7258,
+                  "id": 7569,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 7264,
-                  "src": "838:7:35",
+                  "scope": 7575,
+                  "src": "838:7:36",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1007,10 +1007,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 7257,
+                    "id": 7568,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "838:7:35",
+                    "src": "838:7:36",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1019,54 +1019,54 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "837:9:35"
+              "src": "837:9:36"
             },
-            "scope": 7320,
-            "src": "773:112:35",
+            "scope": 7631,
+            "src": "773:112:36",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "internal"
           },
           {
             "body": {
-              "id": 7277,
+              "id": 7588,
               "nodeType": "Block",
-              "src": "944:70:35",
+              "src": "944:70:36",
               "statements": [
                 {
-                  "id": 7276,
+                  "id": 7587,
                   "nodeType": "UncheckedBlock",
-                  "src": "954:54:35",
+                  "src": "954:54:36",
                   "statements": [
                     {
                       "expression": {
-                        "id": 7274,
+                        "id": 7585,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftHandSide": {
                           "expression": {
-                            "id": 7270,
+                            "id": 7581,
                             "name": "counter",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 7267,
-                            "src": "978:7:35",
+                            "referencedDeclaration": 7578,
+                            "src": "978:7:36",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Counter_$7252_storage_ptr",
+                              "typeIdentifier": "t_struct$_Counter_$7563_storage_ptr",
                               "typeString": "struct Counters.Counter storage pointer"
                             }
                           },
-                          "id": 7272,
+                          "id": 7583,
                           "isConstant": false,
                           "isLValue": true,
                           "isPure": false,
                           "lValueRequested": true,
                           "memberName": "_value",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 7251,
-                          "src": "978:14:35",
+                          "referencedDeclaration": 7562,
+                          "src": "978:14:36",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
@@ -1076,111 +1076,111 @@
                         "operator": "+=",
                         "rightHandSide": {
                           "hexValue": "31",
-                          "id": 7273,
+                          "id": 7584,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
                           "kind": "number",
                           "lValueRequested": false,
                           "nodeType": "Literal",
-                          "src": "996:1:35",
+                          "src": "996:1:36",
                           "typeDescriptions": {
                             "typeIdentifier": "t_rational_1_by_1",
                             "typeString": "int_const 1"
                           },
                           "value": "1"
                         },
-                        "src": "978:19:35",
+                        "src": "978:19:36",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         }
                       },
-                      "id": 7275,
+                      "id": 7586,
                       "nodeType": "ExpressionStatement",
-                      "src": "978:19:35"
+                      "src": "978:19:36"
                     }
                   ]
                 }
               ]
             },
-            "id": 7278,
+            "id": 7589,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "increment",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 7268,
+              "id": 7579,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7267,
+                  "id": 7578,
                   "mutability": "mutable",
                   "name": "counter",
                   "nodeType": "VariableDeclaration",
-                  "scope": 7278,
-                  "src": "910:23:35",
+                  "scope": 7589,
+                  "src": "910:23:36",
                   "stateVariable": false,
                   "storageLocation": "storage",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Counter_$7252_storage_ptr",
+                    "typeIdentifier": "t_struct$_Counter_$7563_storage_ptr",
                     "typeString": "struct Counters.Counter"
                   },
                   "typeName": {
-                    "id": 7266,
+                    "id": 7577,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 7265,
+                      "id": 7576,
                       "name": "Counter",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 7252,
-                      "src": "910:7:35"
+                      "referencedDeclaration": 7563,
+                      "src": "910:7:36"
                     },
-                    "referencedDeclaration": 7252,
-                    "src": "910:7:35",
+                    "referencedDeclaration": 7563,
+                    "src": "910:7:36",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Counter_$7252_storage_ptr",
+                      "typeIdentifier": "t_struct$_Counter_$7563_storage_ptr",
                       "typeString": "struct Counters.Counter"
                     }
                   },
                   "visibility": "internal"
                 }
               ],
-              "src": "909:25:35"
+              "src": "909:25:36"
             },
             "returnParameters": {
-              "id": 7269,
+              "id": 7580,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "944:0:35"
+              "src": "944:0:36"
             },
-            "scope": 7320,
-            "src": "891:123:35",
+            "scope": 7631,
+            "src": "891:123:36",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "internal"
           },
           {
             "body": {
-              "id": 7305,
+              "id": 7616,
               "nodeType": "Block",
-              "src": "1073:176:35",
+              "src": "1073:176:36",
               "statements": [
                 {
                   "assignments": [
-                    7285
+                    7596
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 7285,
+                      "id": 7596,
                       "mutability": "mutable",
                       "name": "value",
                       "nodeType": "VariableDeclaration",
-                      "scope": 7305,
-                      "src": "1083:13:35",
+                      "scope": 7616,
+                      "src": "1083:13:36",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
@@ -1188,10 +1188,10 @@
                         "typeString": "uint256"
                       },
                       "typeName": {
-                        "id": 7284,
+                        "id": 7595,
                         "name": "uint256",
                         "nodeType": "ElementaryTypeName",
-                        "src": "1083:7:35",
+                        "src": "1083:7:36",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -1200,36 +1200,36 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 7288,
+                  "id": 7599,
                   "initialValue": {
                     "expression": {
-                      "id": 7286,
+                      "id": 7597,
                       "name": "counter",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 7281,
-                      "src": "1099:7:35",
+                      "referencedDeclaration": 7592,
+                      "src": "1099:7:36",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Counter_$7252_storage_ptr",
+                        "typeIdentifier": "t_struct$_Counter_$7563_storage_ptr",
                         "typeString": "struct Counters.Counter storage pointer"
                       }
                     },
-                    "id": 7287,
+                    "id": 7598,
                     "isConstant": false,
                     "isLValue": true,
                     "isPure": false,
                     "lValueRequested": false,
                     "memberName": "_value",
                     "nodeType": "MemberAccess",
-                    "referencedDeclaration": 7251,
-                    "src": "1099:14:35",
+                    "referencedDeclaration": 7562,
+                    "src": "1099:14:36",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
                   "nodeType": "VariableDeclarationStatement",
-                  "src": "1083:30:35"
+                  "src": "1083:30:36"
                 },
                 {
                   "expression": {
@@ -1239,18 +1239,18 @@
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         },
-                        "id": 7292,
+                        "id": 7603,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
-                          "id": 7290,
+                          "id": 7601,
                           "name": "value",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 7285,
-                          "src": "1131:5:35",
+                          "referencedDeclaration": 7596,
+                          "src": "1131:5:36",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
@@ -1260,21 +1260,21 @@
                         "operator": ">",
                         "rightExpression": {
                           "hexValue": "30",
-                          "id": 7291,
+                          "id": 7602,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
                           "kind": "number",
                           "lValueRequested": false,
                           "nodeType": "Literal",
-                          "src": "1139:1:35",
+                          "src": "1139:1:36",
                           "typeDescriptions": {
                             "typeIdentifier": "t_rational_0_by_1",
                             "typeString": "int_const 0"
                           },
                           "value": "0"
                         },
-                        "src": "1131:9:35",
+                        "src": "1131:9:36",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bool",
                           "typeString": "bool"
@@ -1282,14 +1282,14 @@
                       },
                       {
                         "hexValue": "436f756e7465723a2064656372656d656e74206f766572666c6f77",
-                        "id": 7293,
+                        "id": 7604,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
                         "kind": "string",
                         "lValueRequested": false,
                         "nodeType": "Literal",
-                        "src": "1142:29:35",
+                        "src": "1142:29:36",
                         "typeDescriptions": {
                           "typeIdentifier": "t_stringliteral_1dfd0d5389474d871b8e8929aab9d4def041f55f90f625754fb5f9a9ba08af6f",
                           "typeString": "literal_string \"Counter: decrement overflow\""
@@ -1308,7 +1308,7 @@
                           "typeString": "literal_string \"Counter: decrement overflow\""
                         }
                       ],
-                      "id": 7289,
+                      "id": 7600,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -1316,13 +1316,13 @@
                         4294967278
                       ],
                       "referencedDeclaration": 4294967278,
-                      "src": "1123:7:35",
+                      "src": "1123:7:36",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 7294,
+                    "id": 7605,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1330,51 +1330,51 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "1123:49:35",
+                    "src": "1123:49:36",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 7295,
+                  "id": 7606,
                   "nodeType": "ExpressionStatement",
-                  "src": "1123:49:35"
+                  "src": "1123:49:36"
                 },
                 {
-                  "id": 7304,
+                  "id": 7615,
                   "nodeType": "UncheckedBlock",
-                  "src": "1182:61:35",
+                  "src": "1182:61:36",
                   "statements": [
                     {
                       "expression": {
-                        "id": 7302,
+                        "id": 7613,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftHandSide": {
                           "expression": {
-                            "id": 7296,
+                            "id": 7607,
                             "name": "counter",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 7281,
-                            "src": "1206:7:35",
+                            "referencedDeclaration": 7592,
+                            "src": "1206:7:36",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Counter_$7252_storage_ptr",
+                              "typeIdentifier": "t_struct$_Counter_$7563_storage_ptr",
                               "typeString": "struct Counters.Counter storage pointer"
                             }
                           },
-                          "id": 7298,
+                          "id": 7609,
                           "isConstant": false,
                           "isLValue": true,
                           "isPure": false,
                           "lValueRequested": true,
                           "memberName": "_value",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 7251,
-                          "src": "1206:14:35",
+                          "referencedDeclaration": 7562,
+                          "src": "1206:14:36",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
@@ -1387,18 +1387,18 @@
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
                           },
-                          "id": 7301,
+                          "id": 7612,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "leftExpression": {
-                            "id": 7299,
+                            "id": 7610,
                             "name": "value",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 7285,
-                            "src": "1223:5:35",
+                            "referencedDeclaration": 7596,
+                            "src": "1223:5:36",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
@@ -1408,133 +1408,133 @@
                           "operator": "-",
                           "rightExpression": {
                             "hexValue": "31",
-                            "id": 7300,
+                            "id": 7611,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
                             "kind": "number",
                             "lValueRequested": false,
                             "nodeType": "Literal",
-                            "src": "1231:1:35",
+                            "src": "1231:1:36",
                             "typeDescriptions": {
                               "typeIdentifier": "t_rational_1_by_1",
                               "typeString": "int_const 1"
                             },
                             "value": "1"
                           },
-                          "src": "1223:9:35",
+                          "src": "1223:9:36",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
                           }
                         },
-                        "src": "1206:26:35",
+                        "src": "1206:26:36",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         }
                       },
-                      "id": 7303,
+                      "id": 7614,
                       "nodeType": "ExpressionStatement",
-                      "src": "1206:26:35"
+                      "src": "1206:26:36"
                     }
                   ]
                 }
               ]
             },
-            "id": 7306,
+            "id": 7617,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "decrement",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 7282,
+              "id": 7593,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7281,
+                  "id": 7592,
                   "mutability": "mutable",
                   "name": "counter",
                   "nodeType": "VariableDeclaration",
-                  "scope": 7306,
-                  "src": "1039:23:35",
+                  "scope": 7617,
+                  "src": "1039:23:36",
                   "stateVariable": false,
                   "storageLocation": "storage",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Counter_$7252_storage_ptr",
+                    "typeIdentifier": "t_struct$_Counter_$7563_storage_ptr",
                     "typeString": "struct Counters.Counter"
                   },
                   "typeName": {
-                    "id": 7280,
+                    "id": 7591,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 7279,
+                      "id": 7590,
                       "name": "Counter",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 7252,
-                      "src": "1039:7:35"
+                      "referencedDeclaration": 7563,
+                      "src": "1039:7:36"
                     },
-                    "referencedDeclaration": 7252,
-                    "src": "1039:7:35",
+                    "referencedDeclaration": 7563,
+                    "src": "1039:7:36",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Counter_$7252_storage_ptr",
+                      "typeIdentifier": "t_struct$_Counter_$7563_storage_ptr",
                       "typeString": "struct Counters.Counter"
                     }
                   },
                   "visibility": "internal"
                 }
               ],
-              "src": "1038:25:35"
+              "src": "1038:25:36"
             },
             "returnParameters": {
-              "id": 7283,
+              "id": 7594,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1073:0:35"
+              "src": "1073:0:36"
             },
-            "scope": 7320,
-            "src": "1020:229:35",
+            "scope": 7631,
+            "src": "1020:229:36",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "internal"
           },
           {
             "body": {
-              "id": 7318,
+              "id": 7629,
               "nodeType": "Block",
-              "src": "1304:35:35",
+              "src": "1304:35:36",
               "statements": [
                 {
                   "expression": {
-                    "id": 7316,
+                    "id": 7627,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "expression": {
-                        "id": 7312,
+                        "id": 7623,
                         "name": "counter",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 7309,
-                        "src": "1314:7:35",
+                        "referencedDeclaration": 7620,
+                        "src": "1314:7:36",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Counter_$7252_storage_ptr",
+                          "typeIdentifier": "t_struct$_Counter_$7563_storage_ptr",
                           "typeString": "struct Counters.Counter storage pointer"
                         }
                       },
-                      "id": 7314,
+                      "id": 7625,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": true,
                       "memberName": "_value",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 7251,
-                      "src": "1314:14:35",
+                      "referencedDeclaration": 7562,
+                      "src": "1314:14:36",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -1544,96 +1544,96 @@
                     "operator": "=",
                     "rightHandSide": {
                       "hexValue": "30",
-                      "id": 7315,
+                      "id": 7626,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
                       "kind": "number",
                       "lValueRequested": false,
                       "nodeType": "Literal",
-                      "src": "1331:1:35",
+                      "src": "1331:1:36",
                       "typeDescriptions": {
                         "typeIdentifier": "t_rational_0_by_1",
                         "typeString": "int_const 0"
                       },
                       "value": "0"
                     },
-                    "src": "1314:18:35",
+                    "src": "1314:18:36",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "id": 7317,
+                  "id": 7628,
                   "nodeType": "ExpressionStatement",
-                  "src": "1314:18:35"
+                  "src": "1314:18:36"
                 }
               ]
             },
-            "id": 7319,
+            "id": 7630,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "reset",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 7310,
+              "id": 7621,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7309,
+                  "id": 7620,
                   "mutability": "mutable",
                   "name": "counter",
                   "nodeType": "VariableDeclaration",
-                  "scope": 7319,
-                  "src": "1270:23:35",
+                  "scope": 7630,
+                  "src": "1270:23:36",
                   "stateVariable": false,
                   "storageLocation": "storage",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Counter_$7252_storage_ptr",
+                    "typeIdentifier": "t_struct$_Counter_$7563_storage_ptr",
                     "typeString": "struct Counters.Counter"
                   },
                   "typeName": {
-                    "id": 7308,
+                    "id": 7619,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 7307,
+                      "id": 7618,
                       "name": "Counter",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 7252,
-                      "src": "1270:7:35"
+                      "referencedDeclaration": 7563,
+                      "src": "1270:7:36"
                     },
-                    "referencedDeclaration": 7252,
-                    "src": "1270:7:35",
+                    "referencedDeclaration": 7563,
+                    "src": "1270:7:36",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Counter_$7252_storage_ptr",
+                      "typeIdentifier": "t_struct$_Counter_$7563_storage_ptr",
                       "typeString": "struct Counters.Counter"
                     }
                   },
                   "visibility": "internal"
                 }
               ],
-              "src": "1269:25:35"
+              "src": "1269:25:36"
             },
             "returnParameters": {
-              "id": 7311,
+              "id": 7622,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1304:0:35"
+              "src": "1304:0:36"
             },
-            "scope": 7320,
-            "src": "1255:84:35",
+            "scope": 7631,
+            "src": "1255:84:36",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "internal"
           }
         ],
-        "scope": 7321,
-        "src": "370:971:35"
+        "scope": 7632,
+        "src": "370:971:36"
       }
     ],
-    "src": "33:1309:35"
+    "src": "33:1309:36"
   },
   "compiler": {
     "name": "solc",
@@ -1641,7 +1641,7 @@
   },
   "networks": {},
   "schemaVersion": "3.3.4",
-  "updatedAt": "2021-08-19T15:04:07.515Z",
+  "updatedAt": "2021-08-31T17:48:18.266Z",
   "devdoc": {
     "author": "Matt Condon (@shrugs)",
     "details": "Provides counters that can only be incremented, decremented or reset. This can be used e.g. to track the number of elements in a mapping, issuing ERC721 ids, or counting request ids. Include with `using Counters for Counters.Counter;`",

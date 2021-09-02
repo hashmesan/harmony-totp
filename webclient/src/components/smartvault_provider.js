@@ -22,6 +22,9 @@ class AccountProvider extends Component {
                 this.smartvault.loadFromWalletData(data);    
             }
         }
+        this.smartvault.setup().then(e=>{
+            console.log("Done setup!");
+        })
         this.state = {}
     }
 
