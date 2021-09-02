@@ -16,7 +16,7 @@ const homedir = require('os').homedir();
 
 program
 .version('0.1.0')
-.option('-e --env <env>', "environment mainnet0, testnet0, testnet3", "mainnet0")
+.option('-e --env <env>', "environment mainnet0, testnet0, testnet3", "mainnet0", "development")
 .option('-d --datadir <datadir>', "datadir", homedir + "/.smartvault/")
 
 async function main() {
@@ -105,7 +105,7 @@ async function main() {
     program
         .command("list")
         .description("list all wallets")
-        .action((options)=>{
+        .action(async (options)=>{
             var client = new SmartVault(config.CONFIG[program._optionValues.env], program._optionValues.datadir);
             await client.setup();
             var {matches, addresses, names} = client.listWallets();
@@ -117,7 +117,7 @@ async function main() {
             })
         });
 
-    function loadWalletByNameOrAddress(client, nameOrAddress) {
+    async function loadWalletByNameOrAddress(client, nameOrAddress) {
         var {dir, matches, addresses, names} = client.listWallets();
 
         var index1 = addresses.indexOf(nameOrAddress)
