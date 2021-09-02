@@ -20,36 +20,40 @@ import Create from "./components/create";
 import Wallet from "./components/wallet";
 import Recover from "./components/recover";
 import Landing from "./components/landing";
-import Onboarding1 from "./components/onboard_1";
+import Onboarding1 from "./components/onboarding/onboard_1";
+
+import AccountProvider from "./components/smartvault_provider";
 
 const mapToProps = ({ environment }) => ({ environment });
 const App = connect(mapToProps)(({ environment }) => (
   <Router>
-    <Header />
-    <Switch>
-      <Route exact path="/">
-        {getLocalWallet(environment, false) ? (
-          <Redirect to="/wallet" />
-        ) : (
-          <Redirect to="/landing" />
-        )}
-      </Route>
-      <Route path="/landing">
-        <Landing />
-      </Route>
-      <Route path="/create">
-        <Create />
-      </Route>
-      <Route path="/onboarding1">
-        <Onboarding1 />
-      </Route>
-      <Route path="/wallet">
-        <Wallet />
-      </Route>
-      <Route path="/recover">
-        <Recover />
-      </Route>
-    </Switch>
+    <AccountProvider>
+      <Header />
+      <Switch>
+        <Route exact path="/">
+          {getLocalWallet(environment, false) ? (
+            <Redirect to="/wallet" />
+          ) : (
+            <Redirect to="/landing" />
+          )}
+        </Route>
+        <Route path="/landing">
+          <Landing />
+        </Route>
+        <Route path="/create">
+          <Create />
+        </Route>
+        <Route path="/onboarding1">
+          <Onboarding1 />
+        </Route>
+        <Route path="/wallet">
+          <Wallet />
+        </Route>
+        <Route path="/recover">
+          <Recover />
+        </Route>
+      </Switch>
+    </AccountProvider>
   </Router>
 ));
 

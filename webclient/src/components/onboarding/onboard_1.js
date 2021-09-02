@@ -4,8 +4,8 @@ const web3utils = require("web3-utils");
 import { connect } from "redux-zero/react";
 import { CountryDropdown } from "react-country-region-selector";
 
-import actions from "../redux/actions";
-import { SmartVaultContext, SmartVaultConsumer } from "./smartvault_provider";
+import actions from "../../redux/actions";
+import { SmartVaultContext, SmartVaultConsumer } from "../smartvault_provider";
 class Onboarding1 extends Component {
   constructor(props) {
     super(props);
@@ -17,12 +17,19 @@ class Onboarding1 extends Component {
         userCountryOfResidence: "",
       },
       validity: {
-        userName: true,
-        userPassword: true,
-        userEmail: true,
-        userCountryOfResidence: true,
+        userName: null,
+        userPassword: null,
+        userEmail: null,
+        userCountryOfResidence: null,
+        form: false,
       },
-      priorityOptions: ["CH"],
+      wallet: {
+        isAvailable: true,
+        rentPrice: "0",
+        loading: false,
+        error: "",
+      },
+      loading: null,
     };
   }
 
@@ -35,37 +42,42 @@ class Onboarding1 extends Component {
     this.setState({ user: currentState });
   };
 
-  checkRentPrice = () => {
-    console.log("checking price: ");
-    this.context.smartvault
-      .create(
-        this.state.name + ".crazy.one",
+  checkRentPriceAsync = async () => {
+    const { user } = this.state;
+    const { smartvault } = this.context;
+
+    this.setState({ loading: true });
+
+    try {
+      const createdWallet = await smartvault.create(
+        user.userName + ".crazy.one",
         null,
-        web3utils.toWei(this.state.dailyLimit + ""),
-        this.state.drainAddress,
+        null,
+        null,
         this.state.password,
         this.state.email,
         this.state.countryOfResidence
-      )
-      .then((res) => {
-        if (res == null) {
-          self.setState({ error: "Already exists!" });
-        } else {
-          self.setState({
-            cost: self.context.smartvault.walletData.rentPrice,
-            showCost: true,
-            error: null,
-          });
-        }
-        self.setState({ busy: false });
-      })
-      .catch((ex) => {
-        self.setState({ error: ex.message });
-        self.setState({ busy: false });
-      });
+      );
+
+      const { wallet } = { ...this.state };
+
+      if (createdWallet === null) {
+        wallet.isAvailable = false;
+        wallet.error = "Address / wallet already existing";
+        this.setState({ wallet: wallet, loading: false });
+      } else {
+        wallet.isAvailable = true;
+        wallet.error = "";
+        wallet.rentPrice = createdWallet.rentPrice;
+
+        this.setState({ wallet: wallet, loading: false });
+      }
+    } catch (e) {
+      console.error("Error in creating smart wallet: ", e.message);
+    }
   };
 
-  handleChange = (evt) => {
+  handleBlur = (evt) => {
     const { user } = { ...this.state };
     const currentState = user;
 
@@ -77,17 +89,16 @@ class Onboarding1 extends Component {
 
     switch (id) {
       case "userName":
-        const nameRegex = /^[a-zA-Z\-]+$/;
+        const nameRegex =
+          /^([a-zA-Z0-9\u0600-\u06FF\u0660-\u0669\u06F0-\u06F9 _.-]+)$/;
+
         const userName = value;
 
         const validityCheck = nameRegex.exec(userName) && userName.length > 7;
 
         const { validity } = { ...this.state };
         const currentState = validity;
-        currentState.userName = validityCheck;
-
-        // TODO: Check for "existence of HNS"
-        const rentPrice = this.checkRentPrice();
+        currentState[id] = validityCheck;
 
         this.setState({ validity: currentState });
 
@@ -99,10 +110,35 @@ class Onboarding1 extends Component {
 
       default:
     }
+
+    this.checkRentPriceAsync();
+    this.checkForm();
+  };
+
+  checkForm = () => {
+    const { user, validity } = this.state;
+    validity.form =
+      user.userName.length *
+        user.userPassword.length *
+        user.userEmail.length *
+        user.userCountryOfResidence.length >
+      0
+        ? true
+        : false;
+    this.setState({ validity: validity });
+  };
+
+  handleSubmit = () => {
+    /*
+    for element in this.state.user
+      create evt object
+        this.handleBlur(evt)
+    */
   };
 
   render() {
     const { userCountryOfResidence } = this.state.user;
+    const dropdownPriorityOptions = ["CH"];
 
     return (
       <SmartVaultConsumer>
@@ -161,17 +197,38 @@ class Onboarding1 extends Component {
                             <input
                               type="text"
                               className={`form-control  ${
-                                this.state.validity.userName ? "" : "is-invalid"
+                                this.state.user.userName.length > 0
+                                  ? this.state.validity.userName &&
+                                    this.state.wallet.isAvailable
+                                    ? "is-valid"
+                                    : "is-invalid"
+                                  : ""
                               }`}
                               id="userName"
                               placeholder="Please use at least 8 characters"
                               onChange={this.handleChange}
+                              onBlur={this.handleBlur}
                               required
                             />
                             <div className="invalid-feedback">
-                              Please use at least 8 characters, no numbers, no
-                              special characters
+                              {this.state.validity.userName
+                                ? ""
+                                : "Please use at least 8 characters and no special characters. "}
+                              {this.state.wallet.isAvailable
+                                ? ""
+                                : "Please choose another username - this one is already taken"}
                             </div>
+                            {!this.state.loading && (
+                              <div className="valid-feedback">
+                                Username is valid and available for{" "}
+                                {
+                                  web3utils
+                                    .fromWei(this.state.wallet.rentPrice)
+                                    .split(".")[0]
+                                }{" "}
+                                ONE
+                              </div>
+                            )}
                           </div>
 
                           <div className="col-md-5">
@@ -206,8 +263,7 @@ class Onboarding1 extends Component {
                               required
                             />
                             <div className="invalid-feedback">
-                              Please use at least 8 characters, no numbers, no
-                              special characters
+                              Please provide XYZ
                             </div>
                           </div>
 
@@ -266,7 +322,7 @@ class Onboarding1 extends Component {
                           <div className="col-md-7">
                             <CountryDropdown
                               value={userCountryOfResidence}
-                              priorityOptions={this.state.priorityOptions}
+                              priorityOptions={dropdownPriorityOptions}
                               onChange={this.selectCountry}
                               className="w-100 form-select"
                             />

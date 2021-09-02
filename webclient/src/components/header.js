@@ -13,6 +13,10 @@ class Header extends Component {
     this.toggleNav = this.toggleNav.bind(this);
   }
 
+  componentDidMount() {
+    this.props.setEnvironment("testnet0");
+  }
+
   toggleNav() {
     this.setState({
       showNav: !this.state.showNav,
@@ -80,19 +84,3 @@ class Header extends Component {
 
 const mapToProps = ({ environment }) => ({ environment });
 export default connect(mapToProps, actions)(Header);
-
-/*
-<li className="nav-item">
-                  <select
-                    className="form-select"
-                    aria-label="Network selection"
-                    value={this.props.environment}
-                    onChange={this.handleChange.bind(this)}
-                  >
-                    <option value="mainnet0">Mainnet</option>
-                    <option value="testnet0">Testnet</option>
-                    <option value="development">Local</option>
-                  </select>
-                </li>
-
-*/
