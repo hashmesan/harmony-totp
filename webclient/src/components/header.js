@@ -26,12 +26,12 @@ class Header extends Component {
 
     return (
       <React.Fragment>
-        <nav className="navbar navbar-expand-lg  navbar-light bg-white py-3 sticky-top d-flex">
+        <nav className="navbar navbar-expand-lg navbar-light bg-white py-3 sticky-top d-flex">
           <div className="container-fluid">
             <Link to="/" className="navbar-brand">
               <img src="logo_R.svg" alt="" className="img-fluid m-1 h-75" />
             </Link>
-
+            <div className="text-secondary fs-5">{this.props.location}</div>
             <button
               className="navbar-toggler"
               type="button"
@@ -39,10 +39,10 @@ class Header extends Component {
             >
               <span className="navbar-toggler-icon"></span>
             </button>
+
             <div
               className={(showNav ? "show" : "") + " collapse navbar-collapse"}
             >
-              <div className="text-secondary fs-5">{this.props.location}</div>
               <ul className="navbar-nav ms-auto px-1 text-end">
                 <li className="nav-item">
                   <Link to="/" className="nav-link active fs-5">

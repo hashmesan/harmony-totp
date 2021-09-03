@@ -9,15 +9,16 @@ class OnboardNav extends Component {
   }
 
   render() {
+    const { onboardingStep } = this.props;
+
     return (
       <React.Fragment>
-        <div className="d-flex bg-gray-400 vh-100 align-content-center justify-content-center">
+        <div className="d-flex bg-gray-400 vh-100 align-content-center justify-content-center p-2">
           <ul>
             <li className="">el 1</li>
             <li>el 1</li>
             <li>el 1</li>
           </ul>
-          {this.props.onboardingStep}
         </div>
       </React.Fragment>
     );
