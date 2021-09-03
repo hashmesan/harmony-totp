@@ -1,9 +1,18 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "redux-zero/react";
-import styled from "@emotion/styled";
+
+import actions from "../redux/actions";
 
 class Landing extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  componentDidMount() {
+    this.props.setLocation("");
+  }
+
   render() {
     return (
       <div>
@@ -72,4 +81,8 @@ class Landing extends Component {
   }
 }
 
-export default Landing;
+const mapToProps = ({ environment, location }) => ({
+  environment,
+  location,
+});
+export default connect(mapToProps, actions)(Landing);

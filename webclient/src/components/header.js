@@ -1,10 +1,8 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "redux-zero/react";
-import styled from "@emotion/styled";
 
 import actions from "../redux/actions";
-import { getLocalWallet } from "../config";
 
 class Header extends Component {
   constructor(props) {
@@ -28,18 +26,10 @@ class Header extends Component {
 
     return (
       <React.Fragment>
-        <nav className="navbar navbar-expand-lg bg-r-bank-blue navbar-dark py-3 sticky-top d-flex">
+        <nav className="navbar navbar-expand-lg  navbar-light bg-white py-3 sticky-top d-flex">
           <div className="container-fluid">
             <Link to="/" className="navbar-brand">
-              <img
-                src="logo_R.svg"
-                alt=""
-                className="img-fluid m-1"
-                width="40px"
-              />
-            </Link>
-            <Link to="/" className="navbar-brand">
-              <h1 className="text-light mb-0">The R Bank</h1>
+              <img src="logo_R.svg" alt="" className="img-fluid m-1 h-75" />
             </Link>
 
             <button
@@ -52,28 +42,42 @@ class Header extends Component {
             <div
               className={(showNav ? "show" : "") + " collapse navbar-collapse"}
             >
-              <ul className="navbar-nav ms-auto px-5 text-end">
+              <div className="text-secondary fs-5">{this.props.location}</div>
+              <ul className="navbar-nav ms-auto px-1 text-end">
                 <li className="nav-item">
-                  <Link to="/" className="nav-link fs-5">
-                    Mission & Vision
+                  <Link to="/" className="nav-link active fs-5">
+                    Home
                   </Link>
                 </li>
                 <li className="nav-item ">
-                  <Link to="/" className="nav-link fs-5">
-                    Team
+                  <Link to="/" className="nav-link active fs-5">
+                    Features
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link to="/" className="nav-link fs-5">
-                    Whatever
+                  <Link to="/" className="nav-link active fs-5">
+                    Pricing
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link to="/login" className="nav-link active fs-5">
-                    Login
+                  <Link to="/" className="nav-link active fs-5">
+                    About
                   </Link>
                 </li>
               </ul>
+              <Link to="/onboard">
+                <button className="btn btn-outline-dark rounded-pill fs-5 px-3 mx-1">
+                  Login
+                </button>
+              </Link>
+              <Link to="/onboard">
+                <button
+                  className="btn btn-warning rounded-pill fs-5 px-3 mx-1"
+                  type="button"
+                >
+                  Onboard
+                </button>
+              </Link>
             </div>
           </div>
         </nav>
@@ -82,5 +86,8 @@ class Header extends Component {
   }
 }
 
-const mapToProps = ({ environment }) => ({ environment });
+const mapToProps = ({ environment, location }) => ({
+  environment,
+  location,
+});
 export default connect(mapToProps, actions)(Header);

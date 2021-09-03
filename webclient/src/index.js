@@ -21,6 +21,7 @@ import Wallet from "./components/wallet";
 import Recover from "./components/recover";
 import Landing from "./components/landing";
 import Onboarding1 from "./components/onboarding/onboard_1";
+import Onboard from "./components/onboarding/onboard";
 
 import AccountProvider from "./components/smartvault_provider";
 
@@ -45,6 +46,9 @@ const App = connect(mapToProps)(({ environment }) => (
         </Route>
         <Route path="/onboarding1">
           <Onboarding1 />
+        </Route>
+        <Route path="/onboard">
+          <Onboard />
         </Route>
         <Route path="/wallet">
           <Wallet />
