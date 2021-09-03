@@ -2,6 +2,9 @@ const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 require("@babel/polyfill");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const {GitRevisionPlugin} = require('git-revision-webpack-plugin');
+const gitRevisionPlugin = new GitRevisionPlugin();
+var webpack = require("webpack")
 
 module.exports = {
   devServer: {
@@ -42,7 +45,12 @@ module.exports = {
           template: "./src/index.html",
           minify: false
         }),
-
+        new webpack.DefinePlugin({
+          'VERSION': JSON.stringify(gitRevisionPlugin.version()),
+          'COMMITHASH': JSON.stringify(gitRevisionPlugin.commithash()),
+          'BRANCH': JSON.stringify(gitRevisionPlugin.branch()),
+          'LASTCOMMITDATETIME': JSON.stringify(gitRevisionPlugin.lastcommitdatetime()),
+        }),
         // Copy our app's index.html to the build folder.
         new CopyWebpackPlugin([
 //            { from: './src/index.html', to: "index.html" },

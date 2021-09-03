@@ -31,7 +31,7 @@ Number.prototype.toFixedNoRounding = function(n) {
     return b > 0 ? (a + "0".repeat(b)) : a;
  }
 
- 
+const version = VERSION+"-"+BRANCH;
 const mapToProps = ({ environment }) => ({ environment });
 const App = connect(mapToProps)(({environment}) => (
     <Router>
@@ -54,7 +54,7 @@ const App = connect(mapToProps)(({environment}) => (
             </Route>            
         </Switch>
         <footer className="my-5 pt-5 text-muted text-center text-small">
-            <p className="mb-1">Smartvault (beta) powered by Harmony Blockchain | Opensource (GPL)</p>
+            <p className="mb-1">Smartvault (beta) powered by Harmony Blockchain | Opensource (GPL) | Version: {version}</p>
             <ul className="list-inline">
             <li className="list-inline-item"><a href="#/stats">Stats</a></li>
             <li className="list-inline-item"><a href="https://github.com/hashmesan/harmony-totp">Github</a></li>
