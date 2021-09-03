@@ -5,12 +5,26 @@ pragma solidity >=0.7.6;
 import "../external/IUniswapRouter.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
+// TestMulticall.at(a).then(e=>e.getChainID()).then(e=>e.toString())
+
 contract TestMulticall {
 
     struct Call {
         address to;
         uint256 value;
         bytes data;
+    }
+    
+    function getChainID() external view returns (uint256) {
+        uint256 id;
+        assembly {
+            id := chainid()
+        }
+        return id;
+    }
+
+    function getChainID2() external view returns (uint256) {
+        return block.chainid;
     }
 
     address uniswapRouter = 0xda3DD48726278a7F478eFaE3BEf9a5756ccdb4D0;
