@@ -351,7 +351,7 @@ class Onboarding1 extends Component {
                 <div className="col-4">
                   <div className="d-flex bg-gray-400 vh-100 align-content-center justify-content-center">
                     <img
-                      src="undraw_app_data_re.svg"
+                      src="public/undraw_app_data_re.svg"
                       alt=""
                       className="img-fluid w-75"
                     />

@@ -29,7 +29,11 @@ class Header extends Component {
         <nav className="navbar navbar-expand-lg navbar-light bg-white py-3 sticky-top d-flex">
           <div className="container-fluid">
             <Link to="/" className="navbar-brand">
-              <img src="logo_R.svg" alt="" className="img-fluid m-1 h-75" />
+              <img
+                src="public/logo_R.svg"
+                alt=""
+                className="img-fluid m-1 h-75"
+              />
             </Link>
             <div className="text-secondary fs-5">{this.props.location}</div>
             <button

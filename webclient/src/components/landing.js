@@ -31,14 +31,20 @@ class Landing extends Component {
                     nemo iure atque.
                   </p>
                 </div>
-                <img src="undraw_wallet_aym5.svg" className="img-fluid w-25" />
+                <img
+                  src="public/undraw_wallet_aym5.svg"
+                  className="img-fluid w-25"
+                />
               </div>
             </div>
           </div>
           <div className="container">
             <div className="card my-5 p-3">
               <div className=" d-flex align-items-start justify-content-between">
-                <img src="undraw_wallet_aym5.svg" className="img-fluid w-25" />
+                <img
+                  src="public/undraw_wallet_aym5.svg"
+                  className="img-fluid w-25"
+                />
                 <div className="card-body">
                   <h3 className="card-title">Smart Wallet blabla </h3>
                   <p className="card-text">

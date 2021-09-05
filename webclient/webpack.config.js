@@ -5,7 +5,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
   devServer: {
-    contentBase: path.join(__dirname, "public"),
+    //contentBase: path.join(__dirname, "public"),
     compress: false,
   },
   node: {
@@ -28,13 +28,13 @@ module.exports = {
         test: /\.(sa|sc|c)ss$/,
         use: [
           {
-            loader: "style-loader", // creates style nodes from JS strings
+            loader: "style-loader",
           },
           {
-            loader: "css-loader", // translates CSS into CommonJS
+            loader: "css-loader",
           },
           {
-            loader: "sass-loader", // compiles Sass to CSS
+            loader: "sass-loader",
           },
         ],
       },
@@ -73,12 +73,6 @@ module.exports = {
     }),
 
     // Copy our app's index.html to the build folder.
-    new CopyWebpackPlugin([
-      //            { from: './src/index.html', to: "index.html" },
-      //            { from: './js', to: "./js" },
-      //            { from: './css', to: "./css" },
-      { from: "./public", to: "./public" },
-      { from: "./CNAME", to: "./" }, // to prevent github resetting our domain
-    ]),
+    new CopyWebpackPlugin([{ from: "./public", to: "./public" }]),
   ],
 };
