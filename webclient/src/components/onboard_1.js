@@ -4,8 +4,8 @@ const web3utils = require("web3-utils");
 import { connect } from "redux-zero/react";
 import { CountryDropdown } from "react-country-region-selector";
 
-import actions from "../../redux/actions";
-import { SmartVaultContext, SmartVaultConsumer } from "../smartvault_provider";
+import actions from "../redux/actions";
+import { SmartVaultContext, SmartVaultConsumer } from "./smartvault_provider";
 
 class Onboarding1 extends Component {
   constructor(props) {
@@ -18,19 +18,12 @@ class Onboarding1 extends Component {
         userCountryOfResidence: "",
       },
       validity: {
-        userName: null,
-        userPassword: null,
-        userEmail: null,
-        userCountryOfResidence: null,
-        form: false,
+        userName: true,
+        userPassword: true,
+        userEmail: true,
+        userCountryOfResidence: true,
       },
-      wallet: {
-        isAvailable: true,
-        rentPrice: "0",
-        loading: false,
-        error: "",
-      },
-      loading: null,
+      priorityOptions: ["CH"],
     };
   }
 
@@ -43,131 +36,74 @@ class Onboarding1 extends Component {
     this.setState({ user: currentState });
   };
 
-  checkRentPriceAsync = async () => {
-    const { user } = this.state;
-    const { smartvault } = this.context;
-
-    this.setState({ loading: true });
-
-    try {
-      const createdWallet = await smartvault.create(
-        user.userName + ".crazy.one",
+  checkRentPrice = () => {
+    console.log("checking price: ");
+    this.context.smartvault
+      .create(
+        this.state.name + ".crazy.one",
         null,
-        null,
-        null,
+        web3utils.toWei(this.state.dailyLimit + ""),
+        this.state.drainAddress,
         this.state.password,
         this.state.email,
         this.state.countryOfResidence
-      );
-
-      const { wallet } = { ...this.state };
-
-      if (createdWallet === null) {
-        wallet.isAvailable = false;
-        wallet.error = "Address / wallet already existing";
-        this.setState({ wallet: wallet, loading: false });
-      } else {
-        wallet.isAvailable = true;
-        wallet.error = "";
-        wallet.rentPrice = createdWallet.rentPrice;
-
-        this.setState({ wallet: wallet, loading: false });
-      }
-    } catch (e) {
-      console.error("Error in creating smart wallet: ", e.message);
-    }
+      )
+      .then((res) => {
+        if (res == null) {
+          self.setState({ error: "Already exists!" });
+        } else {
+          self.setState({
+            cost: self.context.smartvault.walletData.rentPrice,
+            showCost: true,
+            error: null,
+          });
+        }
+        self.setState({ busy: false });
+      })
+      .catch((ex) => {
+        self.setState({ error: ex.message });
+        self.setState({ busy: false });
+      });
   };
 
-  //User form validity function
-  handleBlur = (evt) => {
-    //Get user-object property from state object before event
+  handleChange = (evt) => {
     const { user } = { ...this.state };
     const currentState = user;
-    
-    //Set user state after event
+
     const { id, value } = evt.target;
+
     currentState[id] = value;
-    this.setState({user: currentState});
 
-    //Validity checks
-    //Validity check for user name
-    if (id=="userName"){
-      const userNamePattern =
-      /^([a-zA-Z0-9\-]+)$/; //one wallet can only have chars, numbers and - as a 1 special char
-  
-      const validityCheck = userNamePattern.exec(value) && value.length > 7;
+    this.setState({ user: currentState });
 
-      const { validity } = { ...this.state };
-      const currentState = validity;
-      currentState[id] = validityCheck;  //TODO: we use the id here because validity object has the same key names as user object
+    switch (id) {
+      case "userName":
+        const nameRegex = /^[a-zA-Z\-]+$/;
+        const userName = value;
 
-    this.setState({ validity: currentState });
+        const validityCheck = nameRegex.exec(userName) && userName.length > 7;
+
+        const { validity } = { ...this.state };
+        const currentState = validity;
+        currentState.userName = validityCheck;
+
+        // TODO: Check for "existence of HNS"
+        const rentPrice = this.checkRentPrice();
+
+        this.setState({ validity: currentState });
+
+      // TODO: Add validity check for PW
+      case "userPassword":
+
+      // TODO: Add validity check for Email
+      case "userEmail":
+
+      default:
     }
-    //Validity check for password
-    else if (id=="userPassword"){
-      const passwordPattern = 
-      /^(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{7,}$/;
-
-      const validityCheck = passwordPattern.exec(value);
-
-      const { validity } = { ...this.state };
-      const currentState = validity;
-      currentState[id] = validityCheck;  //TODO: we use the id here because validity object has the same key names as user object
-
-      this.setState({ validity: currentState });
-    }
-    else if (id=="userEmail"){
-      const emailPattern = 
-      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-      
-      /*
-      RFC 2822 standard email validation
-       /^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|
-\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|
-\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:
-(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/;
-      */
-
-      const validityCheck = emailPattern.exec(value);
-
-      const { validity } = { ...this.state };
-      const currentState = validity;
-      currentState[id] = validityCheck;  //TODO: we use the id here because validity object has the same key names as user object
-
-      this.setState({ validity: currentState });
-    }
-
-    //Other validity check later on if needed
-    else{}
-
-    this.checkRentPriceAsync();
-    this.checkForm();
-  };
-
-  checkForm = () => {
-    const { user, validity } = this.state;
-    validity.form =
-      user.userName.length *
-        user.userPassword.length *
-        user.userEmail.length *
-        user.userCountryOfResidence.length >
-      0
-        ? true
-        : false;
-    this.setState({ validity: validity });
-  };
-
-  handleSubmit = () => {
-    /*
-    for element in this.state.user
-      create evt object
-        this.handleBlur(evt)
-    */
   };
 
   render() {
     const { userCountryOfResidence } = this.state.user;
-    const dropdownPriorityOptions = ["CH"];
 
     return (
       <SmartVaultConsumer>
@@ -226,37 +162,17 @@ class Onboarding1 extends Component {
                             <input
                               type="text"
                               className={`form-control  ${
-                                this.state.user.userName.length > 0
-                                  ? this.state.validity.userName &&
-                                    this.state.wallet.isAvailable
-                                    ? "is-valid"
-                                    : "is-invalid"
-                                  : ""
+                                this.state.validity.userName ? "" : "is-invalid"
                               }`}
                               id="userName"
                               placeholder="Please use at least 8 characters"
-                              onBlur={this.handleBlur}
+                              onChange={this.handleChange}
                               required
                             />
                             <div className="invalid-feedback">
-                              {this.state.validity.userName
-                                ? ""
-                                : "Please use only letters, numeric digits and hyphen. First and last character can't be a hyphen."}
-                              {this.state.wallet.isAvailable
-                                ? ""
-                                : "Please choose another username! This one is already taken."}
+                              Please use at least 8 characters, no numbers, no
+                              special characters
                             </div>
-                            {!this.state.loading && (
-                              <div className="valid-feedback">
-                                Username is valid and available for{" "}
-                                {
-                                  web3utils
-                                    .fromWei(this.state.wallet.rentPrice)
-                                    .split(".")[0]
-                                }{" "}
-                                ONE
-                              </div>
-                            )}
                           </div>
 
                           <div className="col-md-5">
@@ -284,25 +200,15 @@ class Onboarding1 extends Component {
                           <div className="col-md-7">
                             <input
                               type="password"
-                              className={`form-control  ${
-                                this.state.user.userPassword.length > 0
-                                  ? this.state.validity.userPassword
-                                    ? "is-valid"
-                                    : "is-invalid"
-                                  : ""
-                              }`}
+                              className="form-control is-invalid"
                               id="userPassword"
-                              placeholder="Please use more than 6 characters and at least 1 capital letter and 1 special character"
-                              onBlur={this.handleBlur}
+                              placeholder="Please use more than 6 characters, 1 capital letter, 1 special character"
+                              onChange={this.handleChange}
                               required
                             />
                             <div className="invalid-feedback">
-                              {this.state.validity.userPassword
-                                ? ""
-                                : "Invalid password! Please use more than 6 characters, at least 1 capital letter and 1 special character."}
-                            </div>
-                            <div className="valid-feedback">
-                                Password is valid.
+                              Please use at least 8 characters, no numbers, no
+                              special characters
                             </div>
                           </div>
 
@@ -330,28 +236,13 @@ class Onboarding1 extends Component {
                           <div className="col-md-7">
                             <input
                               type="email"
-                              className={`form-control  ${
-                                this.state.user.userEmail.length > 0
-                                  ? this.state.validity.userEmail
-                                    ? "is-valid"
-                                    : "is-invalid"
-                                  : ""
-                              }`}
-                              id="userEmail"
-                              placeholder="Please enter a valid email address"
-                              onBlur={this.handleBlur}
+                              className="form-control"
+                              id="UserEmail"
+                              placeholder="Please use a valid email address"
+                              onChange={this.handleChange}
                               required
                             />
-                            <div className="invalid-feedback">
-                              {this.state.validity.userEmail
-                                ? ""
-                                : "Please enter a valid email address."}
-                            </div>
-                            <div className="valid-feedback">
-                                Email is valid.
-                            </div>
                           </div>
-                            
                           <div className="col-md-5">
                             <p className="text-success fst-italic lh-1 fw-lighter mt-1 mt-md-0">
                               With e-mail you'll be able to reset your account
@@ -376,7 +267,7 @@ class Onboarding1 extends Component {
                           <div className="col-md-7">
                             <CountryDropdown
                               value={userCountryOfResidence}
-                              priorityOptions={dropdownPriorityOptions}
+                              priorityOptions={this.state.priorityOptions}
                               onChange={this.selectCountry}
                               className="w-100 form-select"
                             />
