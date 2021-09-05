@@ -22,11 +22,11 @@ class Onboard extends Component {
     return (
       <React.Fragment>
         <div className="container-fluid p-0">
-          <div className="d-flex align-items-stretch justify-content-between">
-            <div className="row">
-              <OnboardNav className="col-4" />
-              {onboardingStep == 1 && <Step1 className="col-4" />}
+          <div className="row align-items-center justify-content-between">
+            <div className="col-6 p-0">
+              <OnboardNav />
             </div>
+            <div className="col-6 p-0">{onboardingStep == 1 && <Step1 />}</div>
           </div>
         </div>
       </React.Fragment>
