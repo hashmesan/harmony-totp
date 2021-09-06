@@ -6,6 +6,12 @@ const initialState = {
   config: CONFIG[localStorage.getItem("environment") || "mainnet0"],
   location: "",
   onboardingStep: null,
+  user: {
+    userName: "",
+    userPassword: "",
+    userEmail: "",
+    userCountryOfResidence: "",
+  },
 };
 
 const store = createStore(initialState);

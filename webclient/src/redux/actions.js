@@ -14,6 +14,10 @@ const actions = (store) => ({
   setOnboardingStep: (state, value) => ({
     onboardingStep: value,
   }),
+
+  setUser: (state, value) => ({
+    user: value,
+  }),
 });
 
 export default actions;

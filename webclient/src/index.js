@@ -29,34 +29,36 @@ const mapToProps = ({ environment }) => ({ environment });
 const App = connect(mapToProps)(({ environment }) => (
   <Router>
     <AccountProvider>
-      <Header />
-      <Switch>
-        <Route exact path="/">
-          {getLocalWallet(environment, false) ? (
-            <Redirect to="/wallet" />
-          ) : (
-            <Redirect to="/landing" />
-          )}
-        </Route>
-        <Route path="/landing">
-          <Landing />
-        </Route>
-        <Route path="/create">
-          <Create />
-        </Route>
-        <Route path="/onboarding1">
-          <Onboarding1 />
-        </Route>
-        <Route path="/onboard">
-          <Onboard />
-        </Route>
-        <Route path="/wallet">
-          <Wallet />
-        </Route>
-        <Route path="/recover">
-          <Recover />
-        </Route>
-      </Switch>
+      <div className="bg-white">
+        <Header />
+        <Switch>
+          <Route exact path="/">
+            {getLocalWallet(environment, false) ? (
+              <Redirect to="/wallet" />
+            ) : (
+              <Redirect to="/landing" />
+            )}
+          </Route>
+          <Route path="/landing">
+            <Landing />
+          </Route>
+          <Route path="/create">
+            <Create />
+          </Route>
+          <Route path="/onboarding1">
+            <Onboarding1 />
+          </Route>
+          <Route path="/onboard">
+            <Onboard />
+          </Route>
+          <Route path="/wallet">
+            <Wallet />
+          </Route>
+          <Route path="/recover">
+            <Recover />
+          </Route>
+        </Switch>
+      </div>
     </AccountProvider>
   </Router>
 ));

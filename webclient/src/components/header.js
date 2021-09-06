@@ -23,11 +23,14 @@ class Header extends Component {
 
   render() {
     const { showNav } = this.state;
+    const { location, user } = this.props;
+
+    console.log("state store: ", user);
 
     return (
       <React.Fragment>
         <nav className="navbar navbar-expand-lg navbar-light bg-white py-3 border-bottom border-r-bank-grayscale-titanium sticky-top d-flex">
-          <div className="container-fluid">
+          <div className="container-fluid justify-content-start">
             <Link to="/" className="navbar-brand">
               <img
                 src="public/logo_R.svg"
@@ -35,7 +38,9 @@ class Header extends Component {
                 className="img-fluid m-1 h-75"
               />
             </Link>
-            <div className="text-secondary fs-5">{this.props.location}</div>
+            {location !== "landing" && (
+              <div className="text-secondary fs-5 ">{location}</div>
+            )}
             <button
               className="navbar-toggler"
               type="button"
@@ -43,46 +48,49 @@ class Header extends Component {
             >
               <span className="navbar-toggler-icon"></span>
             </button>
-
-            <div
-              className={(showNav ? "show" : "") + " collapse navbar-collapse"}
-            >
-              <ul className="navbar-nav ms-auto px-1 text-end">
-                <li className="nav-item">
-                  <Link to="/" className="nav-link active fs-5">
-                    Home
-                  </Link>
-                </li>
-                <li className="nav-item ">
-                  <Link to="/" className="nav-link active fs-5">
-                    Features
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link to="/" className="nav-link active fs-5">
-                    Pricing
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link to="/" className="nav-link active fs-5">
-                    About
-                  </Link>
-                </li>
-              </ul>
-              <Link to="/onboard">
-                <button className="btn btn-outline-dark rounded-pill fs-5 px-3 mx-1">
-                  Login
-                </button>
-              </Link>
-              <Link to="/onboard">
-                <button
-                  className="btn btn-warning rounded-pill fs-5 px-3 mx-1"
-                  type="button"
-                >
-                  Onboard
-                </button>
-              </Link>
-            </div>
+            {location == "landing" && (
+              <div
+                className={
+                  (showNav ? "show" : "") + " collapse navbar-collapse"
+                }
+              >
+                <ul className="navbar-nav ms-auto px-1 text-end">
+                  <li className="nav-item">
+                    <Link to="/" className="nav-link active fs-5">
+                      Home
+                    </Link>
+                  </li>
+                  <li className="nav-item ">
+                    <Link to="/" className="nav-link active fs-5">
+                      Features
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/" className="nav-link active fs-5">
+                      Pricing
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/" className="nav-link active fs-5">
+                      About
+                    </Link>
+                  </li>
+                </ul>
+                <Link to="/onboard">
+                  <button className="btn btn-outline-dark rounded-pill fs-5 px-3 mx-1">
+                    Login
+                  </button>
+                </Link>
+                <Link to="/onboard">
+                  <button
+                    className="btn btn-warning rounded-pill fs-5 px-3 mx-1"
+                    type="button"
+                  >
+                    Onboard
+                  </button>
+                </Link>
+              </div>
+            )}
           </div>
         </nav>
       </React.Fragment>
@@ -90,8 +98,9 @@ class Header extends Component {
   }
 }
 
-const mapToProps = ({ environment, location }) => ({
+const mapToProps = ({ environment, location, user }) => ({
   environment,
   location,
+  user,
 });
 export default connect(mapToProps, actions)(Header);
