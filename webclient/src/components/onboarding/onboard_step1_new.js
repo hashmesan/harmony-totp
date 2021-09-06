@@ -143,9 +143,9 @@ class Step1 extends Component {
     return (
       <SmartVaultConsumer>
         {({ smartvault }) => (
-          <div className="bg-white vh-100 p-2">
-            <form className="needs-validation" noValidate>
-              <div className="row mb-3">
+          <div className="bg-white vh-100 p-5">
+            <form className="needs-validation d-grid gap-4 w-75" noValidate>
+              <div className="row">
                 <label htmlFor="userName" className="form-label mb-0 fw-bold">
                   Username
                 </label>
@@ -188,7 +188,7 @@ class Step1 extends Component {
                 </div>
               </div>
 
-              <div className="row mb-3">
+              <div className="row">
                 <label
                   htmlFor="userPassword"
                   className="form-label mb-0 fw-bold"
@@ -208,7 +208,7 @@ class Step1 extends Component {
                 </div>
               </div>
 
-              <div className="row mb-3">
+              <div className="row">
                 <label htmlFor="UserEmail" className="form-label mb-0 fw-bold">
                   Email
                 </label>
@@ -224,7 +224,7 @@ class Step1 extends Component {
                 </div>
               </div>
 
-              <div className="row mb-3">
+              <div className="row">
                 <label
                   htmlFor="UserResidence"
                   className="form-label mb-0 fw-bold"
@@ -243,7 +243,7 @@ class Step1 extends Component {
 
               <button
                 role="submit"
-                className="btn bg-r-bank-blue text-light fs-4"
+                className="btn bg-r-bank-blue text-light fs-4 w-25"
                 style={{ borderRadius: "2rem" }}
                 to="/landing"
               >

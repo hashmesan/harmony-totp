@@ -16,10 +16,10 @@ class Landing extends Component {
   render() {
     return (
       <div>
-        <section className=" text-dark p5 text-center text-sm-start">
+        <section className="text-dark p5 text-center text-sm-start">
           <div className="container">
             <div className="card my-5 p-3">
-              <div className=" d-flex align-items-start justify-content-between">
+              <div className="d-flex align-items-start justify-content-between">
                 <div className="card-body">
                   <h3 className="card-title">
                     Your access to decentralized finance
@@ -32,7 +32,7 @@ class Landing extends Component {
                   </p>
                 </div>
                 <img
-                  src="public/undraw_wallet_aym5.svg"
+                  src="public/undraw_Outer_space_re_u9vd.svg"
                   className="img-fluid w-25"
                 />
               </div>
@@ -46,7 +46,7 @@ class Landing extends Component {
                   className="img-fluid w-25"
                 />
                 <div className="card-body">
-                  <h3 className="card-title">Smart Wallet blabla </h3>
+                  <h3 className="card-title">Smart Wallets </h3>
                   <p className="card-text">
                     Some quick example text to build on the card title and make
                     up the bulk of the card's content. Lorem ipsum dolor sit

@@ -26,7 +26,7 @@ class Header extends Component {
 
     return (
       <React.Fragment>
-        <nav className="navbar navbar-expand-lg navbar-light bg-white py-3 sticky-top d-flex">
+        <nav className="navbar navbar-expand-lg navbar-light bg-white py-3 border-bottom border-r-bank-grayscale-titanium sticky-top d-flex">
           <div className="container-fluid">
             <Link to="/" className="navbar-brand">
               <img

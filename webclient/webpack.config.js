@@ -2,6 +2,8 @@ const path = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 require("@babel/polyfill");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const BundleAnalyzerPlugin =
+  require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
 module.exports = {
   devServer: {
@@ -55,6 +57,9 @@ module.exports = {
       },
     ],
   },
+  optimization: {
+    splitChunks: { chunks: "all" },
+  },
   entry: {
     main: ["@babel/polyfill", "./src/index.js"],
     worker: ["@babel/polyfill", "./src/worker/generate.js"],
@@ -71,8 +76,7 @@ module.exports = {
       template: "./src/index.html",
       minify: false,
     }),
-
-    // Copy our app's index.html to the build folder.
+    new BundleAnalyzerPlugin(),
     new CopyWebpackPlugin([{ from: "./public", to: "./public" }]),
   ],
 };

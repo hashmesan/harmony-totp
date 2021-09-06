@@ -22,7 +22,7 @@ class Onboard extends Component {
     return (
       <React.Fragment>
         <div className="container-fluid p-0">
-          <div className="row align-items-center justify-content-between">
+          <div className="row align-items-center justify-content-between m-0">
             <div className="col-6 p-0">
               <OnboardNav />
             </div>
