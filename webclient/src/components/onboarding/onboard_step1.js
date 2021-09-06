@@ -248,7 +248,7 @@ class Step1 extends Component {
 
                   <div className="row mb-1">
                     <label
-                      htmlFor="UserEmail"
+                      htmlFor="userEmail"
                       className="form-label mb-0 text-r-bank-grayscale-iron"
                     >
                       Email
@@ -263,7 +263,7 @@ class Step1 extends Component {
                               : "is-invalid"
                             : ""
                         }`}
-                        id="UserEmail"
+                        id="userEmail"
                         placeholder="Please use a valid email address"
                         onBlur={this.handleBlur}
                         required
@@ -295,7 +295,7 @@ class Step1 extends Component {
                 </form>
               </div>
             </div>
-            <div className="d-flex justify-content-end pe-3">
+            <div className="d-flex justify-content-end p-3 fixed-bottom">
               <button
                 type="button"
                 onClick={this.handleClick}

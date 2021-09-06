@@ -4,6 +4,23 @@ import { connect } from "redux-zero/react";
 import actions from "../../redux/actions";
 import styled from "@emotion/styled";
 
+const Number = styled.div((props) => ({
+  width: "2em",
+  height: "2em",
+  boxSizing: "initial",
+
+  background: props.filled ? "#06232D" : "#efefee",
+  border: props.filled ? "0.1em solid #06232D" : "0.1em solid #92918f",
+  color: props.filled ? "#fff" : "#92918f",
+  textAlign: "center",
+  borderRadius: "50%",
+
+  lineHeight: "2em",
+  boxSizing: "content-box",
+
+  marginRight: "2em",
+}));
+
 class OnboardNav extends Component {
   constructor(props) {
     super(props);
@@ -12,27 +29,10 @@ class OnboardNav extends Component {
   render() {
     const { onboardingStep } = this.props;
 
-    const Number = styled.div((props) => ({
-      width: "2em",
-      height: "2em",
-      boxSizing: "initial",
-
-      background: props.filled ? "#06232D" : "#efefee",
-      border: props.filled ? "0.1em solid #06232D" : "0.1em solid #92918f",
-      color: props.filled ? "#fff" : "#92918f",
-      textAlign: "center",
-      borderRadius: "50%",
-
-      lineHeight: "2em",
-      boxSizing: "content-box",
-
-      marginRight: "2em",
-    }));
-
     return (
       <React.Fragment>
         <div className="bg-r-bank-grayscale-platin border border-r-bank-grayscale-titanium align-content-center justify-content-start p-5 vh-100">
-          <div className="d-flex flex-column">
+          <div className="d-flex flex-column  ">
             <div>
               <div className="fs-6 text-r-bank-grayscale-iron text-uppercase">
                 open an account
@@ -46,7 +46,7 @@ class OnboardNav extends Component {
               <div className="d-flex align-items-start">
                 <Number
                   filled={onboardingStep == 1 && "filled"}
-                  className="fs-6 "
+                  className="fs-6 flex-shrink-0"
                 >
                   1
                 </Number>
@@ -75,10 +75,11 @@ class OnboardNav extends Component {
                   )}
                 </div>
               </div>
+              <hr />
               <div className="d-flex align-items-start py-2">
                 <Number
                   filled={onboardingStep == 2 && "filled"}
-                  className="fs-6"
+                  className="fs-6 flex-shrink-0"
                 >
                   2
                 </Number>
@@ -94,8 +95,95 @@ class OnboardNav extends Component {
                   </span>
                   {onboardingStep == 2 && (
                     <div>
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      Provident, quam aspernatur. Accusamus modi quisquam ex.
+                      <p className="my-1">
+                        We will verify your email adress by sending you a one
+                        time code to your adress.
+                      </p>
+                    </div>
+                  )}
+                </div>{" "}
+              </div>
+              <hr />
+              <div className="d-flex align-items-start py-2">
+                <Number
+                  filled={onboardingStep == 3 && "filled"}
+                  className="fs-6 flex-shrink-0"
+                >
+                  3
+                </Number>
+                <div className="d-flex align-items-start flex-column">
+                  <span
+                    className={
+                      onboardingStep !== 3
+                        ? "text-r-bank-grayscale-iron"
+                        : "fw-bold"
+                    }
+                  >
+                    Link Google Authenticator
+                  </span>
+                  {onboardingStep == 3 && (
+                    <div>
+                      <p className="my-1">
+                        R Bank uses Google Authenticator for our 2 Factor
+                        Authentication. Click here to download the app from the
+                        appstore to your phone.
+                      </p>
+                    </div>
+                  )}
+                </div>{" "}
+              </div>
+              <hr />
+              <div className="d-flex align-items-start py-2">
+                <Number
+                  filled={onboardingStep == 4 && "filled"}
+                  className="fs-6 flex-shrink-0"
+                >
+                  4
+                </Number>
+                <div className="d-flex align-items-start flex-column">
+                  <span
+                    className={
+                      onboardingStep !== 4
+                        ? "text-r-bank-grayscale-iron"
+                        : "fw-bold"
+                    }
+                  >
+                    Fortify security
+                  </span>
+                  {onboardingStep == 4 && (
+                    <div>
+                      <p className="my-1">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                        Neque libero, dolorem natus ratione beatae asperiores.
+                      </p>
+                    </div>
+                  )}
+                </div>{" "}
+              </div>
+              <hr />
+              <div className="d-flex align-items-start py-2">
+                <Number
+                  filled={onboardingStep == 5 && "filled"}
+                  className="fs-6 flex-shrink-0"
+                >
+                  5
+                </Number>
+                <div className="d-flex align-items-start flex-column">
+                  <span
+                    className={
+                      onboardingStep !== 5
+                        ? "text-r-bank-grayscale-iron"
+                        : "fw-bold"
+                    }
+                  >
+                    Add funds
+                  </span>
+                  {onboardingStep == 5 && (
+                    <div>
+                      <p className="my-1">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                        Neque libero, dolorem natus ratione beatae asperiores.
+                      </p>
                     </div>
                   )}
                 </div>{" "}

@@ -6,6 +6,10 @@ import { connect } from "redux-zero/react";
 import actions from "../../redux/actions";
 import OnboardNav from "./onboarding_nav";
 import Step1 from "./onboard_step1";
+import Step2 from "./onboard_step2";
+import Step3 from "./onboard_step3";
+
+import { SmartVaultContext, SmartVaultConsumer } from "../smartvault_provider";
 
 class Onboard extends Component {
   constructor(props) {
@@ -18,7 +22,6 @@ class Onboard extends Component {
 
   render() {
     const onboardingStep = this.props.onboardingStep;
-    console.log("onboarding step: ", onboardingStep);
 
     return (
       <div className="container-fluid p-0">
@@ -26,7 +29,24 @@ class Onboard extends Component {
           <div className="col-6 p-0">
             <OnboardNav />
           </div>
-          <div className="col-6 p-0">{onboardingStep == 1 && <Step1 />}</div>
+          {onboardingStep == 1 && (
+            <div className="col-6 p-0">
+              {" "}
+              <Step1 />
+            </div>
+          )}
+          {onboardingStep == 2 && (
+            <div className="col-6 p-0">
+              {" "}
+              <Step2 />
+            </div>
+          )}
+          {onboardingStep == 3 && (
+            <div className="col-6 p-0">
+              {" "}
+              <Step3 />
+            </div>
+          )}
         </div>
       </div>
     );
