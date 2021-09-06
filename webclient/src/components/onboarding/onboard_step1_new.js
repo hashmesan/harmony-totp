@@ -77,39 +77,59 @@ class Step1 extends Component {
     }
   };
 
+  //User form validity function
   handleBlur = (evt) => {
+    //Get user-object property from state object before event
     const { user } = { ...this.state };
     const currentState = user;
-
+    
+    //Set user state after event
     const { id, value } = evt.target;
-
     currentState[id] = value;
+    this.setState({user: currentState});
 
-    this.setState({ user: currentState });
+    //Validity checks
+    //Validity check for user name
+    if (id=="userName"){
+      const userNamePattern =
+      /^([a-zA-Z0-9\-]+)$/; //one wallet can only have chars, numbers and - as a 1 special char
+  
+      const validityCheck = userNamePattern.exec(value) && value.length > 7;
 
-    switch (id) {
-      case "userName":
-        const nameRegex =
-          /^([a-zA-Z0-9\u0600-\u06FF\u0660-\u0669\u06F0-\u06F9 _.-]+)$/;
+      const { validity } = { ...this.state };
+      const currentState = validity;
+      currentState[id] = validityCheck;  //TODO: we use the id here because validity object has the same key names as user object
 
-        const userName = value;
-
-        const validityCheck = nameRegex.exec(userName) && userName.length > 7;
-
-        const { validity } = { ...this.state };
-        const currentState = validity;
-        currentState[id] = validityCheck;
-
-        this.setState({ validity: currentState });
-
-      // TODO: Add validity check for PW
-      case "userPassword":
-
-      // TODO: Add validity check for Email
-      case "userEmail":
-
-      default:
+    this.setState({ validity: currentState });
     }
+    //Validity check for password
+    else if (id=="userPassword"){
+      const passwordPattern = 
+      /^(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{7,}$/;
+
+      const validityCheck = passwordPattern.exec(value);
+
+      const { validity } = { ...this.state };
+      const currentState = validity;
+      currentState[id] = validityCheck;  //TODO: we use the id here because validity object has the same key names as user object
+
+      this.setState({ validity: currentState });
+    }
+    else if (id=="userEmail"){
+      const emailPattern = 
+      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+      
+      const validityCheck = emailPattern.exec(value);
+
+      const { validity } = { ...this.state };
+      const currentState = validity;
+      currentState[id] = validityCheck;  //TODO: we use the id here because validity object has the same key names as user object
+
+      this.setState({ validity: currentState });
+    }
+
+    //Other validity check later on if needed
+    else{}
 
     this.checkRentPriceAsync();
     this.checkForm();
@@ -143,114 +163,149 @@ class Step1 extends Component {
     return (
       <SmartVaultConsumer>
         {({ smartvault }) => (
-          <div className="bg-white vh-100 p-2">
-            <form className="needs-validation" noValidate>
-              <div className="row mb-3">
-                <label htmlFor="userName" className="form-label mb-0 fw-bold">
-                  Username
-                </label>
-                <div className=" align-items-start">
-                  <input
-                    type="text"
-                    className={`form-control  ${
-                      this.state.user.userName.length > 0
-                        ? this.state.validity.userName &&
-                          this.state.wallet.isAvailable
-                          ? "is-valid"
-                          : "is-invalid"
-                        : ""
-                    }`}
-                    id="userName"
-                    placeholder="Please use at least 8 characters"
-                    onChange={this.handleChange}
-                    onBlur={this.handleBlur}
-                    required
-                  />
-                  <div className="invalid-feedback">
-                    {this.state.validity.userName
-                      ? ""
-                      : "Please use at least 8 characters and no special characters. "}
-                    {this.state.wallet.isAvailable
-                      ? ""
-                      : "Please choose another username - this one is already taken"}
-                  </div>
-                  {!this.state.loading && (
-                    <div className="valid-feedback">
-                      Username is valid and available for{" "}
-                      {
-                        web3utils
-                          .fromWei(this.state.wallet.rentPrice)
-                          .split(".")[0]
-                      }{" "}
-                      ONE
+          <div className="bg-white vh-100 p-3">
+            <div className="container pt-5 pr-5 pb-3 pl-3">
+              <div>
+                <p className="text-secondary">STEP 1</p>
+                <p className="h1">Account setup</p>
+              </div>
+              
+              <form className="needs-validation" noValidate>
+                
+                <div className="row mb-3">
+                  <label htmlFor="userName" className="form-label mb-0 fw-bold">
+                    Username
+                  </label>
+                  <div className=" align-items-start">
+                    <input
+                      type="text"
+                      className={`form-control  ${
+                        this.state.user.userName.length > 0
+                          ? this.state.validity.userName &&
+                            this.state.wallet.isAvailable
+                            ? "is-valid"
+                            : "is-invalid"
+                          : ""
+                      }`}
+                      id="userName"
+                      placeholder="Please use at least 8 characters"
+                      onBlur={this.handleBlur}
+                      required
+                    />
+                    <div className="invalid-feedback">
+                      {this.state.validity.userName
+                        ? ""
+                        : "Please use only letters, numeric digits and hyphen. First and last character can't be a hyphen."}
+                      {this.state.wallet.isAvailable
+                        ? ""
+                        : "Please choose another username! This one is already taken."}
                     </div>
-                  )}
+                    {!this.state.loading && (
+                      <div className="valid-feedback">
+                        Username is valid and available for{" "}
+                        {
+                          web3utils
+                            .fromWei(this.state.wallet.rentPrice)
+                            .split(".")[0]
+                        }{" "}
+                        ONE
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              <div className="row mb-3">
-                <label
-                  htmlFor="userPassword"
-                  className="form-label mb-0 fw-bold"
-                >
-                  Password
-                </label>
-                <div className=" align-items start">
-                  <input
-                    type="password"
-                    className="form-control is-invalid"
-                    id="userPassword"
-                    placeholder="Please use more than 6 characters, 1 capital letter, 1 special character"
-                    onChange={this.handleChange}
-                    required
-                  />
-                  <div className="invalid-feedback">Please provide XYZ</div>
+                <div className="row mb-3">
+                  <label
+                    htmlFor="userPassword"
+                    className="form-label mb-0 fw-bold"
+                  >
+                    Password
+                  </label>
+                  <div className=" align-items start">
+                    <input
+                      type="password"
+                      className={`form-control  ${
+                        this.state.user.userPassword.length > 0
+                          ? this.state.validity.userPassword
+                            ? "is-valid"
+                            : "is-invalid"
+                          : ""
+                      }`}
+                      id="userPassword"
+                      placeholder="Please use more than 6 characters and at least 1 capital letter and 1 special character"
+                      onBlur={this.handleBlur}
+                      required
+                    />
+                    <div className="invalid-feedback">
+                      {this.state.validity.userPassword
+                        ? ""
+                        : "Invalid password! Please use more than 6 characters, at least 1 capital letter and 1 special character."}
+                    </div>
+                    <div className="valid-feedback">
+                        Password is valid.
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-              <div className="row mb-3">
-                <label htmlFor="UserEmail" className="form-label mb-0 fw-bold">
-                  Email
-                </label>
-                <div className=" align-items-start">
-                  <input
-                    type="email"
-                    className="form-control"
-                    id="UserEmail"
-                    placeholder="Please use a valid email address"
-                    onChange={this.handleChange}
-                    required
-                  />
+                <div className="row mb-3">
+                  <label htmlFor="UserEmail" className="form-label mb-0 fw-bold">
+                    Email
+                  </label>
+                  <div className=" align-items-start">
+                    <input
+                      type="email"
+                      className={`form-control  ${
+                        this.state.user.userEmail.length > 0
+                          ? this.state.validity.userEmail
+                            ? "is-valid"
+                            : "is-invalid"
+                          : ""
+                      }`}
+                      id="UserEmail"
+                      placeholder="Please use a valid email address"
+                      onBlur={this.handleBlur}
+                      required
+                    />
+                    <div className="invalid-feedback">
+                      {this.state.validity.userEmail
+                        ? ""
+                        : "Please enter a valid email address."}
+                    </div>
+                    <div className="valid-feedback">
+                        Email is valid.
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-              <div className="row mb-3">
-                <label
-                  htmlFor="UserResidence"
-                  className="form-label mb-0 fw-bold"
-                >
-                  Country of Residence
-                </label>
-                <div className=" algin-items start">
-                  <CountryDropdown
-                    value={userCountryOfResidence}
-                    priorityOptions={dropdownPriorityOptions}
-                    onChange={this.selectCountry}
-                    className="w-100 form-select"
-                  />
+                <div className="row mb-3">
+                  <label
+                    htmlFor="UserResidence"
+                    className="form-label mb-0 fw-bold"
+                  >
+                    Country of Residence
+                  </label>
+                  <div className=" algin-items start">
+                    <CountryDropdown
+                      value={userCountryOfResidence}
+                      priorityOptions={dropdownPriorityOptions}
+                      onChange={this.selectCountry}
+                      className="w-100 form-select"
+                    />
+                  </div>
                 </div>
-              </div>
+
+              </form>
 
               <button
-                role="submit"
-                className="btn bg-r-bank-blue text-light fs-4"
-                style={{ borderRadius: "2rem" }}
-                to="/landing"
-              >
-                <span className="btn-label">Continue with Step 2 </span>
-                <i className="bi bi-caret-right"></i>
+                  role="submit"
+                  className="btn bg-r-bank-blue text-light fs-4"
+                  style={{ borderRadius: "2rem" }}
+                  to="/landing"
+                >
+                  <span className="btn-label">Continue with Step 2 </span>
+                  <i className="bi bi-caret-right"></i>
               </button>
-            </form>
+            </div>
           </div>
         )}
       </SmartVaultConsumer>
