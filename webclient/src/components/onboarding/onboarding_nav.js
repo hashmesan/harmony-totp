@@ -50,7 +50,7 @@ class OnboardNav extends Component {
                 1
               </Number>
               <div className="d-flex align-items-start flex-column">
-                <span className={onboardingStep == 1 && "fw-bold"}>
+                <span className={onboardingStep == 1 ? "fw-bold" : ""}>
                   Account setup
                 </span>
                 {onboardingStep == 1 && (
