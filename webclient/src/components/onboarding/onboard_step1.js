@@ -141,10 +141,9 @@ class Step1 extends Component {
     const { user, validity } = this.state;
     validity.form =
       user.userName.length *
-        user.userPassword.length *
-        user.userEmail.length *
-        user.userCountryOfResidence.length >
-      0
+      user.userPassword.length *
+      user.userEmail.length *
+      user.userCountryOfResidence.length > 0
         ? true
         : false;
     this.setState({ validity: validity });
@@ -168,26 +167,28 @@ class Step1 extends Component {
             <div className="d-flex flex-column mb-5 pe-3">
               <div>
                 <div className="fs-6 text-r-bank-grayscale-iron text-uppercase">Step 1</div>
+
                 <div className="fs-1 text-r-bank-primary">Account setup</div>
               </div>
+
               <div className="pt-5">
                 <form className="needs-validation d-grid gap-4" noValidate>
-                  <div className="row mb-1">
-                    <label
-                      htmlFor="userName"
-                      className="form-label mb-0 text-r-bank-grayscale-iron"
-                    >
-                      Username
-                    </label>
-                    <div className="d-flex">
-                      <div className="col align-items-start">
+                  
+                    <div className="form-group align-items-start mb-1">
+                      <label
+                        htmlFor="userName"
+                        className="form-label mb-0 text-r-bank-grayscale-iron"
+                      >
+                        Username
+                      </label>
+                      <div className="d-flex align-items-center gap-2">
                         <input
                           type="text"
                           className={`form-control  ${
                             this.state.user.userName.length > 0
                               ? this.state.validity.userName &&
                                 this.state.wallet.isAvailable
-                                ? "is-valid"
+                                ? "" //"is-valid" -> Designer doesn't want green border if OK
                                 : "is-invalid"
                               : ""
                           }`}
@@ -196,17 +197,34 @@ class Step1 extends Component {
                           onBlur={this.handleBlur}
                           required
                         />
-                        <div className="invalid-feedback">
-                          {this.state.validity.userName
-                            ? ""
-                            : "Please use only letters, numeric digits and hyphen. First and last character can't be a hyphen."}
-                          {this.state.wallet.isAvailable
-                            ? ""
-                            : "Please choose another username - this one is already taken"}
+                        <div>
+                          {this.state.user.userName.length > 0 ? (
+                            this.state.validity.userName &&
+                            this.state.wallet.isAvailable ? (
+                              <i className="bi bi-check-circle text-success fs-5"></i>
+                            ) : (
+                              <i className="bi bi-x-circle text-danger fs-5"></i>
+                            )
+                          ) : (
+                            <i className="bi bi-question text-white fs-5"></i>
+                          )}
                         </div>
-                        {!this.state.loading && (
-                          <div className="valid-feedback">
-                            Username is valid and available for{" "}
+                      </div>
+                      <small className={`form-text ${
+                            this.state.user.userName.length > 0
+                              ? this.state.validity.userName &&
+                                this.state.wallet.isAvailable
+                                ? "text-success"
+                                : "text-danger"
+                              : ""
+                          }`}
+                      >
+                        {this.state.user.userName.length > 0 &&
+                        this.state.validity.userName && 
+                        this.state.wallet.isAvailable && 
+                        !this.state.loading && (
+                          <div>
+                            Username is available for{" "}
                             {
                               web3utils
                                 .fromWei(this.state.wallet.rentPrice)
@@ -215,37 +233,33 @@ class Step1 extends Component {
                             ONE
                           </div>
                         )}
-                      </div>
-                      <div className="col-1 text-center pt-1">
-                        {this.state.user.userName.length > 0 ? (
-                          this.state.validity.userName &&
-                          this.state.wallet.isAvailable ? (
-                            <i className="bi bi-check-circle text-success fs-5"></i>
-                          ) : (
-                            <i className="bi bi-x-circle text-danger fs-5"></i>
-                          )
-                        ) : (
-                          ""
+                        {this.state.user.userName.length > 0 &&
+                        this.state.validity.userName && 
+                        !this.state.wallet.isAvailable && (
+                          <div>Please choose another username - this one is already taken</div>
                         )}
-                      </div>
+                        {this.state.user.userName.length > 0 &&
+                        !this.state.validity.userName && 
+                        (
+                          <div>Please use at least 8 characters. They must be letters, numbers or hyphen. First and last character can't be a hyphen.</div>
+                        )}
+                      </small>
                     </div>
-                  </div>
-
-                  <div className="row mb-1">
-                    <label
-                      htmlFor="userPassword"
-                      className="form-label mb-0 text-r-bank-grayscale-iron"
-                    >
-                      Password
-                    </label>
-                    <div className="row">
-                      <div className="col align-items start">
+                  
+                    <div className="form-group align-items-start mb-1">
+                      <label
+                        htmlFor="userPassword"
+                        className="form-label mb-0 text-r-bank-grayscale-iron"
+                      >
+                        Password
+                      </label>
+                      <div className="d-flex align-items-center gap-2">
                         <input
                           type="password"
                           className={`form-control  ${
                             this.state.user.userPassword.length > 0
                               ? this.state.validity.userPassword
-                                ? "is-valid"
+                                ? "" //"is-valid" -> Designer doesn't want green border if OK
                                 : "is-invalid"
                               : ""
                           }`}
@@ -254,93 +268,110 @@ class Step1 extends Component {
                           onBlur={this.handleBlur}
                           required
                         />
-                        <div className="invalid-feedback">
-                          {this.state.validity.userPassword
-                            ? ""
-                            : "Please use more than 6 characters, at least 1 capital letter and 1 special character"}
+                        <div>
+                          {this.state.user.userPassword.length > 0 ? (
+                            this.state.validity.userPassword ? (
+                              <i className="bi bi-check-circle text-success fs-5"></i>
+                            ) : (
+                              <i className="bi bi-x-circle text-danger fs-5"></i>
+                            )
+                          ) : (
+                            <i className="bi bi-question text-white fs-5"></i>
+                          )}
                         </div>
                       </div>
-                      <div className="col-1 text-center pt-1">
-                        {this.state.user.userPassword.length > 0 ? (
-                          this.state.validity.userPassword ? (
-                            <i className="bi bi-check-circle text-success fs-5"></i>
-                          ) : (
-                            <i className="bi bi-x-circle text-danger fs-5"></i>
-                          )
-                        ) : (
-                          ""
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="row mb-1">
-                    <label
-                      htmlFor="userEmail"
-                      className="form-label mb-0 text-r-bank-grayscale-iron"
-                    >
-                      Email
-                    </label>
-                    <div className="row">
-                      <div className="col align-items-start">
-                        <input
-                          type="email"
-                          className={`form-control  ${
-                            this.state.user.userEmail.length > 0
-                              ? this.state.validity.userEmail
-                                ? "is-valid"
-                                : "is-invalid"
+                      <small className={`form-text ${
+                            this.state.user.userPassword.length > 0
+                              ? this.state.validity.userPassword 
+                                ? "text-success"
+                                : "text-danger"
                               : ""
                           }`}
-                          id="userEmail"
-                          placeholder="Please use a valid email address"
-                          onBlur={this.handleBlur}
-                          required
+                      >
+                        {this.state.user.userPassword.length > 0 &&
+                        !this.state.validity.userPassword && 
+                        (
+                          <div>Please use more than 6 characters, at least 1 capital letter and 1 special character</div>
+                        )}
+                      </small>
+                    </div>
+
+                    <div className="form-group align-items-start mb-1">
+                      <label
+                        htmlFor="userEmail"
+                        className="form-label mb-0 text-r-bank-grayscale-iron"
+                      >
+                        Email
+                      </label>
+                      <div className="d-flex align-items-center gap-2">
+                        <input
+                            type="email"
+                            className={`form-control  ${
+                              this.state.user.userEmail.length > 0
+                                ? this.state.validity.userEmail
+                                  ? "" //"is-valid" -> Designer doesn't want green border if OK
+                                  : "is-invalid"
+                                : ""
+                            }`}
+                            id="userEmail"
+                            placeholder="Please use a valid email address"
+                            onBlur={this.handleBlur}
+                            required
                         />
-                        <div className="invalid-feedback text-warning">
-                          {this.state.validity.userEmail
-                            ? ""
-                            : "Please enter a valid email address."}
+                        <div>
+                          {this.state.user.userEmail.length > 0 ? (
+                            this.state.validity.userEmail ? (
+                              <i className="bi bi-check-circle text-success fs-5"></i>
+                            ) : (
+                              <i className="bi bi-x-circle text-danger fs-5"></i>
+                            )
+                          ) : (
+                            <i className="bi bi-question text-white fs-5"></i>
+                          )}
                         </div>
                       </div>
-                      <div className="col-1 text-center pt-1">
-                        {this.state.user.userEmail.length > 0
-                          ? this.state.validity.userEmail
-                            ? <i className="bi bi-check-circle text-success fs-5"></i> 
-                            : <i className="bi bi-x-circle text-warning fs-5"></i>
-                          : ""
-                          }
-                      </div>
+                      <small className={`form-text ${
+                            this.state.user.userEmail.length > 0
+                              ? this.state.validity.userEmail 
+                                ? "text-success"
+                                : "text-danger"
+                              : ""
+                          }`}
+                      >
+                        {this.state.user.userEmail.length > 0 &&
+                        !this.state.validity.userEmail && 
+                        (
+                          <div>Please enter a valid email address</div>
+                        )}
+                      </small>
                     </div>
-                  </div>
-
-                  <div className="row mb-1">
-                    <label
-                      htmlFor="UserResidence"
-                      className="form-label mb-0 text-r-bank-grayscale-iron"
-                    >
-                      Country of Residence
-                    </label>
-                    <div className="row">
-                      <div className="col algin-items start">
+                  
+                    <div className="form-group align-items-start mb-1">
+                      <label
+                        htmlFor="UserResidence"
+                        className="form-label mb-0 text-r-bank-grayscale-iron"
+                      >
+                        Country of Residence
+                      </label>
+                      <div className="d-flex align-items-center gap-2">
                         <CountryDropdown
                           value={userCountryOfResidence}
                           priorityOptions={dropdownPriorityOptions}
                           onChange={this.selectCountry}
                           className={`w-100 form-select ${this.state.user.userCountryOfResidence ? "r-bank-primary": "text-r-bank-grayscale-iron"}`}
                         />
-                      </div>
-                      <div className="col-1 text-center pt-1">
-                        {
-                          this.state.user.userCountryOfResidence ? (
-                            <i className="bi bi-check-circle text-success fs-5"></i>
-                          ) : (
-                            ""
-                          ) //<i className="bi bi-x-circle text-danger fs-5"></i>
-                        }
+                        <div>
+                          {
+                            this.state.user.userCountryOfResidence ? (
+                              <i className="bi bi-check-circle text-success fs-5"></i>
+                            ) : (
+                              <i className="bi bi-question text-white fs-5"></i>
+                            )
+                          }
+                        </div>
                       </div>
                     </div>
-                  </div>
+
                 </form>
               </div>
             </div>
@@ -349,8 +380,12 @@ class Step1 extends Component {
               <button
                 type="button"
                 onClick={this.handleClick}
-                className="btn btn-r-bank-grayscale-silver text-white rounded-pill"
-              >
+                className={`btn rounded-pill ${
+                  this.state.validity.form
+                      ? "btn-r-bank-highlight text-rb-bank-primary"
+                      : "btn-r-bank-grayscale-silver text-rb-bank-white"
+                }`}
+                >
                 Continue
               </button>
             </div>

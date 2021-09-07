@@ -32,10 +32,10 @@ class OnboardNav extends Component {
     return (
       <React.Fragment>
         <div className="bg-r-bank-grayscale-platin border border-r-bank-grayscale-titanium align-content-center justify-content-start p-5 vh-100">
-          <div className="d-flex flex-column  ">
+          <div className="d-flex flex-column ps-3">
             <div>
               <div className="fs-6 text-r-bank-grayscale-iron text-uppercase">
-                open an account
+                pen an account
               </div>
 
               <div className="fs-1 text-r-bank-grayscale-iron">

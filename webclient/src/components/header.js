@@ -83,7 +83,7 @@ class Header extends Component {
                 </Link>
                 <Link to="/onboard">
                   <button
-                    className="btn btn-warning rounded-pill fs-6 px-3 mx-1"
+                    className="btn btn-r-bank-highlight rounded-pill fs-6 px-3 mx-1"
                     type="button"
                   >
                     Onboard
