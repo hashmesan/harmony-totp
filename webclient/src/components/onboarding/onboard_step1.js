@@ -319,7 +319,7 @@ class Step1 extends Component {
                           value={userCountryOfResidence}
                           priorityOptions={dropdownPriorityOptions}
                           onChange={this.selectCountry}
-                          className="w-100 form-select text-secondary"
+                          className={`w-100 form-select ${this.state.user.userCountryOfResidence ? "r-bank-primary": "text-r-bank-grayscale-iron"}`}
                         />
                       </div>
                       <div className="col-1 text-center pt-1">
