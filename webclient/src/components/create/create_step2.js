@@ -26,6 +26,7 @@ class ScanQRCode extends Component {
   }
   handleChange(otp) {
     this.setState({ otp });
+    validate(otp);
   }
 
   validate(e) {

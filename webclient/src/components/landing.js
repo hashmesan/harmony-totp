@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "redux-zero/react";
+import styled from "@emotion/styled";
 
 import actions from "../redux/actions";
 
@@ -46,41 +47,70 @@ class Landing extends Component {
             </div>
           </div>
           <div className="row p-3 bg-r-bank-grayscale-platin ">
-            <div className="col h1 text-r-bank-primary text-center">
-              Why R-Bank?
+            <div className="row justify-content-center">
+              <div className="col h1 text-r-bank-primary text-center">
+                Why R-Bank?
+              </div>
             </div>
-            <div className="row">
-              <div className="col-md-4 justify-content-center">
-                <div className="row">
-                  <img src="public/wallet_steffi.svg" className="w-25" />
-                </div>
-                <div className="row">
-                  <p className="fs-3">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                    Ratione officia hic laboriosam similique accusamus
-                    repudiandae?
-                  </p>
+            <div className="row py-3">
+              <div className="col-md-4 px-3 pt-5">
+                <div className="card bg-r-bank-grayscale-platin border-0">
+                  <img
+                    src="public/wallet_steffi.svg"
+                    className="card-img-top thumbnail image-fluid mx-auto"
+                    style={{ maxHeight: "80px" }}
+                    alt="..."
+                  />
+                  <div className="card-body mt-3">
+                    <p className="card-text text-center fs-6">
+                      <span className="fw-bold">
+                        R-Bank offers you a bullet proof smart wallet,
+                      </span>
+                      with advanced safety features natively available e.g.
+                      wallet recovery or locking in case of an emergency.
+                    </p>
+                  </div>
                 </div>
               </div>
-              <div className="col-md-4">
-                <img
-                  src="public/compass_steffi.svg"
-                  className="img-fluid w-25"
-                />
-                <p className="fs-3">
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                  Ratione officia hic laboriosam similique accusamus
-                  repudiandae?
-                </p>
+              <div className="col-md-4 px-3 pt-5">
+                <div className="card bg-r-bank-grayscale-platin border-0">
+                  <img
+                    src="public/compass_steffi.svg"
+                    className="card-img-top  mx-auto"
+                    style={{ maxHeight: "80px" }}
+                    alt="..."
+                  />
+                  <div className="card-body mt-3">
+                    <p className="card-text text-center fs-6">
+                      <span className="fw-bold">
+                        R-Bank takes you by the hand and guides you through the
+                        complex world of crypto investments.{" "}
+                      </span>
+                      We offer comprehensive product descriptions and highlight
+                      chances and risks. If you are interested to deepen your
+                      understanding, we’re at your service.{" "}
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div className="col-md-4">
-                <img src="public/safe_steffi.svg" className="img-fluid w-25" />
-
-                <p className="fs-3">
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                  Ratione officia hic laboriosam similique accusamus
-                  repudiandae?
-                </p>
+              <div className="col-md-4 px-3 pt-5">
+                <div className="card bg-r-bank-grayscale-platin border-0">
+                  <img
+                    src="public/safe_steffi.svg"
+                    className="card-img-top mx-auto"
+                    style={{ maxHeight: "80px" }}
+                    alt="..."
+                  />
+                  <div className="card-body mt-3">
+                    <p className="card-text text-center fs-6">
+                      <span className="fw-bold">
+                        R-Bank offers you a bullet proof smart wallet,
+                      </span>
+                      with advanced safety features natively available e.g.
+                      wallet recovery or locking in case of an emergency.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
