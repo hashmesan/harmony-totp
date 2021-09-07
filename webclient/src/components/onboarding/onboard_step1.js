@@ -289,7 +289,7 @@ class Step1 extends Component {
                           onBlur={this.handleBlur}
                           required
                         />
-                        <div className="invalid-feedback">
+                        <div className="invalid-feedback text-warning">
                           {this.state.validity.userEmail
                             ? ""
                             : "Please enter a valid email address."}
@@ -299,7 +299,7 @@ class Step1 extends Component {
                         {this.state.user.userEmail.length > 0
                           ? this.state.validity.userEmail
                             ? <i className="bi bi-check-circle text-success fs-5"></i> 
-                            : <i className="bi bi-x-circle text-danger fs-5"></i>
+                            : <i className="bi bi-x-circle text-warning fs-5"></i>
                           : ""
                           }
                       </div>
