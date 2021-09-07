@@ -29,20 +29,20 @@ class Header extends Component {
 
     return (
       <React.Fragment>
-        <nav className="navbar navbar-expand-lg navbar-light bg-white py-3 border-bottom border-r-bank-grayscale-titanium sticky-top d-flex">
+        <nav className="navbar navbar-expand-lg navbar-light bg-white py-3 sticky-top d-flex">
           <div className="container-fluid justify-content-start">
             <Link to="/" className="navbar-brand">
               <img
-                src="public/logo_R.svg"
+                src="public/logo_R_black.svg"
                 alt=""
                 className="img-fluid m-1 h-75"
               />
             </Link>
             {location !== "landing" && (
-              <div className="text-secondary fs-5 ">{location}</div>
+              <div className="text-secondary fs-6 ">{location}</div>
             )}
             <button
-              className="navbar-toggler"
+              className="navbar-toggler ms-auto"
               type="button"
               onClick={this.toggleNav}
             >
@@ -56,34 +56,34 @@ class Header extends Component {
               >
                 <ul className="navbar-nav ms-auto px-1 text-end">
                   <li className="nav-item">
-                    <Link to="/" className="nav-link active fs-5">
+                    <Link to="/" className="nav-link active fs-6">
                       Home
                     </Link>
                   </li>
                   <li className="nav-item ">
-                    <Link to="/" className="nav-link active fs-5">
+                    <Link to="/" className="nav-link active fs-6">
                       Features
                     </Link>
                   </li>
                   <li className="nav-item">
-                    <Link to="/" className="nav-link active fs-5">
+                    <Link to="/" className="nav-link active fs-6">
                       Pricing
                     </Link>
                   </li>
                   <li className="nav-item">
-                    <Link to="/" className="nav-link active fs-5">
+                    <Link to="/" className="nav-link active fs-6">
                       About
                     </Link>
                   </li>
                 </ul>
                 <Link to="/onboard">
-                  <button className="btn btn-outline-dark rounded-pill fs-5 px-3 mx-1">
+                  <button className="btn btn-outline-dark rounded-pill fs-6 px-3 mx-1">
                     Login
                   </button>
                 </Link>
                 <Link to="/onboard">
                   <button
-                    className="btn btn-warning rounded-pill fs-5 px-3 mx-1"
+                    className="btn btn-warning rounded-pill fs-6 px-3 mx-1"
                     type="button"
                   >
                     Onboard

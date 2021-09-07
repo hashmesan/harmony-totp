@@ -159,7 +159,7 @@ class Step1 extends Component {
     return (
       <SmartVaultConsumer>
         {({ smartvault }) => (
-          <div className="bg-white align-content-center justify-content-start p-5 vh-100">
+          <div className="bg-white align-content-center border-top border-r-bank-grayscale-titanium justify-content-start p-5 vh-100">
             <div className="d-flex flex-column mb-5 pe-3">
               <div>
                 <div className="fs-6 text-r-bank-grayscale-iron text-uppercase">
