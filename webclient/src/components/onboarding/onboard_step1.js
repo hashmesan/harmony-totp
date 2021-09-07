@@ -383,13 +383,13 @@ class Step1 extends Component {
                 className={`btn rounded-pill ${
                   this.state.validity.form
                       ? "btn-r-bank-highlight text-rb-bank-primary"
-                      : "btn-r-bank-grayscale-silver text-rb-bank-white"
+                      : "btn-r-bank-grayscale-silver text-white"
                 }`}
                 >
                 Continue
               </button>
             </div>
-          </div>
+          </div> 
         )}
       </SmartVaultConsumer>
     );
