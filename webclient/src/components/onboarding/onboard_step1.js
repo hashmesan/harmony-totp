@@ -40,7 +40,9 @@ class Step1 extends Component {
     currentState.userCountryOfResidence = value;
 
     this.setState({ user: currentState });
-    this.setState({ validity: {...this.state.validity, userCountryOfResidence: true}});
+    this.setState({
+      validity: { ...this.state.validity, userCountryOfResidence: true },
+    });
   };
 
   checkRentPriceAsync = async () => {
@@ -113,7 +115,7 @@ class Step1 extends Component {
       currentState[id] = validityCheck; //TODO: we use the id here because validity object has the same key names as user object
 
       this.setState({ validity: currentState });
-    } 
+    }
     //Validity check for email
     else if (id == "userEmail") {
       const emailPattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -131,7 +133,7 @@ class Step1 extends Component {
     else {
     }
 
-    id=="userName" ? this.checkRentPriceAsync():"";
+    id == "userName" ? this.checkRentPriceAsync() : "";
     this.checkForm();
   };
 
@@ -162,8 +164,8 @@ class Step1 extends Component {
     return (
       <SmartVaultConsumer>
         {({ smartvault }) => (
-          <div className="bg-white align-content-center justify-content-start p-5 vh-100">
-            <div className="d-flex flex-column mb-5">
+          <div className="bg-white align-content-center border-top border-r-bank-grayscale-titanium justify-content-start p-5 vh-100">
+            <div className="d-flex flex-column mb-5 pe-3">
               <div>
                 <div className="fs-6 text-r-bank-grayscale-iron text-uppercase">Step 1</div>
                 <div className="fs-1 text-r-bank-primary">Account setup</div>
@@ -177,7 +179,7 @@ class Step1 extends Component {
                     >
                       Username
                     </label>
-                    <div className="row">
+                    <div className="d-flex">
                       <div className="col align-items-start">
                         <input
                           type="text"
@@ -215,15 +217,18 @@ class Step1 extends Component {
                         )}
                       </div>
                       <div className="col-1 text-center pt-1">
-                        {this.state.user.userName.length > 0
-                          ? this.state.validity.userName && this.state.wallet.isAvailable 
-                            ? <i className="bi bi-check-circle text-success fs-5"></i> 
-                            : <i className="bi bi-x-circle text-danger fs-5"></i>
-                          : ""
-                          }
+                        {this.state.user.userName.length > 0 ? (
+                          this.state.validity.userName &&
+                          this.state.wallet.isAvailable ? (
+                            <i className="bi bi-check-circle text-success fs-5"></i>
+                          ) : (
+                            <i className="bi bi-x-circle text-danger fs-5"></i>
+                          )
+                        ) : (
+                          ""
+                        )}
                       </div>
                     </div>
-                    
                   </div>
 
                   <div className="row mb-1">
@@ -256,12 +261,15 @@ class Step1 extends Component {
                         </div>
                       </div>
                       <div className="col-1 text-center pt-1">
-                        {this.state.user.userPassword.length > 0
-                          ? this.state.validity.userPassword
-                            ? <i className="bi bi-check-circle text-success fs-5"></i> 
-                            : <i className="bi bi-x-circle text-danger fs-5"></i>
-                          : ""
-                          }
+                        {this.state.user.userPassword.length > 0 ? (
+                          this.state.validity.userPassword ? (
+                            <i className="bi bi-check-circle text-success fs-5"></i>
+                          ) : (
+                            <i className="bi bi-x-circle text-danger fs-5"></i>
+                          )
+                        ) : (
+                          ""
+                        )}
                       </div>
                     </div>
                   </div>
@@ -323,9 +331,12 @@ class Step1 extends Component {
                         />
                       </div>
                       <div className="col-1 text-center pt-1">
-                        {this.state.user.userCountryOfResidence
-                          ? <i className="bi bi-check-circle text-success fs-5"></i> 
-                          : ""//<i className="bi bi-x-circle text-danger fs-5"></i>
+                        {
+                          this.state.user.userCountryOfResidence ? (
+                            <i className="bi bi-check-circle text-success fs-5"></i>
+                          ) : (
+                            ""
+                          ) //<i className="bi bi-x-circle text-danger fs-5"></i>
                         }
                       </div>
                     </div>
@@ -333,7 +344,7 @@ class Step1 extends Component {
                 </form>
               </div>
             </div>
-            
+
             <div className="d-flex justify-content-end pe-3 fixed-bottom">
               <button
                 type="button"
