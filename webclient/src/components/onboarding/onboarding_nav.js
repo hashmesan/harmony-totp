@@ -1,8 +1,9 @@
 import React, { Component } from "react";
-
+import { Link } from "react-router-dom";
 import { connect } from "redux-zero/react";
-import actions from "../../redux/actions";
 import styled from "@emotion/styled";
+
+import actions from "../../redux/actions";
 
 const Number = styled.div((props) => ({
   width: "2em",
@@ -26,6 +27,10 @@ class OnboardNav extends Component {
     super(props);
   }
 
+  handleClick = (nr) => {
+    this.props.setOnboardingStep(nr);
+  };
+
   render() {
     const { onboardingStep } = this.props;
 
@@ -43,7 +48,10 @@ class OnboardNav extends Component {
               </div>
             </div>
             <div className="pt-5">
-              <div className="d-flex align-items-start">
+              <div
+                className="d-flex align-items-start"
+                onClick={() => this.handleClick(1)}
+              >
                 <Number
                   filled={onboardingStep == 1 && "filled"}
                   className="fs-6 flex-shrink-0"
@@ -76,7 +84,11 @@ class OnboardNav extends Component {
                 </div>
               </div>
               <hr />
-              <div className="d-flex align-items-start py-2">
+              <div
+                className="d-flex align-items-start py-2"
+                id="2"
+                onClick={() => this.handleClick(2)}
+              >
                 <Number
                   filled={onboardingStep == 2 && "filled"}
                   className="fs-6 flex-shrink-0"
@@ -104,7 +116,10 @@ class OnboardNav extends Component {
                 </div>{" "}
               </div>
               <hr />
-              <div className="d-flex align-items-start py-2">
+              <div
+                className="d-flex align-items-start py-2"
+                onClick={() => this.handleClick(3)}
+              >
                 <Number
                   filled={onboardingStep == 3 && "filled"}
                   className="fs-6 flex-shrink-0"
@@ -133,7 +148,10 @@ class OnboardNav extends Component {
                 </div>{" "}
               </div>
               <hr />
-              <div className="d-flex align-items-start py-2">
+              <div
+                className="d-flex align-items-start py-2"
+                onClick={() => this.handleClick(4)}
+              >
                 <Number
                   filled={onboardingStep == 4 && "filled"}
                   className="fs-6 flex-shrink-0"
@@ -153,15 +171,18 @@ class OnboardNav extends Component {
                   {onboardingStep == 4 && (
                     <div>
                       <p className="my-1">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                        Neque libero, dolorem natus ratione beatae asperiores.
+                        Make sure to secure your wallet with state-of-the-art
+                        security features.
                       </p>
                     </div>
                   )}
                 </div>{" "}
               </div>
               <hr />
-              <div className="d-flex align-items-start py-2">
+              <div
+                className="d-flex align-items-start py-2"
+                onClick={() => this.handleClick(5)}
+              >
                 <Number
                   filled={onboardingStep == 5 && "filled"}
                   className="fs-6 flex-shrink-0"
@@ -181,8 +202,13 @@ class OnboardNav extends Component {
                   {onboardingStep == 5 && (
                     <div>
                       <p className="my-1">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                        Neque libero, dolorem natus ratione beatae asperiores.
+                        Adding funds will activate your wallet and you’re all
+                        set up to start investing in the space of decentralized
+                        finance!
+                      </p>
+                      <p className="text-r-bank-grayscale-iron mt-3">
+                        R-Bank only charges the fees of third party providers
+                        and does not earn anything on top-ups.
                       </p>
                     </div>
                   )}

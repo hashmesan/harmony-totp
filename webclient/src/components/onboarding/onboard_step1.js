@@ -162,206 +162,201 @@ class Step1 extends Component {
     const dropdownPriorityOptions = ["CH"];
 
     return (
-      <SmartVaultConsumer>
-        {({ smartvault }) => (
-          <div className="bg-white align-content-center border-top border-r-bank-grayscale-titanium justify-content-start p-5 vh-100">
-            <div className="d-flex flex-column mb-5 pe-3">
-              <div>
-                <div className="fs-6 text-r-bank-grayscale-iron text-uppercase">
-                  Step 1
-                </div>
-                <div className="fs-1 text-r-bank-primary">Account setup</div>
-              </div>
-              <div className="pt-5">
-                <form className="needs-validation d-grid gap-4" noValidate>
-                  <div className="row mb-1">
-                    <label
-                      htmlFor="userName"
-                      className="form-label mb-0 text-r-bank-grayscale-iron"
-                    >
-                      Username
-                    </label>
-                    <div className="row">
-                      <div className="col align-items-start">
-                        <input
-                          type="text"
-                          className={`form-control  ${
-                            this.state.user.userName.length > 0
-                              ? this.state.validity.userName &&
-                                this.state.wallet.isAvailable
-                                ? "is-valid"
-                                : "is-invalid"
-                              : ""
-                          }`}
-                          id="userName"
-                          placeholder="Please use at least 8 characters"
-                          onBlur={this.handleBlur}
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          {this.state.validity.userName
-                            ? ""
-                            : "Please use only letters, numeric digits and hyphen. First and last character can't be a hyphen."}
-                          {this.state.wallet.isAvailable
-                            ? ""
-                            : "Please choose another username - this one is already taken"}
-                        </div>
-                        {!this.state.loading && (
-                          <div className="valid-feedback">
-                            Username is valid and available for{" "}
-                            {
-                              web3utils
-                                .fromWei(this.state.wallet.rentPrice)
-                                .split(".")[0]
-                            }{" "}
-                            ONE
-                          </div>
-                        )}
-                      </div>
-                      <div className="col-1 text-center pt-1">
-                        {this.state.user.userName.length > 0 ? (
-                          this.state.validity.userName &&
-                          this.state.wallet.isAvailable ? (
-                            <i className="bi bi-check-circle text-success fs-5"></i>
-                          ) : (
-                            <i className="bi bi-x-circle text-danger fs-5"></i>
-                          )
-                        ) : (
-                          ""
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="row mb-1">
-                    <label
-                      htmlFor="userPassword"
-                      className="form-label mb-0 text-r-bank-grayscale-iron"
-                    >
-                      Password
-                    </label>
-                    <div className="row">
-                      <div className="col align-items start">
-                        <input
-                          type="password"
-                          className={`form-control  ${
-                            this.state.user.userPassword.length > 0
-                              ? this.state.validity.userPassword
-                                ? "is-valid"
-                                : "is-invalid"
-                              : ""
-                          }`}
-                          id="userPassword"
-                          placeholder="Please use more than 6 characters and at least 1 capital letter and 1 special character"
-                          onBlur={this.handleBlur}
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          {this.state.validity.userPassword
-                            ? ""
-                            : "Please use more than 6 characters, at least 1 capital letter and 1 special character"}
-                        </div>
-                      </div>
-                      <div className="col-1 text-center pt-1">
-                        {this.state.user.userPassword.length > 0 ? (
-                          this.state.validity.userPassword ? (
-                            <i className="bi bi-check-circle text-success fs-5"></i>
-                          ) : (
-                            <i className="bi bi-x-circle text-danger fs-5"></i>
-                          )
-                        ) : (
-                          ""
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="row mb-1">
-                    <label
-                      htmlFor="userEmail"
-                      className="form-label mb-0 text-r-bank-grayscale-iron"
-                    >
-                      Email
-                    </label>
-                    <div className="row">
-                      <div className="col align-items-start">
-                        <input
-                          type="email"
-                          className={`form-control  ${
-                            this.state.user.userEmail.length > 0
-                              ? this.state.validity.userEmail
-                                ? "is-valid"
-                                : "is-invalid"
-                              : ""
-                          }`}
-                          id="userEmail"
-                          placeholder="Please use a valid email address"
-                          onBlur={this.handleBlur}
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          {this.state.validity.userEmail
-                            ? ""
-                            : "Please enter a valid email address."}
-                        </div>
-                      </div>
-                      <div className="col-1 text-center pt-1">
-                        {this.state.user.userEmail.length > 0 ? (
-                          this.state.validity.userEmail ? (
-                            <i className="bi bi-check-circle text-success fs-5"></i>
-                          ) : (
-                            <i className="bi bi-x-circle text-danger fs-5"></i>
-                          )
-                        ) : (
-                          ""
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="row mb-1">
-                    <label
-                      htmlFor="UserResidence"
-                      className="form-label mb-0 text-r-bank-grayscale-iron"
-                    >
-                      Country of Residence
-                    </label>
-                    <div className="row">
-                      <div className="col algin-items start">
-                        <CountryDropdown
-                          value={userCountryOfResidence}
-                          priorityOptions={dropdownPriorityOptions}
-                          onChange={this.selectCountry}
-                          className="w-100 form-select text-secondary"
-                        />
-                      </div>
-                      <div className="col-1 text-center pt-1">
-                        {
-                          this.state.user.userCountryOfResidence ? (
-                            <i className="bi bi-check-circle text-success fs-5"></i>
-                          ) : (
-                            ""
-                          ) //<i className="bi bi-x-circle text-danger fs-5"></i>
-                        }
-                      </div>
-                    </div>
-                  </div>
-                </form>
-              </div>
+      <div className="bg-white align-content-center border-top border-r-bank-grayscale-titanium justify-content-start p-5 vh-100">
+        <div className="d-flex flex-column mb-5 pe-3">
+          <div>
+            <div className="fs-6 text-r-bank-grayscale-iron text-uppercase">
+              Step 1
             </div>
-
-            <div className="d-flex justify-content-end pe-3 fixed-bottom">
-              <button
-                type="button"
-                onClick={this.handleClick}
-                className="btn btn-r-bank-grayscale-silver text-white rounded-pill"
-              >
-                Continue
-              </button>
-            </div>
+            <div className="fs-1 text-r-bank-primary">Account setup</div>
           </div>
-        )}
-      </SmartVaultConsumer>
+          <div className="pt-5">
+            <form className="needs-validation d-grid gap-5" noValidate>
+              <div className="row mb-1">
+                <label
+                  htmlFor="userName"
+                  className="form-label mb-0 text-r-bank-grayscale-iron"
+                >
+                  Username
+                </label>
+                <div className="row">
+                  <div className="col align-items-start">
+                    <input
+                      type="text"
+                      className={`form-control  ${
+                        this.state.user.userName.length > 0
+                          ? this.state.validity.userName &&
+                            this.state.wallet.isAvailable
+                            ? "is-valid"
+                            : "is-invalid"
+                          : ""
+                      }`}
+                      id="userName"
+                      placeholder="Please use at least 8 characters"
+                      onBlur={this.handleBlur}
+                      required
+                    />
+                    <div className="invalid-feedback">
+                      {this.state.validity.userName
+                        ? ""
+                        : "Please use only letters, numeric digits and hyphen. First and last character can't be a hyphen."}
+                      {this.state.wallet.isAvailable
+                        ? ""
+                        : "Please choose another username - this one is already taken"}
+                    </div>
+                    {!this.state.loading && (
+                      <div className="valid-feedback">
+                        Username is valid and available for{" "}
+                        {
+                          web3utils
+                            .fromWei(this.state.wallet.rentPrice)
+                            .split(".")[0]
+                        }{" "}
+                        ONE
+                      </div>
+                    )}
+                  </div>
+                  <div className="col-1 text-center pt-1">
+                    {this.state.user.userName.length > 0 ? (
+                      this.state.validity.userName &&
+                      this.state.wallet.isAvailable ? (
+                        <i className="bi bi-check-circle text-success fs-5"></i>
+                      ) : (
+                        <i className="bi bi-x-circle text-danger fs-5"></i>
+                      )
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="row mb-1">
+                <label
+                  htmlFor="userPassword"
+                  className="form-label mb-0 text-r-bank-grayscale-iron"
+                >
+                  Password
+                </label>
+                <div className="row">
+                  <div className="col align-items start">
+                    <input
+                      type="password"
+                      className={`form-control  ${
+                        this.state.user.userPassword.length > 0
+                          ? this.state.validity.userPassword
+                            ? "is-valid"
+                            : "is-invalid"
+                          : ""
+                      }`}
+                      id="userPassword"
+                      placeholder="Please use more than 6 characters and at least 1 capital letter and 1 special character"
+                      onBlur={this.handleBlur}
+                      required
+                    />
+                    <div className="invalid-feedback">
+                      {this.state.validity.userPassword
+                        ? ""
+                        : "Please use more than 6 characters, at least 1 capital letter and 1 special character"}
+                    </div>
+                  </div>
+                  <div className="col-1 text-center pt-1">
+                    {this.state.user.userPassword.length > 0 ? (
+                      this.state.validity.userPassword ? (
+                        <i className="bi bi-check-circle text-success fs-5"></i>
+                      ) : (
+                        <i className="bi bi-x-circle text-danger fs-5"></i>
+                      )
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="row mb-1">
+                <label
+                  htmlFor="userEmail"
+                  className="form-label mb-0 text-r-bank-grayscale-iron"
+                >
+                  Email
+                </label>
+                <div className="row">
+                  <div className="col align-items-start">
+                    <input
+                      type="email"
+                      className={`form-control  ${
+                        this.state.user.userEmail.length > 0
+                          ? this.state.validity.userEmail
+                            ? "is-valid"
+                            : "is-invalid"
+                          : ""
+                      }`}
+                      id="userEmail"
+                      placeholder="Please use a valid email address"
+                      onBlur={this.handleBlur}
+                      required
+                    />
+                    <div className="invalid-feedback">
+                      {this.state.validity.userEmail
+                        ? ""
+                        : "Please enter a valid email address."}
+                    </div>
+                  </div>
+                  <div className="col-1 text-center pt-1">
+                    {this.state.user.userEmail.length > 0 ? (
+                      this.state.validity.userEmail ? (
+                        <i className="bi bi-check-circle text-success fs-5"></i>
+                      ) : (
+                        <i className="bi bi-x-circle text-danger fs-5"></i>
+                      )
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="row mb-1">
+                <label
+                  htmlFor="UserResidence"
+                  className="form-label mb-0 text-r-bank-grayscale-iron"
+                >
+                  Country of Residence
+                </label>
+                <div className="row">
+                  <div className="col algin-items start">
+                    <CountryDropdown
+                      value={userCountryOfResidence}
+                      priorityOptions={dropdownPriorityOptions}
+                      onChange={this.selectCountry}
+                      className="w-100 form-select text-secondary"
+                    />
+                  </div>
+                  <div className="col-1 text-center pt-1">
+                    {
+                      this.state.user.userCountryOfResidence ? (
+                        <i className="bi bi-check-circle text-success fs-5"></i>
+                      ) : (
+                        ""
+                      ) //<i className="bi bi-x-circle text-danger fs-5"></i>
+                    }
+                  </div>
+                </div>
+              </div>
+              <div className="d-flex justify-content-end p-3 fixed-bottom">
+                <button
+                  type="button"
+                  className="btn btn-r-bank-grayscale-silver text-white rounded-pill"
+                  onClick={this.handleClick}
+                >
+                  Continue
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     );
   }
 }

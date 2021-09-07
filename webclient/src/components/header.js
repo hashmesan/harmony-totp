@@ -8,18 +8,17 @@ class Header extends Component {
   constructor(props) {
     super(props);
     this.state = { showNav: false };
-    this.toggleNav = this.toggleNav.bind(this);
   }
 
   componentDidMount() {
     this.props.setEnvironment("testnet0");
   }
 
-  toggleNav() {
+  toggleNav = () => {
     this.setState({
       showNav: !this.state.showNav,
     });
-  }
+  };
 
   render() {
     const { showNav } = this.state;
@@ -50,9 +49,7 @@ class Header extends Component {
             </button>
             {location == "landing" && (
               <div
-                className={
-                  (showNav ? "show" : "") + " collapse navbar-collapse"
-                }
+                className={(showNav ? "show" : "") + "collapse navbar-collapse"}
               >
                 <ul className="navbar-nav ms-auto px-1 text-end">
                   <li className="nav-item">
