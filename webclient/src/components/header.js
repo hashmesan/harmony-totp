@@ -21,6 +21,12 @@ class Header extends Component {
       <React.Fragment>
         <nav className="navbar navbar-expand-lg bg-dark navbar-dark py-3 sticky-top">
           <div className="container">
+            <img
+              src="logo_R.svg"
+              alt=""
+              className="img-fluid m-1"
+              width="24px"
+            />{" "}
             <Link to="/" className="navbar-brand">
               The R Bank
             </Link>
