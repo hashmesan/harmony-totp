@@ -29,10 +29,10 @@ const WalletProvider = require("@truffle/hdwallet-provider");
 
 let secrets = require("./secrets");
 
-let rinkebyProvider = new WalletProvider(
-  secrets.rinkeby,
-  "https://rinkeby.infura.io/v3/e97751423883454abdbc93474d5e4ca7"
-);
+//let rinkebyProvider = new WalletProvider(
+//  secrets.rinkeby,
+//  "https://rinkeby.infura.io/v3/e97751423883454abdbc93474d5e4ca7"
+//);
 
 let harmonyTestNetProvider0 = new WalletProvider(
   secrets.harmonytestnet,
@@ -107,11 +107,11 @@ module.exports = {
     // network_id: 2111,   // This network is yours, in the cloud.
     // production: true    // Treats this network as if it was a public net. (default: false)
     // }
-    rinkeby: {
-      provider: rinkebyProvider,
-      network_id: "4",
-      gas: 10000000,
-    },
+    //rinkeby: {
+    //  provider: rinkebyProvider,
+    //  network_id: "4",
+    //  gas: 10000000,
+    //},
     harmonytestnet0: {
       provider: harmonyTestNetProvider0,
       network_id: "1666700000",
