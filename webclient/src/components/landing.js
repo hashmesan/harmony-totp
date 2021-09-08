@@ -16,14 +16,16 @@ class Landing extends Component {
           <div className="container">
             <div className="d-sm-flex align-items-center justify-content-between">
               <div>
-                <Link to="/create" className="btn btn-link">
+                <Link to="/create">
                   <img
                     src="bitcoin.svg"
                     alt=""
                     className="img-fluid m-1"
                     width="24px"
                   />
-                  <span>Create your Crypto Portfolio</span>
+                  <a href="" className="btn btn-link">
+                    Create your Crypto Portfolio
+                  </a>
                   <i className="bi bi-arrow-right-short"></i>
                 </Link>
                 <h1>
