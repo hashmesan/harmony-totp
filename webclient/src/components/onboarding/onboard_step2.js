@@ -43,8 +43,15 @@ class Step2 extends Component {
     console.log("handling email");
   };
 
-  handleClick = () => {
-    this.props.setOnboardingStep(3);
+  handleClick = (evt) => {
+    const { id } = evt.target;
+    if (id == "backButton") {
+      this.props.setOnboardingStep(1);
+    }
+    else if (id== "continueButton"){
+      this.props.setOnboardingStep(3);
+    }
+    else{}
   };
 
   render() {
@@ -91,17 +98,32 @@ class Step2 extends Component {
               </p>
               {this.state.validated && (
                 <div className="mt-2">
-                  <i className="bi bi-check-circle text-r-bank-secondary-yellow-green fs-5" />
-                  <span className="ps-3 text-r-bank-secondary-yellow-green">
+                  <i className="bi bi-check-circle text-success fs-5" />
+                  <span className="ps-3 text-success">
                     Validation completed
                   </span>
                 </div>
               )}
-              <div className="d-flex justify-content-end p-3 fixed-bottom">
+              <div className="d-flex justify-content-end p-3 gap-2 fixed-bottom">
                 <button
+                  id="backButton"
                   type="button"
                   onClick={this.handleClick}
-                  className="btn btn-r-bank-grayscale-silver text-white rounded-pill"
+                  //className="btn btn-r-bank-grayscale-silver text-white rounded-pill"
+                  className="btn rounded-pill btn-r-bank-white text-rb-bank-primary"
+                >
+                  Back
+                </button>
+                <button
+                  id="continueButton"
+                  type="button"
+                  onClick={this.handleClick}
+                  //className="btn btn-r-bank-grayscale-silver text-white rounded-pill"
+                  className={`btn rounded-pill ${
+                    this.state.validated
+                        ? "btn-r-bank-highlight text-rb-bank-primary"
+                        : "btn-r-bank-grayscale-silver text-rb-bank-white"
+                  }`}
                   disabled={!this.state.validated && "disabled"}
                 >
                   Continue
