@@ -32,7 +32,7 @@ class Landing extends Component {
               <p className="text-black">Interested? Sign up now!</p>
               <Link to="/onboard">
                 <button
-                  className="btn btn-warning text-r-bank-primary rounded-pill fs-6 "
+                  className="btn btn-r-bank-highlight text-r-bank-primary rounded-pill fs-6 "
                   type="button"
                 >
                   Onboard
