@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "redux-zero/react";
+import { Collapse } from "bootstrap";
 
 import { SmartVaultContext } from "../smartvault_provider";
 
