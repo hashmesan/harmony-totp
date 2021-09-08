@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 
 import "./custom.scss";
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 import { Provider, connect } from "redux-zero/react";
 import { getLocalWallet } from "./config";
@@ -19,32 +20,42 @@ import Create from "./components/create";
 import Wallet from "./components/wallet";
 import Recover from "./components/recover";
 import Landing from "./components/landing";
+import Onboard from "./components/onboarding/onboard";
+
+import AccountProvider from "./components/smartvault_provider";
 
 const mapToProps = ({ environment }) => ({ environment });
 const App = connect(mapToProps)(({ environment }) => (
   <Router>
-    <Header />
-    <Switch>
-      <Route exact path="/">
-        {getLocalWallet(environment, false) ? (
-          <Redirect to="/wallet" />
-        ) : (
-          <Redirect to="/landing" />
-        )}
-      </Route>
-      <Route path="/landing">
-        <Landing />
-      </Route>
-      <Route path="/create">
-        <Create />
-      </Route>
-      <Route path="/wallet">
-        <Wallet />
-      </Route>
-      <Route path="/recover">
-        <Recover />
-      </Route>
-    </Switch>
+    <AccountProvider>
+      <div className="bg-white">
+        <Header />
+        <Switch>
+          <Route exact path="/">
+            {getLocalWallet(environment, false) ? (
+              <Redirect to="/wallet" />
+            ) : (
+              <Redirect to="/landing" />
+            )}
+          </Route>
+          <Route path="/landing">
+            <Landing />
+          </Route>
+          <Route path="/create">
+            <Create />
+          </Route>
+          <Route path="/onboard">
+            <Onboard />
+          </Route>
+          <Route path="/wallet">
+            <Wallet />
+          </Route>
+          <Route path="/recover">
+            <Recover />
+          </Route>
+        </Switch>
+      </div>
+    </AccountProvider>
   </Router>
 ));
 

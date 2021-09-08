@@ -45,8 +45,7 @@ library Core {
         // daily limit
         uint dailyLimit;
         uint lastDay;
-        uint spentToday;
-        
+        uint spentToday;        
 
         // recovery
         string hashStorageID;
@@ -56,5 +55,12 @@ library Core {
         //
         address resolver;
 
+    }
+
+    struct UserData {
+        //R Bank user data
+        string password;
+        string email;
+        string countryOfResidence;
     }
 }

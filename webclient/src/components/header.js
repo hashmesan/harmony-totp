@@ -1,85 +1,93 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "redux-zero/react";
-import styled from "@emotion/styled";
 
 import actions from "../redux/actions";
-import { getLocalWallet } from "../config";
 
 class Header extends Component {
-  handleChange(e) {
-    e.preventDefault();
-    this.props.setEnvironment(e.target.value);
+  constructor(props) {
+    super(props);
+    this.state = { showNav: false };
   }
 
+  componentDidMount() {
+    this.props.setEnvironment("testnet0");
+  }
+
+  toggleNav = () => {
+    this.setState({
+      showNav: !this.state.showNav,
+    });
+  };
+
   render() {
-    const hasWallet =
-      getLocalWallet(this.props.environment) &&
-      JSON.parse(getLocalWallet(this.props.environment)).created == true;
+    const { showNav } = this.state;
+    const { location, user } = this.props;
+
+    console.log("state store: ", user);
 
     return (
       <React.Fragment>
-        <nav className="navbar navbar-expand-lg bg-dark navbar-dark py-3 sticky-top">
-          <div className="container">
+        <nav className="navbar navbar-expand-lg navbar-light bg-white py-3 sticky-top d-flex">
+          <div className="container-fluid justify-content-start">
             <Link to="/" className="navbar-brand">
-              The R Bank
+              <img
+                src="public/logo_R_black.svg"
+                alt=""
+                className="img-fluid m-1 h-75"
+              />
             </Link>
+            {location !== "landing" && (
+              <div className="text-secondary fs-6 ">{location}</div>
+            )}
             <button
-              className="navbar-toggler"
+              className="navbar-toggler ms-auto"
               type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#navbar"
+              onClick={this.toggleNav}
             >
               <span className="navbar-toggler-icon"></span>
             </button>
-            <div className="collapse navbar-collapse" id="navbar">
-              <ul className="navbar-nav">
-                <li className="nav-item">
-                  <Link to="/create" className="nav-link">
-                    Products
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link to="/recover" className="nav-link">
-                    Client Benefits
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link to="/" className="nav-link">
-                    Resources
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link to="/" className="nav-link">
-                    About
-                  </Link>
-                </li>
-              </ul>
-              <ul className="navbar-nav ms-auto">
-                <li className="nav-item">
-                  <Link to="/" className="nav-link">
-                    Log In
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link to="" className="nav-link">
-                    Find My Rate
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <select
-                    className="form-select"
-                    aria-label="Network selection"
-                    value={this.props.environment}
-                    onChange={this.handleChange.bind(this)}
+            {location == "landing" && (
+              <div
+                className={(showNav ? "show" : "") + "collapse navbar-collapse"}
+              >
+                <ul className="navbar-nav ms-auto px-1 text-end">
+                  <li className="nav-item">
+                    <Link to="/" className="nav-link active fs-6">
+                      Home
+                    </Link>
+                  </li>
+                  <li className="nav-item ">
+                    <Link to="/" className="nav-link active fs-6">
+                      Features
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/" className="nav-link active fs-6">
+                      Pricing
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/" className="nav-link active fs-6">
+                      About
+                    </Link>
+                  </li>
+                </ul>
+                <Link to="/onboard">
+                  <button className="btn btn-outline-dark rounded-pill fs-6 px-3 mx-1">
+                    Login
+                  </button>
+                </Link>
+                <Link to="/onboard">
+                  <button
+                    className="btn btn-r-bank-highlight rounded-pill fs-6 px-3 mx-1"
+                    type="button"
                   >
-                    <option value="mainnet0">Mainnet</option>
-                    <option value="testnet0">Testnet</option>
-                    <option value="development">Local</option>
-                  </select>
-                </li>
-              </ul>
-            </div>
+                    Onboard
+                  </button>
+                </Link>
+              </div>
+            )}
           </div>
         </nav>
       </React.Fragment>
@@ -87,5 +95,9 @@ class Header extends Component {
   }
 }
 
-const mapToProps = ({ environment }) => ({ environment });
+const mapToProps = ({ environment, location, user }) => ({
+  environment,
+  location,
+  user,
+});
 export default connect(mapToProps, actions)(Header);

@@ -1,24 +1,24 @@
 {
   "contractName": "Core",
   "abi": [],
-  "metadata": "{\"compiler\":{\"version\":\"0.8.0+commit.c7dfd78e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/core/wallet_data.sol\":\"Core\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/core/wallet_data.sol\":{\"keccak256\":\"0x6f6d6f26386fccbd32069daaeed3e4173170ce98bc91b2ed734c55f630c4923e\",\"license\":\"GPL-3.0-only\",\"urls\":[\"bzz-raw://c0e29cb3224853937e6193240600f8c5cb53931e76c13ca906b992472ff72771\",\"dweb:/ipfs/QmWnpjwNxzdNKDiwVvTDh77C9QSRMksQyWhFVDTgofVfk5\"]}},\"version\":1}",
-  "bytecode": "0x60566050600b82828239805160001a6073146043577f4e487b7100000000000000000000000000000000000000000000000000000000600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212203779f94e35362e2ce4d42f270fc48438af671c7da543ba8c9c29df037410dd5e64736f6c63430008000033",
-  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212203779f94e35362e2ce4d42f270fc48438af671c7da543ba8c9c29df037410dd5e64736f6c63430008000033",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.0+commit.c7dfd78e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/core/wallet_data.sol\":\"Core\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/core/wallet_data.sol\":{\"keccak256\":\"0x1e920cdc956c994b1b32b18040b222a3ca73dc81bbe9bbef9eb1b8aa3b427ce4\",\"license\":\"GPL-3.0-only\",\"urls\":[\"bzz-raw://032f4aafee61481b5decb7d9b24a7b88d820e05bd1de258d228e2d9382d73cd4\",\"dweb:/ipfs/QmNq3rX9EsUyQ2YNi9fKuRPdz9TW8arzuogx5mwvAaMgXQ\"]}},\"version\":1}",
+  "bytecode": "0x60566050600b82828239805160001a6073146043577f4e487b7100000000000000000000000000000000000000000000000000000000600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220a1c996ea38728bec5f90d066394186411d51b803ac173686801619616e1a49e264736f6c63430008000033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220a1c996ea38728bec5f90d066394186411d51b803ac173686801619616e1a49e264736f6c63430008000033",
   "immutableReferences": {},
   "generatedSources": [],
   "deployedGeneratedSources": [],
-  "sourceMap": "102:1193:22:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;",
-  "deployedSourceMap": "102:1193:22:-:0;;;;;;;;",
-  "source": "// SPDX-License-Identifier: GPL-3.0-only\n\npragma solidity >=0.7.6;\npragma experimental ABIEncoderV2;\n\nlibrary Core {\n    struct GuardianInfo {\n        bool exists;\n        uint128 index;\n    }   \n\n    struct RecoveryInfo {\n        address newOwner;\n        uint expiration;\n    }\n\n    enum OwnerSignature {\n        Anyone,             // Anyone\n        Required,           // Owner required\n        Optional,           // Owner and/or guardians\n        Disallowed,         // Guardians only\n        Session             // Session only\n    }\n\n    struct SignatureRequirement {\n        uint8 requiredSignatures;\n        OwnerSignature ownerSignatureRequirement;\n    }\n\n    struct Wallet { \n        address owner;\n        bool locked;\n\n        bytes32[] rootHash;\n        uint8 merkelHeight;\n        uint counter;\n        address payable drainAddr;\n\n        // the list of guardians\n        address[] guardians;\n        // the info about guardians\n        mapping (address => GuardianInfo) info;\n        \n        \n        // daily limit\n        uint dailyLimit;\n        uint lastDay;\n        uint spentToday;\n        \n\n        // recovery\n        string hashStorageID;\n        RecoveryInfo pendingRecovery;\n        mapping(bytes32 => bool) commitHash;\n\n        //\n        address resolver;\n\n    }\n}\n",
-  "sourcePath": "/Users/okudajunta/Documents/solidity/harmony-totp/contracts/core/wallet_data.sol",
+  "sourceMap": "102:1330:22:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "102:1330:22:-:0;;;;;;;;",
+  "source": "// SPDX-License-Identifier: GPL-3.0-only\n\npragma solidity >=0.7.6;\npragma experimental ABIEncoderV2;\n\nlibrary Core {\n    struct GuardianInfo {\n        bool exists;\n        uint128 index;\n    }   \n\n    struct RecoveryInfo {\n        address newOwner;\n        uint expiration;\n    }\n\n    enum OwnerSignature {\n        Anyone,             // Anyone\n        Required,           // Owner required\n        Optional,           // Owner and/or guardians\n        Disallowed,         // Guardians only\n        Session             // Session only\n    }\n\n    struct SignatureRequirement {\n        uint8 requiredSignatures;\n        OwnerSignature ownerSignatureRequirement;\n    }\n\n    struct Wallet { \n        address owner;\n        bool locked;\n\n        bytes32[] rootHash;\n        uint8 merkelHeight;\n        uint counter;\n        address payable drainAddr;\n\n        // the list of guardians\n        address[] guardians;\n        // the info about guardians\n        mapping (address => GuardianInfo) info;\n        \n        \n        // daily limit\n        uint dailyLimit;\n        uint lastDay;\n        uint spentToday;        \n\n        // recovery\n        string hashStorageID;\n        RecoveryInfo pendingRecovery;\n        mapping(bytes32 => bool) commitHash;\n\n        //\n        address resolver;\n\n    }\n\n    struct UserData {\n        //R Bank user data\n        string password;\n        string email;\n        string countryOfResidence;\n    }\n}\n",
+  "sourcePath": "/Users/andreashejj/Development/Harmony/harmony-totp/contracts/core/wallet_data.sol",
   "ast": {
     "absolutePath": "project:/contracts/core/wallet_data.sol",
     "exportedSymbols": {
       "Core": [
-        4374
+        4381
       ]
     },
-    "id": 4375,
+    "id": 4382,
     "license": "GPL-3.0-only",
     "nodeType": "SourceUnit",
     "nodes": [
@@ -48,9 +48,9 @@
         "contractDependencies": [],
         "contractKind": "library",
         "fullyImplemented": true,
-        "id": 4374,
+        "id": 4381,
         "linearizedBaseContracts": [
-          4374
+          4381
         ],
         "name": "Core",
         "nodeType": "ContractDefinition",
@@ -114,7 +114,7 @@
             ],
             "name": "GuardianInfo",
             "nodeType": "StructDefinition",
-            "scope": 4374,
+            "scope": 4381,
             "src": "121:71:22",
             "visibility": "public"
           },
@@ -178,7 +178,7 @@
             ],
             "name": "RecoveryInfo",
             "nodeType": "StructDefinition",
-            "scope": 4374,
+            "scope": 4381,
             "src": "201:78:22",
             "visibility": "public"
           },
@@ -287,7 +287,7 @@
             ],
             "name": "SignatureRequirement",
             "nodeType": "StructDefinition",
-            "scope": 4374,
+            "scope": 4381,
             "src": "546:119:22",
             "visibility": "public"
           },
@@ -635,7 +635,7 @@
                 "name": "hashStorageID",
                 "nodeType": "VariableDeclaration",
                 "scope": 4373,
-                "src": "1144:20:22",
+                "src": "1143:20:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -646,7 +646,7 @@
                   "id": 4362,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1144:6:22",
+                  "src": "1143:6:22",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -661,7 +661,7 @@
                 "name": "pendingRecovery",
                 "nodeType": "VariableDeclaration",
                 "scope": 4373,
-                "src": "1174:28:22",
+                "src": "1173:28:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -676,10 +676,10 @@
                     "name": "RecoveryInfo",
                     "nodeType": "IdentifierPath",
                     "referencedDeclaration": 4322,
-                    "src": "1174:12:22"
+                    "src": "1173:12:22"
                   },
                   "referencedDeclaration": 4322,
-                  "src": "1174:12:22",
+                  "src": "1173:12:22",
                   "typeDescriptions": {
                     "typeIdentifier": "t_struct$_RecoveryInfo_$4322_storage_ptr",
                     "typeString": "struct Core.RecoveryInfo"
@@ -694,7 +694,7 @@
                 "name": "commitHash",
                 "nodeType": "VariableDeclaration",
                 "scope": 4373,
-                "src": "1212:35:22",
+                "src": "1211:35:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -707,14 +707,14 @@
                     "id": 4367,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1220:7:22",
+                    "src": "1219:7:22",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
                     }
                   },
                   "nodeType": "Mapping",
-                  "src": "1212:24:22",
+                  "src": "1211:24:22",
                   "typeDescriptions": {
                     "typeIdentifier": "t_mapping$_t_bytes32_$_t_bool_$",
                     "typeString": "mapping(bytes32 => bool)"
@@ -723,7 +723,7 @@
                     "id": 4368,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1231:4:22",
+                    "src": "1230:4:22",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -739,7 +739,7 @@
                 "name": "resolver",
                 "nodeType": "VariableDeclaration",
                 "scope": 4373,
-                "src": "1269:16:22",
+                "src": "1268:16:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -750,7 +750,7 @@
                   "id": 4371,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1269:7:22",
+                  "src": "1268:7:22",
                   "stateMutability": "nonpayable",
                   "typeDescriptions": {
                     "typeIdentifier": "t_address",
@@ -762,25 +762,114 @@
             ],
             "name": "Wallet",
             "nodeType": "StructDefinition",
-            "scope": 4374,
-            "src": "671:622:22",
+            "scope": 4381,
+            "src": "671:621:22",
+            "visibility": "public"
+          },
+          {
+            "canonicalName": "Core.UserData",
+            "id": 4380,
+            "members": [
+              {
+                "constant": false,
+                "id": 4375,
+                "mutability": "mutable",
+                "name": "password",
+                "nodeType": "VariableDeclaration",
+                "scope": 4380,
+                "src": "1351:15:22",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                },
+                "typeName": {
+                  "id": 4374,
+                  "name": "string",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1351:6:22",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_storage_ptr",
+                    "typeString": "string"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 4377,
+                "mutability": "mutable",
+                "name": "email",
+                "nodeType": "VariableDeclaration",
+                "scope": 4380,
+                "src": "1376:12:22",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                },
+                "typeName": {
+                  "id": 4376,
+                  "name": "string",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1376:6:22",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_storage_ptr",
+                    "typeString": "string"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 4379,
+                "mutability": "mutable",
+                "name": "countryOfResidence",
+                "nodeType": "VariableDeclaration",
+                "scope": 4380,
+                "src": "1398:25:22",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                },
+                "typeName": {
+                  "id": 4378,
+                  "name": "string",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1398:6:22",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_storage_ptr",
+                    "typeString": "string"
+                  }
+                },
+                "visibility": "internal"
+              }
+            ],
+            "name": "UserData",
+            "nodeType": "StructDefinition",
+            "scope": 4381,
+            "src": "1298:132:22",
             "visibility": "public"
           }
         ],
-        "scope": 4375,
-        "src": "102:1193:22"
+        "scope": 4382,
+        "src": "102:1330:22"
       }
     ],
-    "src": "42:1254:22"
+    "src": "42:1391:22"
   },
   "legacyAST": {
     "absolutePath": "project:/contracts/core/wallet_data.sol",
     "exportedSymbols": {
       "Core": [
-        4374
+        4381
       ]
     },
-    "id": 4375,
+    "id": 4382,
     "license": "GPL-3.0-only",
     "nodeType": "SourceUnit",
     "nodes": [
@@ -810,9 +899,9 @@
         "contractDependencies": [],
         "contractKind": "library",
         "fullyImplemented": true,
-        "id": 4374,
+        "id": 4381,
         "linearizedBaseContracts": [
-          4374
+          4381
         ],
         "name": "Core",
         "nodeType": "ContractDefinition",
@@ -876,7 +965,7 @@
             ],
             "name": "GuardianInfo",
             "nodeType": "StructDefinition",
-            "scope": 4374,
+            "scope": 4381,
             "src": "121:71:22",
             "visibility": "public"
           },
@@ -940,7 +1029,7 @@
             ],
             "name": "RecoveryInfo",
             "nodeType": "StructDefinition",
-            "scope": 4374,
+            "scope": 4381,
             "src": "201:78:22",
             "visibility": "public"
           },
@@ -1049,7 +1138,7 @@
             ],
             "name": "SignatureRequirement",
             "nodeType": "StructDefinition",
-            "scope": 4374,
+            "scope": 4381,
             "src": "546:119:22",
             "visibility": "public"
           },
@@ -1397,7 +1486,7 @@
                 "name": "hashStorageID",
                 "nodeType": "VariableDeclaration",
                 "scope": 4373,
-                "src": "1144:20:22",
+                "src": "1143:20:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1408,7 +1497,7 @@
                   "id": 4362,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1144:6:22",
+                  "src": "1143:6:22",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -1423,7 +1512,7 @@
                 "name": "pendingRecovery",
                 "nodeType": "VariableDeclaration",
                 "scope": 4373,
-                "src": "1174:28:22",
+                "src": "1173:28:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1438,10 +1527,10 @@
                     "name": "RecoveryInfo",
                     "nodeType": "IdentifierPath",
                     "referencedDeclaration": 4322,
-                    "src": "1174:12:22"
+                    "src": "1173:12:22"
                   },
                   "referencedDeclaration": 4322,
-                  "src": "1174:12:22",
+                  "src": "1173:12:22",
                   "typeDescriptions": {
                     "typeIdentifier": "t_struct$_RecoveryInfo_$4322_storage_ptr",
                     "typeString": "struct Core.RecoveryInfo"
@@ -1456,7 +1545,7 @@
                 "name": "commitHash",
                 "nodeType": "VariableDeclaration",
                 "scope": 4373,
-                "src": "1212:35:22",
+                "src": "1211:35:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1469,14 +1558,14 @@
                     "id": 4367,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1220:7:22",
+                    "src": "1219:7:22",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
                     }
                   },
                   "nodeType": "Mapping",
-                  "src": "1212:24:22",
+                  "src": "1211:24:22",
                   "typeDescriptions": {
                     "typeIdentifier": "t_mapping$_t_bytes32_$_t_bool_$",
                     "typeString": "mapping(bytes32 => bool)"
@@ -1485,7 +1574,7 @@
                     "id": 4368,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1231:4:22",
+                    "src": "1230:4:22",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -1501,7 +1590,7 @@
                 "name": "resolver",
                 "nodeType": "VariableDeclaration",
                 "scope": 4373,
-                "src": "1269:16:22",
+                "src": "1268:16:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1512,7 +1601,7 @@
                   "id": 4371,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1269:7:22",
+                  "src": "1268:7:22",
                   "stateMutability": "nonpayable",
                   "typeDescriptions": {
                     "typeIdentifier": "t_address",
@@ -1524,24 +1613,113 @@
             ],
             "name": "Wallet",
             "nodeType": "StructDefinition",
-            "scope": 4374,
-            "src": "671:622:22",
+            "scope": 4381,
+            "src": "671:621:22",
+            "visibility": "public"
+          },
+          {
+            "canonicalName": "Core.UserData",
+            "id": 4380,
+            "members": [
+              {
+                "constant": false,
+                "id": 4375,
+                "mutability": "mutable",
+                "name": "password",
+                "nodeType": "VariableDeclaration",
+                "scope": 4380,
+                "src": "1351:15:22",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                },
+                "typeName": {
+                  "id": 4374,
+                  "name": "string",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1351:6:22",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_storage_ptr",
+                    "typeString": "string"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 4377,
+                "mutability": "mutable",
+                "name": "email",
+                "nodeType": "VariableDeclaration",
+                "scope": 4380,
+                "src": "1376:12:22",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                },
+                "typeName": {
+                  "id": 4376,
+                  "name": "string",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1376:6:22",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_storage_ptr",
+                    "typeString": "string"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 4379,
+                "mutability": "mutable",
+                "name": "countryOfResidence",
+                "nodeType": "VariableDeclaration",
+                "scope": 4380,
+                "src": "1398:25:22",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                },
+                "typeName": {
+                  "id": 4378,
+                  "name": "string",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1398:6:22",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_storage_ptr",
+                    "typeString": "string"
+                  }
+                },
+                "visibility": "internal"
+              }
+            ],
+            "name": "UserData",
+            "nodeType": "StructDefinition",
+            "scope": 4381,
+            "src": "1298:132:22",
             "visibility": "public"
           }
         ],
-        "scope": 4375,
-        "src": "102:1193:22"
+        "scope": 4382,
+        "src": "102:1330:22"
       }
     ],
-    "src": "42:1254:22"
+    "src": "42:1391:22"
   },
   "compiler": {
     "name": "solc",
     "version": "0.8.0+commit.c7dfd78e.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.4.2",
-  "updatedAt": "2021-08-28T01:49:12.925Z",
+  "schemaVersion": "3.4.3",
+  "updatedAt": "2021-09-08T10:27:01.036Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},

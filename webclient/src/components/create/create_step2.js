@@ -26,6 +26,7 @@ class ScanQRCode extends Component {
   }
   handleChange(otp) {
     this.setState({ otp });
+    validate(otp);
   }
 
   validate(e) {
@@ -60,8 +61,8 @@ class ScanQRCode extends Component {
             <div className="mb-4">
               <img
                 src={qr_fixed}
-                width="200"
-                height="200"
+                width="128"
+                height="128"
                 className="img-thumbnail"
               />
               <br />

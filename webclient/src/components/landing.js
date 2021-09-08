@@ -3,123 +3,161 @@ import { Link } from "react-router-dom";
 import { connect } from "redux-zero/react";
 import styled from "@emotion/styled";
 
-const InputWrapper = styled.div`
-  @media (min-width: 768px) {
-    width: 50%;
-  }
-`;
+import actions from "../redux/actions";
+
 class Landing extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  componentDidMount() {
+    this.props.setLocation("landing");
+  }
+
   render() {
     return (
       <div>
-        <section className="bg-dark text-light p-5 text-center text-sm-start">
-          <div className="container">
-            <div className="d-sm-flex align-items-center justify-content-between">
-              <div>
-                <Link to="/create">
-                  <img
-                    src="bitcoin.svg"
-                    alt=""
-                    className="img-fluid m-1"
-                    width="24px"
-                  />
-                  <a href="" className="btn btn-link">
-                    Create your Crypto Portfolio
-                  </a>
-                  <i className="bi bi-arrow-right-short"></i>
-                </Link>
-                <h1>
-                  Become the <span className="text-warning">MASTER</span> of
-                  your wealth
-                </h1>
-                <p className="lead my-4">
-                  Too long did Traditional Banks take your money and benfit from
-                  it - we're giving you back{" "}
-                  <span className="text-warning">YOUR</span> freedom
-                </p>
-                <Link to="/create" className="btn btn-primary btn-lg">
-                  Enter now
-                </Link>
-              </div>
+        <div className="container-fluid">
+          <div className="row my-5 p-3">
+            <div className="col-md-6">
+              <p className="display-4">
+                R-Bank is your trusted partner and gateway to Decentralized
+                Finance!
+              </p>
+              <p className="fs-4 text-r-bank-grayscale-iron">
+                Secure, understandable and easy to use – R-Bank enables you to
+                make educated financial investments in a world growing ever more
+                complex.
+              </p>
+              <p className="text-black">Interested? Sign up now!</p>
+              <Link to="/onboard">
+                <button
+                  className="btn btn-r-bank-highlight text-r-bank-primary rounded-pill fs-6 "
+                  type="button"
+                >
+                  Onboard
+                </button>
+              </Link>
+            </div>
+            <div className="col-md-6">
               <img
-                className="img-fluid w-75"
-                src="undraw_wallet_aym5.svg"
-                alt=""
+                src="public/landing_mockup.svg"
+                className="img-fluid w-100"
               />
             </div>
           </div>
-        </section>
-        <section className="bg-primary text-light p-5">
-          <div className="container">
-            <div className="d-md-flex justify-content-between align-items-center">
-              <h3 className="mb-3 mb-md-0">Sign up for the latest news</h3>
-              <InputWrapper className="input-group">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Enter E-mail"
+          <div className="row p-3 bg-r-bank-grayscale-platin ">
+            <div className="row justify-content-center">
+              <div className="col h1 text-r-bank-primary text-center">
+                Why R-Bank?
+              </div>
+            </div>
+            <div className="row py-3">
+              <div className="col-md-4 px-3 pt-5">
+                <div className="card bg-r-bank-grayscale-platin border-0">
+                  <img
+                    src="public/wallet_steffi.svg"
+                    className="card-img-top thumbnail image-fluid mx-auto"
+                    style={{ maxHeight: "80px" }}
+                    alt="..."
+                  />
+                  <div className="card-body mt-3">
+                    <p className="card-text text-center fs-6">
+                      <span className="fw-bold">
+                        R-Bank offers you a bullet proof smart wallet,
+                      </span>
+                      with advanced safety features natively available e.g.
+                      wallet recovery or locking in case of an emergency.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-4 px-3 pt-5">
+                <div className="card bg-r-bank-grayscale-platin border-0">
+                  <img
+                    src="public/compass_steffi.svg"
+                    className="card-img-top  mx-auto"
+                    style={{ maxHeight: "80px" }}
+                    alt="..."
+                  />
+                  <div className="card-body mt-3">
+                    <p className="card-text text-center fs-6">
+                      <span className="fw-bold">
+                        R-Bank takes you by the hand and guides you through the
+                        complex world of crypto investments.{" "}
+                      </span>
+                      We offer comprehensive product descriptions and highlight
+                      chances and risks. If you are interested to deepen your
+                      understanding, we’re at your service.{" "}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-4 px-3 pt-5">
+                <div className="card bg-r-bank-grayscale-platin border-0">
+                  <img
+                    src="public/safe_steffi.svg"
+                    className="card-img-top mx-auto"
+                    style={{ maxHeight: "80px" }}
+                    alt="..."
+                  />
+                  <div className="card-body mt-3">
+                    <p className="card-text text-center fs-6">
+                      <span className="fw-bold">
+                        R-Bank offers you a bullet proof smart wallet,
+                      </span>
+                      with advanced safety features natively available e.g.
+                      wallet recovery or locking in case of an emergency.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="footer mt-auto py-3 bg-r-bank-primary ">
+          <div className="container-fluid d-flex align-items-center justify-content-between">
+            <div>
+              <Link to="/" className="navbar-brand m-0">
+                <img
+                  src="public/logo_R_white.svg"
+                  alt=""
+                  className="img-fluid m-1 h-75"
                 />
-                <button className="btn btn-dark btn-lg" type="button">
-                  Sign Up
-                </button>
-              </InputWrapper>
+              </Link>
+            </div>
+            <div className="d-flex align-items-center justify-content-between">
+              <Link to="/" className="text-white fs-6 px-3">
+                Home
+              </Link>
+              <Link to="/" className="text-white fs-6 px-3">
+                Features
+              </Link>
+
+              <Link to="/" className="text-white fs-6 px-3">
+                Pricing
+              </Link>
+
+              <Link to="/" className="text-white fs-6 px-3">
+                About
+              </Link>
+            </div>
+            <div>
+              <Link
+                to="/impressum"
+                className="m-0 text-r-bank-grayscale-silver f-6"
+              >
+                impressum
+              </Link>
             </div>
           </div>
-        </section>
-        <section className="p-5">
-          <div className="container">
-            <div className="row text-center g-4">
-              <div className="col-md">
-                <div className="card bg-dark text-light">
-                  <div className="card-body text-center">
-                    <div className="h1 mb-3">
-                      <i className="bi bi-laptop"></i>
-                    </div>
-                    <h3 className="card-title mb-3">Virtual</h3>
-                    <p className="card-text">
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      Consectetur, ex!
-                    </p>
-                    <button className="btn btn-primary">Read more</button>
-                  </div>
-                </div>
-              </div>
-              <div className="col-md">
-                <div className="card bg-secondary text-light">
-                  <div className="card-body text-center">
-                    <div className="h1 mb-3">
-                      <i className="bi bi-person-square"></i>
-                    </div>
-                    <h3 className="card-title mb-3">Virtual</h3>
-                    <p className="card-text">
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      Consectetur, ex!
-                    </p>
-                    <button className="btn btn-dark">Read more</button>
-                  </div>
-                </div>
-              </div>
-              <div className="col-md">
-                <div className="card bg-dark text-light">
-                  <div className="card-body text-center">
-                    <div className="h1 mb-3">
-                      <i className="bi bi-people"></i>
-                    </div>
-                    <h3 className="card-title mb-3">Virtual</h3>
-                    <p className="card-text">
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      Consectetur, ex!
-                    </p>
-                    <button className="btn btn-primary">Read more</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+        </div>
       </div>
     );
   }
 }
 
-export default Landing;
+const mapToProps = ({ location }) => ({
+  location,
+});
+export default connect(mapToProps, actions)(Landing);

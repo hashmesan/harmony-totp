@@ -32,6 +32,9 @@ contract WalletFactory
         address	  drainAddr;
         uint 	  dailyLimit;
         uint      salt;
+        string    password;
+        string    email;
+        string    countryOfResidence;
         address   feeReceipient;
         uint256   feeAmount;
     }
@@ -98,7 +101,13 @@ contract WalletFactory
             config.feeReceipient,
             config.feeAmount
         );
-
+        
+        TOTPWallet(payable(wallet)).initializeUserData(
+            config.email,
+            config.password,
+            config.countryOfResidence
+        );
+        
         //TOTPWallet(payable(wallet)).registerENS(config.subdomain, config.domain, config.duration);
     }
 

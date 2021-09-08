@@ -15,6 +15,11 @@ class ChooseName extends Component {
       showCost: false,
       dailyLimit: 10000,
       drainAddress: "",
+    
+      //R Bank user data
+      password: "",
+      email: "",
+      countryOfResidence: "",
     };
   }
 
@@ -41,7 +46,10 @@ class ChooseName extends Component {
         this.state.name + ".crazy.one",
         null,
         web3utils.toWei(this.state.dailyLimit + ""),
-        this.state.drainAddress
+        this.state.drainAddress,
+        this.state.password,
+        this.state.email,
+        this.state.countryOfResidence
       )
       .then((res) => {
         if (res == null) {

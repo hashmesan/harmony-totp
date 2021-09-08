@@ -30,6 +30,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
 
     address masterCopy;
     Core.Wallet public wallet;
+    Core.UserData public userData;
     bool internal isImplementationContract;
 
 
@@ -98,6 +99,17 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
             payable(feeRecipient).sendValue(feeAmount);
         }        
     }   
+
+    function initializeUserData(
+        string  calldata   password_,
+        string  calldata   email_,
+        string  calldata   countryOfResidence_
+    ) external {
+        userData.password = password_;
+        userData.email = email_;
+        userData.countryOfResidence = countryOfResidence_;
+    }
+    
 
     function registerENS(string calldata subdomain, string calldata domain, uint duration) external onlyFromWalletOrOwnerWhenUnlocked() {
         wallet.registerENS(subdomain, domain, duration);

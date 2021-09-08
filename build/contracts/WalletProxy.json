@@ -943,23 +943,23 @@
   "sourceMap": "616:1514:29:-:0;;;1054:162;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;1132:1;1109:25;;:11;:25;;;;1101:74;;;;;;;;;;;;:::i;:::-;;;;;;;;;1198:11;1185:10;;:24;;;;;;;;;;;;;;;;;;1054:162;616:1514;;7:143:40;;95:6;89:13;80:22;;111:33;138:5;111:33;:::i;:::-;70:80;;;;:::o;156:284::-;;275:2;263:9;254:7;250:23;246:32;243:2;;;291:1;288;281:12;243:2;334:1;359:64;415:7;406:6;395:9;391:22;359:64;:::i;:::-;349:74;;305:128;233:207;;;;:::o;446:368::-;;609:67;673:2;668:3;609:67;:::i;:::-;602:74;;706:34;702:1;697:3;693:11;686:55;772:6;767:2;762:3;758:12;751:28;805:2;800:3;796:12;789:19;;592:222;;;:::o;820:419::-;;1024:2;1013:9;1009:18;1001:26;;1073:9;1067:4;1063:20;1059:1;1048:9;1044:17;1037:47;1101:131;1227:4;1101:131;:::i;:::-;1093:139;;991:248;;;:::o;1245:169::-;;1363:6;1358:3;1351:19;1403:4;1398:3;1394:14;1379:29;;1341:73;;;;:::o;1420:96::-;;1486:24;1504:5;1486:24;:::i;:::-;1475:35;;1465:51;;;:::o;1522:126::-;;1599:42;1592:5;1588:54;1577:65;;1567:81;;;:::o;1654:122::-;1727:24;1745:5;1727:24;:::i;:::-;1720:5;1717:35;1707:2;;1766:1;1763;1756:12;1707:2;1697:79;:::o;616:1514:29:-;;;;;;;",
   "deployedSourceMap": "616:1514:29:-:0;;;1495:42;1491:1;1485:8;1481:57;1673:66;1669:1;1656:15;1653:87;1650:2;;;1769:11;1766:1;1759:22;1808:4;1805:1;1798:15;1650:2;1859:14;1856:1;1853;1840:34;1957:1;1954;1938:14;1935:1;1922:11;1915:5;1902:57;1993:16;1990:1;1987;1972:38;2038:1;2029:7;2026:14;2023:2;;;2053:16;2050:1;2043:27;2023:2;2095:16;2092:1;2085:27",
   "source": "// SPDX-License-Identifier: LGPL-3.0-or-later\n// Taken from: https://github.com/gnosis/safe-contracts/blob/development/contracts/proxies/GnosisSafeProxy.sol\npragma solidity >=0.7.0;\n\n/// @title IProxy - Helper interface to access masterCopy of the Proxy on-chain\n/// @author Richard Meissner - <richard@gnosis.io>\ninterface IProxy {\n    function masterCopy() external view returns (address);\n}\n\n/// @title WalletProxy - Generic proxy contract allows to execute all transactions applying the code of a master contract.\n/// @author Stefan George - <stefan@gnosis.io>\n/// @author Richard Meissner - <richard@gnosis.io>\ncontract WalletProxy {\n\n    // masterCopy always needs to be first declared variable, to ensure that it is at the same location in the contracts to which calls are delegated.\n    // To reduce deployment costs this variable is internal and needs to be retrieved via `getStorageAt`\n    address internal masterCopy;\n\n    /// @dev Constructor function sets address of master copy contract.\n    /// @param _masterCopy Master copy address.\n    constructor(address _masterCopy)\n    {\n        require(_masterCopy != address(0), \"Invalid master copy address provided\");\n        masterCopy = _masterCopy;\n    }\n\n    /// @dev Fallback function forwards all transactions and returns all received return data.\n    fallback()\n        payable\n        external\n    {\n        // solium-disable-next-line security/no-inline-assembly\n        assembly {\n            let _masterCopy := and(sload(0), 0xffffffffffffffffffffffffffffffffffffffff)\n            // 0xa619486e == keccak(\"masterCopy()\"). The value is right padded to 32-bytes with 0s\n            if eq(calldataload(0), 0xa619486e00000000000000000000000000000000000000000000000000000000) {\n                mstore(0, _masterCopy)\n                return(0, 0x20)\n            }\n            calldatacopy(0, 0, calldatasize())\n            let success := delegatecall(gas(), _masterCopy, 0, calldatasize(), 0, 0)\n            returndatacopy(0, 0, returndatasize())\n            if eq(success, 0) { revert(0, returndatasize()) }\n            return(0, returndatasize())\n        }\n    }\n}",
-  "sourcePath": "/Users/okudajunta/Documents/solidity/harmony-totp/contracts/external/walletproxy.sol",
+  "sourcePath": "/Users/andreashejj/Development/Harmony/harmony-totp/contracts/external/walletproxy.sol",
   "ast": {
     "absolutePath": "project:/contracts/external/walletproxy.sol",
     "exportedSymbols": {
       "IProxy": [
-        4888
+        4895
       ],
       "WalletProxy": [
-        4919
+        4926
       ]
     },
-    "id": 4920,
+    "id": 4927,
     "license": "LGPL-3.0-or-later",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 4881,
+        "id": 4888,
         "literals": [
           "solidity",
           ">=",
@@ -975,44 +975,44 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 4882,
+          "id": 4889,
           "nodeType": "StructuredDocumentation",
           "src": "183:131:29",
           "text": "@title IProxy - Helper interface to access masterCopy of the Proxy on-chain\n @author Richard Meissner - <richard@gnosis.io>"
         },
         "fullyImplemented": false,
-        "id": 4888,
+        "id": 4895,
         "linearizedBaseContracts": [
-          4888
+          4895
         ],
         "name": "IProxy",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "functionSelector": "a619486e",
-            "id": 4887,
+            "id": 4894,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "masterCopy",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 4883,
+              "id": 4890,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "356:2:29"
             },
             "returnParameters": {
-              "id": 4886,
+              "id": 4893,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4885,
+                  "id": 4892,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 4887,
+                  "scope": 4894,
                   "src": "382:7:29",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1021,7 +1021,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4884,
+                    "id": 4891,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "382:7:29",
@@ -1036,14 +1036,14 @@
               ],
               "src": "381:9:29"
             },
-            "scope": 4888,
+            "scope": 4895,
             "src": "337:54:29",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 4920,
+        "scope": 4927,
         "src": "314:79:29"
       },
       {
@@ -1052,26 +1052,26 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "documentation": {
-          "id": 4889,
+          "id": 4896,
           "nodeType": "StructuredDocumentation",
           "src": "395:221:29",
           "text": "@title WalletProxy - Generic proxy contract allows to execute all transactions applying the code of a master contract.\n @author Stefan George - <stefan@gnosis.io>\n @author Richard Meissner - <richard@gnosis.io>"
         },
         "fullyImplemented": true,
-        "id": 4919,
+        "id": 4926,
         "linearizedBaseContracts": [
-          4919
+          4926
         ],
         "name": "WalletProxy",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 4891,
+            "id": 4898,
             "mutability": "mutable",
             "name": "masterCopy",
             "nodeType": "VariableDeclaration",
-            "scope": 4919,
+            "scope": 4926,
             "src": "900:27:29",
             "stateVariable": true,
             "storageLocation": "default",
@@ -1080,7 +1080,7 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 4890,
+              "id": 4897,
               "name": "address",
               "nodeType": "ElementaryTypeName",
               "src": "900:7:29",
@@ -1094,7 +1094,7 @@
           },
           {
             "body": {
-              "id": 4911,
+              "id": 4918,
               "nodeType": "Block",
               "src": "1091:125:29",
               "statements": [
@@ -1106,17 +1106,17 @@
                           "typeIdentifier": "t_address",
                           "typeString": "address"
                         },
-                        "id": 4903,
+                        "id": 4910,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
-                          "id": 4898,
+                          "id": 4905,
                           "name": "_masterCopy",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 4894,
+                          "referencedDeclaration": 4901,
                           "src": "1109:11:29",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -1129,7 +1129,7 @@
                           "arguments": [
                             {
                               "hexValue": "30",
-                              "id": 4901,
+                              "id": 4908,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
@@ -1151,7 +1151,7 @@
                                 "typeString": "int_const 0"
                               }
                             ],
-                            "id": 4900,
+                            "id": 4907,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -1163,14 +1163,14 @@
                               "typeString": "type(address)"
                             },
                             "typeName": {
-                              "id": 4899,
+                              "id": 4906,
                               "name": "address",
                               "nodeType": "ElementaryTypeName",
                               "src": "1124:7:29",
                               "typeDescriptions": {}
                             }
                           },
-                          "id": 4902,
+                          "id": 4909,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -1193,7 +1193,7 @@
                       },
                       {
                         "hexValue": "496e76616c6964206d617374657220636f707920616464726573732070726f7669646564",
-                        "id": 4904,
+                        "id": 4911,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -1219,7 +1219,7 @@
                           "typeString": "literal_string \"Invalid master copy address provided\""
                         }
                       ],
-                      "id": 4897,
+                      "id": 4904,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -1233,7 +1233,7 @@
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 4905,
+                    "id": 4912,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1248,23 +1248,23 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 4906,
+                  "id": 4913,
                   "nodeType": "ExpressionStatement",
                   "src": "1101:74:29"
                 },
                 {
                   "expression": {
-                    "id": 4909,
+                    "id": 4916,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
-                      "id": 4907,
+                      "id": 4914,
                       "name": "masterCopy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4891,
+                      "referencedDeclaration": 4898,
                       "src": "1185:10:29",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -1274,11 +1274,11 @@
                     "nodeType": "Assignment",
                     "operator": "=",
                     "rightHandSide": {
-                      "id": 4908,
+                      "id": 4915,
                       "name": "_masterCopy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4894,
+                      "referencedDeclaration": 4901,
                       "src": "1198:11:29",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -1291,35 +1291,35 @@
                       "typeString": "address"
                     }
                   },
-                  "id": 4910,
+                  "id": 4917,
                   "nodeType": "ExpressionStatement",
                   "src": "1185:24:29"
                 }
               ]
             },
             "documentation": {
-              "id": 4892,
+              "id": 4899,
               "nodeType": "StructuredDocumentation",
               "src": "934:115:29",
               "text": "@dev Constructor function sets address of master copy contract.\n @param _masterCopy Master copy address."
             },
-            "id": 4912,
+            "id": 4919,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 4895,
+              "id": 4902,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4894,
+                  "id": 4901,
                   "mutability": "mutable",
                   "name": "_masterCopy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 4912,
+                  "scope": 4919,
                   "src": "1066:19:29",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1328,7 +1328,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4893,
+                    "id": 4900,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1066:7:29",
@@ -1344,12 +1344,12 @@
               "src": "1065:21:29"
             },
             "returnParameters": {
-              "id": 4896,
+              "id": 4903,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1091:0:29"
             },
-            "scope": 4919,
+            "scope": 4926,
             "src": "1054:162:29",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1357,7 +1357,7 @@
           },
           {
             "body": {
-              "id": 4917,
+              "id": 4924,
               "nodeType": "Block",
               "src": "1365:763:29",
               "statements": [
@@ -1764,44 +1764,44 @@
                   },
                   "evmVersion": "istanbul",
                   "externalReferences": [],
-                  "id": 4916,
+                  "id": 4923,
                   "nodeType": "InlineAssembly",
                   "src": "1439:683:29"
                 }
               ]
             },
             "documentation": {
-              "id": 4913,
+              "id": 4920,
               "nodeType": "StructuredDocumentation",
               "src": "1222:90:29",
               "text": "@dev Fallback function forwards all transactions and returns all received return data."
             },
-            "id": 4918,
+            "id": 4925,
             "implemented": true,
             "kind": "fallback",
             "modifiers": [],
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 4914,
+              "id": 4921,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1325:2:29"
             },
             "returnParameters": {
-              "id": 4915,
+              "id": 4922,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1365:0:29"
             },
-            "scope": 4919,
+            "scope": 4926,
             "src": "1317:811:29",
             "stateMutability": "payable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 4920,
+        "scope": 4927,
         "src": "616:1514:29"
       }
     ],
@@ -1811,18 +1811,18 @@
     "absolutePath": "project:/contracts/external/walletproxy.sol",
     "exportedSymbols": {
       "IProxy": [
-        4888
+        4895
       ],
       "WalletProxy": [
-        4919
+        4926
       ]
     },
-    "id": 4920,
+    "id": 4927,
     "license": "LGPL-3.0-or-later",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 4881,
+        "id": 4888,
         "literals": [
           "solidity",
           ">=",
@@ -1838,44 +1838,44 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 4882,
+          "id": 4889,
           "nodeType": "StructuredDocumentation",
           "src": "183:131:29",
           "text": "@title IProxy - Helper interface to access masterCopy of the Proxy on-chain\n @author Richard Meissner - <richard@gnosis.io>"
         },
         "fullyImplemented": false,
-        "id": 4888,
+        "id": 4895,
         "linearizedBaseContracts": [
-          4888
+          4895
         ],
         "name": "IProxy",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "functionSelector": "a619486e",
-            "id": 4887,
+            "id": 4894,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "masterCopy",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 4883,
+              "id": 4890,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "356:2:29"
             },
             "returnParameters": {
-              "id": 4886,
+              "id": 4893,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4885,
+                  "id": 4892,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 4887,
+                  "scope": 4894,
                   "src": "382:7:29",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1884,7 +1884,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4884,
+                    "id": 4891,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "382:7:29",
@@ -1899,14 +1899,14 @@
               ],
               "src": "381:9:29"
             },
-            "scope": 4888,
+            "scope": 4895,
             "src": "337:54:29",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 4920,
+        "scope": 4927,
         "src": "314:79:29"
       },
       {
@@ -1915,26 +1915,26 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "documentation": {
-          "id": 4889,
+          "id": 4896,
           "nodeType": "StructuredDocumentation",
           "src": "395:221:29",
           "text": "@title WalletProxy - Generic proxy contract allows to execute all transactions applying the code of a master contract.\n @author Stefan George - <stefan@gnosis.io>\n @author Richard Meissner - <richard@gnosis.io>"
         },
         "fullyImplemented": true,
-        "id": 4919,
+        "id": 4926,
         "linearizedBaseContracts": [
-          4919
+          4926
         ],
         "name": "WalletProxy",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 4891,
+            "id": 4898,
             "mutability": "mutable",
             "name": "masterCopy",
             "nodeType": "VariableDeclaration",
-            "scope": 4919,
+            "scope": 4926,
             "src": "900:27:29",
             "stateVariable": true,
             "storageLocation": "default",
@@ -1943,7 +1943,7 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 4890,
+              "id": 4897,
               "name": "address",
               "nodeType": "ElementaryTypeName",
               "src": "900:7:29",
@@ -1957,7 +1957,7 @@
           },
           {
             "body": {
-              "id": 4911,
+              "id": 4918,
               "nodeType": "Block",
               "src": "1091:125:29",
               "statements": [
@@ -1969,17 +1969,17 @@
                           "typeIdentifier": "t_address",
                           "typeString": "address"
                         },
-                        "id": 4903,
+                        "id": 4910,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
-                          "id": 4898,
+                          "id": 4905,
                           "name": "_masterCopy",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 4894,
+                          "referencedDeclaration": 4901,
                           "src": "1109:11:29",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -1992,7 +1992,7 @@
                           "arguments": [
                             {
                               "hexValue": "30",
-                              "id": 4901,
+                              "id": 4908,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
@@ -2014,7 +2014,7 @@
                                 "typeString": "int_const 0"
                               }
                             ],
-                            "id": 4900,
+                            "id": 4907,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -2026,14 +2026,14 @@
                               "typeString": "type(address)"
                             },
                             "typeName": {
-                              "id": 4899,
+                              "id": 4906,
                               "name": "address",
                               "nodeType": "ElementaryTypeName",
                               "src": "1124:7:29",
                               "typeDescriptions": {}
                             }
                           },
-                          "id": 4902,
+                          "id": 4909,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -2056,7 +2056,7 @@
                       },
                       {
                         "hexValue": "496e76616c6964206d617374657220636f707920616464726573732070726f7669646564",
-                        "id": 4904,
+                        "id": 4911,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -2082,7 +2082,7 @@
                           "typeString": "literal_string \"Invalid master copy address provided\""
                         }
                       ],
-                      "id": 4897,
+                      "id": 4904,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -2096,7 +2096,7 @@
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 4905,
+                    "id": 4912,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2111,23 +2111,23 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 4906,
+                  "id": 4913,
                   "nodeType": "ExpressionStatement",
                   "src": "1101:74:29"
                 },
                 {
                   "expression": {
-                    "id": 4909,
+                    "id": 4916,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
-                      "id": 4907,
+                      "id": 4914,
                       "name": "masterCopy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4891,
+                      "referencedDeclaration": 4898,
                       "src": "1185:10:29",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -2137,11 +2137,11 @@
                     "nodeType": "Assignment",
                     "operator": "=",
                     "rightHandSide": {
-                      "id": 4908,
+                      "id": 4915,
                       "name": "_masterCopy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4894,
+                      "referencedDeclaration": 4901,
                       "src": "1198:11:29",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -2154,35 +2154,35 @@
                       "typeString": "address"
                     }
                   },
-                  "id": 4910,
+                  "id": 4917,
                   "nodeType": "ExpressionStatement",
                   "src": "1185:24:29"
                 }
               ]
             },
             "documentation": {
-              "id": 4892,
+              "id": 4899,
               "nodeType": "StructuredDocumentation",
               "src": "934:115:29",
               "text": "@dev Constructor function sets address of master copy contract.\n @param _masterCopy Master copy address."
             },
-            "id": 4912,
+            "id": 4919,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 4895,
+              "id": 4902,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4894,
+                  "id": 4901,
                   "mutability": "mutable",
                   "name": "_masterCopy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 4912,
+                  "scope": 4919,
                   "src": "1066:19:29",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2191,7 +2191,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4893,
+                    "id": 4900,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1066:7:29",
@@ -2207,12 +2207,12 @@
               "src": "1065:21:29"
             },
             "returnParameters": {
-              "id": 4896,
+              "id": 4903,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1091:0:29"
             },
-            "scope": 4919,
+            "scope": 4926,
             "src": "1054:162:29",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -2220,7 +2220,7 @@
           },
           {
             "body": {
-              "id": 4917,
+              "id": 4924,
               "nodeType": "Block",
               "src": "1365:763:29",
               "statements": [
@@ -2627,44 +2627,44 @@
                   },
                   "evmVersion": "istanbul",
                   "externalReferences": [],
-                  "id": 4916,
+                  "id": 4923,
                   "nodeType": "InlineAssembly",
                   "src": "1439:683:29"
                 }
               ]
             },
             "documentation": {
-              "id": 4913,
+              "id": 4920,
               "nodeType": "StructuredDocumentation",
               "src": "1222:90:29",
               "text": "@dev Fallback function forwards all transactions and returns all received return data."
             },
-            "id": 4918,
+            "id": 4925,
             "implemented": true,
             "kind": "fallback",
             "modifiers": [],
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 4914,
+              "id": 4921,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1325:2:29"
             },
             "returnParameters": {
-              "id": 4915,
+              "id": 4922,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1365:0:29"
             },
-            "scope": 4919,
+            "scope": 4926,
             "src": "1317:811:29",
             "stateMutability": "payable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 4920,
+        "scope": 4927,
         "src": "616:1514:29"
       }
     ],
@@ -2675,8 +2675,8 @@
     "version": "0.8.0+commit.c7dfd78e.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.4.2",
-  "updatedAt": "2021-08-28T01:49:12.947Z",
+  "schemaVersion": "3.4.3",
+  "updatedAt": "2021-09-08T10:27:01.049Z",
   "devdoc": {
     "author": "Stefan George - <stefan@gnosis.io>Richard Meissner - <richard@gnosis.io>",
     "kind": "dev",
