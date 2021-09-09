@@ -47,11 +47,10 @@ class Step2 extends Component {
     const { id } = evt.target;
     if (id == "backButton") {
       this.props.setOnboardingStep(1);
-    }
-    else if (id== "continueButton"){
+    } else if (id == "continueButton") {
       this.props.setOnboardingStep(3);
+    } else {
     }
-    else{}
   };
 
   render() {
@@ -72,7 +71,6 @@ class Step2 extends Component {
                 <span className="fw-bold">{userEmail}</span>
               </div>
               <p className="text-r-bank-grayscale-iron fs-6">Code</p>
-
               <StyledOTPContainer className="row justify-content-start ">
                 <OtpInput
                   inputStyle="inputStyle"
@@ -121,8 +119,8 @@ class Step2 extends Component {
                   //className="btn btn-r-bank-grayscale-silver text-white rounded-pill"
                   className={`btn rounded-pill ${
                     this.state.validated
-                        ? "btn-r-bank-highlight text-rb-bank-primary"
-                        : "btn-r-bank-grayscale-silver text-rb-bank-white"
+                      ? "btn-r-bank-highlight text-rb-bank-primary"
+                      : "btn-r-bank-grayscale-silver text-rb-bank-white"
                   }`}
                   disabled={!this.state.validated && "disabled"}
                 >

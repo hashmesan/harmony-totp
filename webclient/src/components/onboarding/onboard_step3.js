@@ -22,6 +22,7 @@ class Step3 extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      validated: false,
       error: "",
       otp: "",
     };
@@ -31,7 +32,7 @@ class Step3 extends Component {
     this.setState({ otp });
     const match = this.context.smartvault.validateOTP(otp);
     if (match) {
-      this.setState({ error: "none" });
+      this.setState({ error: "none", validated: true });
     } else {
       this.setState({ error: "OTP does not match" });
       return;
@@ -85,13 +86,20 @@ class Step3 extends Component {
                   separator={<span></span>}
                 />
               </StyledOTPContainer>
-
+              {this.state.validated && (
+                <div className="mt-2">
+                  <i className="bi bi-check-circle text-success fs-5" />
+                  <span className="ps-3 text-success">
+                    Validation completed
+                  </span>
+                </div>
+              )}
               <div className="d-flex justify-content-end p-3 fixed-bottom">
                 <button
                   type="button"
                   onClick={this.handleClick}
                   className="btn btn-r-bank-grayscale-silver text-white rounded-pill"
-                  disabled={this.state.error !== "none" && "disabled"}
+                  disabled={!this.state.validated && "disabled"}
                 >
                   Continue
                 </button>

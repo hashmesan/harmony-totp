@@ -7,32 +7,29 @@ import { SmartVaultContext } from "../smartvault_provider";
 import actions from "../../redux/actions";
 
 const Step4 = ({ user }) => {
-  const [form, setForm] = useState({});
+  const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
   const [guardians, setGuardians] = useState([]);
+  const [isValid, setValidity] = useState(null);
   const [collapsed, setCollapsed] = useState(false);
-
-  const setField = (field, value) => {
-    setForm({
-      ...form,
-      [field]: value,
-    });
-    // Check and see if errors exist, and remove them from the error object:
-    if (!!errors[field])
-      setErrors({
-        ...errors,
-        [field]: null,
-      });
-  };
 
   const { smartvault } = useContext(SmartVaultContext);
 
-  const handleAdd = async (e) => {
+  const handleAdd = async () => {
     const hns = "renaissancebank.crazy.one";
     console.log(smartvault);
     const address = await smartvault.harmonyClient.ens.name(hns).getAddress();
 
     console.log("address: ", address);
+  };
+
+  const handleChange = (e) => {
+    updateFormData({
+      ...formData,
+
+      // Trimming any whitespace
+      [e.target.name]: e.target.value.trim(),
+    });
   };
 
   return (
@@ -81,10 +78,9 @@ const Step4 = ({ user }) => {
             <p className="text-r-bank-grayscale-iron pt-5">
               Who would you want to add?
             </p>
-
             <input
               type="text"
-              className="form-control is-valid my-3"
+              className="form-control my-3"
               id="guardianName"
               placeholder="Please enter a guardian's username or address"
               required
