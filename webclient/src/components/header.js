@@ -24,8 +24,6 @@ class Header extends Component {
     const { showNav } = this.state;
     const { location, user } = this.props;
 
-    console.log("state store: ", user);
-
     return (
       <React.Fragment>
         <nav className="navbar navbar-expand-lg navbar-light bg-white py-3 sticky-top d-flex">

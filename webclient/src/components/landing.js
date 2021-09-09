@@ -17,8 +17,8 @@ class Landing extends Component {
   render() {
     return (
       <div>
-        <div className="container-fluid">
-          <div className="row my-5 p-3">
+        <div className="container-fluid pe-0">
+          <div className="row my-5">
             <div className="col-md-6">
               <p className="display-4">
                 R-Bank is your trusted partner and gateway to Decentralized

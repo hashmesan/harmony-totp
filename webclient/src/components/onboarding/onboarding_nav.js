@@ -36,11 +36,11 @@ class OnboardNav extends Component {
 
     return (
       <React.Fragment>
-        <div className="bg-r-bank-grayscale-platin border border-r-bank-grayscale-titanium align-content-center justify-content-start p-5 vh-100">
+        <div className="bg-r-bank-grayscale-platin border border-r-bank-grayscale-titanium align-content-center justify-content-start p-5 min-vh-100">
           <div className="d-flex flex-column ps-3">
             <div>
               <div className="fs-6 text-r-bank-grayscale-iron text-uppercase">
-                pen an account
+                Open an account
               </div>
 
               <div className="fs-1 text-r-bank-grayscale-iron">
@@ -50,6 +50,7 @@ class OnboardNav extends Component {
             <div className="pt-5">
               <div
                 className="d-flex align-items-start"
+                style={{ cursor: "pointer" }}
                 onClick={() => this.handleClick(1)}
               >
                 <Number
@@ -86,6 +87,7 @@ class OnboardNav extends Component {
               <hr />
               <div
                 className="d-flex align-items-start py-2"
+                style={{ cursor: "pointer" }}
                 id="2"
                 onClick={() => this.handleClick(2)}
               >
@@ -118,6 +120,7 @@ class OnboardNav extends Component {
               <hr />
               <div
                 className="d-flex align-items-start py-2"
+                style={{ cursor: "pointer" }}
                 onClick={() => this.handleClick(3)}
               >
                 <Number
@@ -150,6 +153,7 @@ class OnboardNav extends Component {
               <hr />
               <div
                 className="d-flex align-items-start py-2"
+                style={{ cursor: "pointer" }}
                 onClick={() => this.handleClick(4)}
               >
                 <Number
@@ -181,6 +185,7 @@ class OnboardNav extends Component {
               <hr />
               <div
                 className="d-flex align-items-start py-2"
+                style={{ cursor: "pointer" }}
                 onClick={() => this.handleClick(5)}
               >
                 <Number

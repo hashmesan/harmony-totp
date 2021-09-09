@@ -27,8 +27,6 @@ class Create extends Component {
   componentDidMount() {}
 
   render() {
-    console.log("state=", this.state);
-
     return (
       <div
         className="container text-center pt-5 justify-content-md-center"
