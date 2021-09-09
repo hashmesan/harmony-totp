@@ -5,26 +5,37 @@ import { Collapse } from "bootstrap";
 import { SmartVaultContext } from "../smartvault_provider";
 
 import actions from "../../redux/actions";
+import { add } from "lodash";
 
 const Step4 = ({ user }) => {
   const [formData, setFormData] = useState({});
-  const [errors, setErrors] = useState({});
   const [guardians, setGuardians] = useState([]);
   const [isValid, setValidity] = useState(null);
   const [collapsed, setCollapsed] = useState(false);
 
   const { smartvault } = useContext(SmartVaultContext);
+  const zero = "0x0000000000000000000000000000000000000000";
 
-  const handleAdd = async () => {
-    const hns = "renaissancebank.crazy.one";
-    console.log(smartvault);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const hns = formData.guardianName + ".crazy.one";
     const address = await smartvault.harmonyClient.ens.name(hns).getAddress();
+    const guardian = {
+      hns: hns,
+      address: address,
+    };
 
     console.log("address: ", address);
+
+    // TODO: Check if hns not already in guardians.hns
+    if (address !== zero) {
+      setGuardians((prev) => [...prev, guardian]);
+    }
   };
 
   const handleChange = (e) => {
-    updateFormData({
+    setFormData({
       ...formData,
 
       // Trimming any whitespace
@@ -66,29 +77,29 @@ const Step4 = ({ user }) => {
               <p className="text-r-bank-grayscale-iron pt-3">
                 Added guardians{" "}
               </p>
-              <div
-                className={(collapsed ? "show" : "") + "collapse"}
-                id="collapse-Target"
-              >
-                <div className="card card-body">some content here</div>
-              </div>
+              {guardians.map((guardian) => {
+                return <div key={guardian.hns}>Hello {guardian.hns}</div>;
+              })}
             </div>
           )}
           <div className="justify-content-start pt-3">
             <p className="text-r-bank-grayscale-iron pt-5">
               Who would you want to add?
             </p>
+
             <input
               type="text"
               className="form-control my-3"
               id="guardianName"
+              name="guardianName"
               placeholder="Please enter a guardian's username or address"
+              onChange={handleChange}
               required
             />
             <button
               className="btn btn-outline-dark rounded-pill"
               type="button"
-              onClick={handleAdd}
+              onClick={handleSubmit}
             >
               Add
             </button>

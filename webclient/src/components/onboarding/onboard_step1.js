@@ -70,8 +70,12 @@ class Step1 extends Component {
         userCountryOfResidence
       );
 
+      const address = await smartvault.harmonyClient.ens
+        .name(userName)
+        .getAddress();
+
       const { wallet } = { ...this.state };
-      console.log("createdWallet: ", createdWallet);
+      console.log("address: ", address);
 
       if (createdWallet === null) {
         wallet.isAvailable = false;
