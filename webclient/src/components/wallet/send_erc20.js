@@ -6,6 +6,12 @@ const {
 const web3utils = require("web3-utils");
 import { SmartVaultContext, SmartVaultConsumer } from "../smartvault_provider";
 import Notifications, {notify} from 'react-notify-toast';
+import { withRouter } from 'react-router-dom';
+import erc20Artifact from "../../../../build/contracts/ERC20.json";
+import RelayerClient from '../../../../lib/relayer_client';
+
+var Contract = require('web3-eth-contract');
+var erc20 = new Contract(erc20Artifact.abi)
 
 class SendPayment extends Component {
 	constructor(props) {
@@ -17,15 +23,27 @@ class SendPayment extends Component {
 		this.setState({
 			gasLimit: this.context.smartvault.config.gasLimit,
 			gasPrice: web3utils.fromWei(this.context.smartvault.config.gasPrice + "", "gwei"),
-			gasFee: web3utils.toBN(this.context.smartvault.config.gasLimit).mul(web3utils.toBN(this.context.smartvault.config.gasPrice))
+			gasFee: web3utils.toBN(this.context.smartvault.config.gasLimit).mul(web3utils.toBN(this.context.smartvault.config.gasPrice)),
+            contractAddress: this.props.match.params.address
 		});
+
+        const self = this;
+        this.context.smartvault.harmonyClient.getERC20Info(this.props.match.params.address).then(e=>{
+            self.setState({...e})
+        })        
+
+        this.context.smartvault.harmonyClient.getErc20Balance([this.props.match.params.address], this.context.smartvault.walletData.walletAddress).then(e=>{
+            self.setState({balance: e[0]})
+        })
 	}
 	transfer(e) {
 		e.preventDefault();
 		var self = this;
 		self.setState({ submitting: true });
 
-		this.context.smartvault.relayClient.transferTX(this.context.smartvault.walletData.walletAddress, fromBech32(this.state.destination), web3utils.toWei(this.state.sendAmount), parseInt(web3utils.toWei(""+this.state.gasPrice,'gwei')), this.state.gasLimit, this.context.smartvault.ownerAccount).then(e => {
+        const data = erc20.methods.transfer(fromBech32(this.state.destination), web3utils.toWei(this.state.sendAmount)).encodeABI();
+        const tx = RelayerClient.getContract().methods.multiCall([{to: this.state.contractAddress, value: 0, data: data}]).encodeABI();
+		this.context.smartvault.submitTransaction(tx, parseInt(web3utils.toWei(this.state.gasPrice,'gwei')), this.state.gasLimit).then(e => {
 			console.log("sigs", e);
 			setTimeout(() => {
 				self.setState({ submitting: false, destination: "", sendAmount: "" });
@@ -49,7 +67,7 @@ class SendPayment extends Component {
                 {({smartvault}) => (				
 			<div className="card">
 				<div className="card-body">
-					<h3 className="card-title text-center">SEND PAYMENT</h3>
+					<h3 className="card-title text-center">SEND {this.state.name}</h3>
 					<form>
 						<div className="form-group">
 							<label htmlFor="inputEmail3" className="col-form-label">Destination Address</label>
@@ -58,6 +76,7 @@ class SendPayment extends Component {
 							</div>
 						</div>
 						<div className="form-group">
+                            <div className="float-right">MAX: {this.state.balance && web3utils.fromWei(this.state.balance)}</div>
 							<label htmlFor="inputEmail3" className="col-form-label">Amount</label>
 							<div className="">
 								<input type="number" className="form-control" id="inputEmail3" value={this.state.sendAmount} onChange={(e) => this.setState({ sendAmount: e.target.value })} />
@@ -86,7 +105,7 @@ class SendPayment extends Component {
 						{this.state.error &&
 							<div className="row justify-content-md-center mt-4">
 								<div className="alert alert-danger w-50" role="alert">
-									{this.state.error && this.state.error.message}
+									{this.state.error && JSON.stringify(this.state.error)}
 								</div>
 							</div>}
 						<div className="form-group row mt-4">
@@ -105,4 +124,4 @@ class SendPayment extends Component {
 }
 SendPayment.contextType = SmartVaultContext;
 
-export default SendPayment;
+export default withRouter(SendPayment);

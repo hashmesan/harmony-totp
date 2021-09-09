@@ -22,13 +22,14 @@ contract("TokenTest", async (accounts) => {
         const methodData = smartWallet.contract.methods.multiCall(calls).encodeABI()
         const gasLimit = 100000;
         const nonce = await commons.getNonceForRelay();
+        const chainId = await web3.eth.getChainId();
 
         var sigs = await commons.signOffchain2(
             [tmpWallet],
             smartWallet.address,
             0,
             methodData,
-            0,
+            chainId,
             nonce,
             0,
             gasLimit,

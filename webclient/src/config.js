@@ -37,6 +37,8 @@ const CONFIG = {
   },
 };
 
+const DEFAULT_TOKEN_LIST = "https://d1xrz6ki9z98vb.cloudfront.net/venomswap/lists/venomswap-default.tokenlist.json";
+
 function getApiUrl(env) {
   return CONFIG[env].API_URL;
 }
@@ -62,11 +64,12 @@ function setLocalWallet(env, data, pending) {
 }
 
 module.exports = {
-  CONFIG,
-  getApiUrl,
-  getStorageKey,
-  getLocalWallet,
-  getExplorerUrl,
-  setLocalWallet,
-};
+    CONFIG,
+    getApiUrl,
+    getStorageKey,
+    getLocalWallet,
+    getExplorerUrl,
+    setLocalWallet,
+    DEFAULT_TOKEN_LIST
+}
 //export default CONFIG;

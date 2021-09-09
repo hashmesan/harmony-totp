@@ -11,7 +11,7 @@
 
 [![](https://github.com/hashmesan/harmony-totp/actions/workflows/docker-test.yml/badge.svg?branch=develop)](https://github.com/hashmesan/harmony-totp/actions/workflows/docker-test.yml)
 [![](https://github.com/hashmesan/harmony-totp/actions/workflows/webclient.yml/badge.svg?branch=develop)](https://github.com/hashmesan/harmony-totp/actions/workflows/webclient.yml)
-
+[![](https://dcbadge.vercel.app/api/shield/396016273798201344?style=plastic)](https://discordapp.com/users/396016273798201344)
 </p>
 
 SmartVault is a smart contract wallet designed with worry-free recovery using your Google Authenticator (no worry about key phrases, passwords, device loss, email phishing, sms hijacking), and with many advanced wallet features.
@@ -24,15 +24,21 @@ SmartVault is a smart contract wallet designed with worry-free recovery using yo
 * **Smart contract without the hassle**: You don't need native wallet (like metamask or CLI) to sign transactions to use it. We designed *meta transactions* which can be relayed, and deduct fees from your wallet when it is successful.
 * **Activate your wallet with a simple deposit**: Using counter-factual wallet [EIP 1014](https://eips.ethereum.org/EIPS/eip-1014), we can generate your "future" wallet before it is created, and safely deposit into the address any amount, from anywhere (even exchanges like Binance, Coinbase, etc), to activate your smart wallet contract (aka Smartvault).
 * **Fully Upgradeable**: Smartvault has built-in upgrade functions. As there are more features like staking, DEX added, simply upgrade with all the new features without moving your assets, and still keep the same address.
+* **Dapp integration**: Integrate with any Dapp with multi-call support. See [Uniswap/Viper demo](https://github.com/hashmesan/harmony-totp/wiki/Integrating-DAPP)
+
+Contract Audited by **Slowmist** - see [report](/audit/SlowMist%20Audit%20Report.pdf)
 
 ### Demo Videos
 #### New Wallet Demo
 ![Demo Video- Create](designs/create.gif)
 
-#### Recover Demo
-![Demo Video- Recover](designs/recover.gif)
+## Developer Guide
 
-## Security & Usabilities
+[SmartVault Specifications](https://github.com/hashmesan/harmony-totp/wiki/SmartVault-Specifications)
+
+[Developer Guide](https://github.com/hashmesan/harmony-totp/wiki/Developer-Guide)
+
+[Integrating Dapp](https://github.com/hashmesan/harmony-totp/wiki/Integrating-DAPP)
 
 ## Deployment
 
@@ -72,6 +78,8 @@ See [Examples](https://github.com/hashmesan/harmony-totp/wiki/CLI-Examples)
 ### Smart contracts
 
 See [/contracts](/contracts/README.md)
+
+Contract Audited by Slowmist - see [report](/audit/SlowMist%20Audit%20Report.pdf)
 
 ### Relayer
 
