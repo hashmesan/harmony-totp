@@ -97,8 +97,29 @@ class Transactions {
         // console.log(data);
         var count = await new Web3(this.provider).eth.getTransactionCount(this.defaultAddress);
         var wallet = await this.getWallet(data.from);
-        var tx = await wallet.executeMetaTx(data.data, data.signatures, data.nonce, data.gasPrice, data.gasLimit, data.refundToken, data.refundAddress, { from: this.defaultAddress, gasLimit: data.gasLimit, nonce: count});
+        var tx = await wallet.executeMetaTx(data.data, data.signatures, data.nonce, data.gasPrice, data.gasLimit, data.refundToken, data.refundAddress, { from: this.defaultAddress, gas: data.gasLimit, gasPrice: data.gasPrice, nonce: count});
         return {tx: tx}
+    }
+
+    async getContractCreated() {
+        const deployedPath = __dirname + "/../../../contracts/deployed.json";
+        let rawdata = fs.readFileSync(deployedPath);
+        let jsonData = JSON.parse(rawdata);
+        const factories = jsonData[this.env];
+        let res = {};
+        var web3 = new Web3(this.provider);
+
+        for(var i=0; i < factories.length; i++) {
+            var address = factories[i];
+            const factoryContract = new web3.eth.Contract(
+                walletFactoryArtifacts.abi,
+                address
+            );
+            const created = await factoryContract.methods.getCreated().call();
+            res[address] = created.map(e=>{ return {"wallet": e.wallet, "domain": e.domain}})
+        }
+
+        return {"factories": res };
     }
 }
 

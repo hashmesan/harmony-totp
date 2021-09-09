@@ -8,7 +8,23 @@ const Relayer = artifacts.require("Relayer");
 const NameRegistry = artifacts.require("NameRegistry");
 const NameService = artifacts.require("NameService");
 
-module.exports = async function(deployer) {
+const fs = require('fs');
+
+function appendJSON(filename, key, value) {
+    let rawdata = fs.readFileSync(filename);
+    let jsonData = JSON.parse(rawdata); 
+    
+    if(jsonData[key] == null) {
+        jsonData[key] = [value]
+    } else {
+        jsonData[key].push(value)
+    }
+
+    let data = JSON.stringify(jsonData, null, 2);
+    fs.writeFileSync(filename, data);
+}
+
+module.exports = async function(deployer, network) {
   await Promise.all([deployer.deploy(Guardians), 
                      deployer.deploy(DailyLimit),
                      deployer.deploy(Recovery),
@@ -27,4 +43,5 @@ module.exports = async function(deployer) {
 
   var factory = await deployer.deploy(WalletFactory, instance.address);
   console.log("Factory=", factory.address);
+  appendJSON("contracts/deployed.json", network, factory.address)
 };

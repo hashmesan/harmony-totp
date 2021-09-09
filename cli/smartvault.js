@@ -16,7 +16,7 @@ const homedir = require('os').homedir();
 
 program
 .version('0.1.0')
-.option('-e --env <env>', "environment mainnet0, testnet0, testnet3", "mainnet0")
+.option('-e --env <env>', "environment mainnet0, testnet0, testnet3", "mainnet0", "development")
 .option('-d --datadir <datadir>', "datadir", homedir + "/.smartvault/")
 
 async function main() {
@@ -32,6 +32,7 @@ async function main() {
             }
             try {
                 var client = new SmartVault(config.CONFIG[program._optionValues.env], program._optionValues.datadir);
+                await client.setup();
                 var walletData = await client.create(name, null, daily_limit, drain_address == ethers.constants.AddressZero ? drain_address: fromBech32(drain_address));
 
                 if(walletData == null) {
@@ -93,6 +94,7 @@ async function main() {
         .description("recover wallet")
         .action(async (name, code1, code2, code3, code4, code5)=>{        
             var client = new SmartVault(config.CONFIG[program._optionValues.env], program._optionValues.datadir);
+            await client.setup();
             var codes = [code1, code2, code3, code4, code5];
             var success = await client.recoverWallet(name, codes, status=>{
                 console.log("STATUS: ", status)})
@@ -103,8 +105,9 @@ async function main() {
     program
         .command("list")
         .description("list all wallets")
-        .action((options)=>{
+        .action(async (options)=>{
             var client = new SmartVault(config.CONFIG[program._optionValues.env], program._optionValues.datadir);
+            await client.setup();
             var {matches, addresses, names} = client.listWallets();
 
             console.log("List Wallets");
@@ -114,7 +117,7 @@ async function main() {
             })
         });
 
-    function loadWalletByNameOrAddress(client, nameOrAddress) {
+    async function loadWalletByNameOrAddress(client, nameOrAddress) {
         var {dir, matches, addresses, names} = client.listWallets();
 
         var index1 = addresses.indexOf(nameOrAddress)
@@ -124,7 +127,8 @@ async function main() {
         if(index == -1) {
             throw Error("Error: Cannot find wallet")
         }
-        client.loadFromLocal(dir + matches[index])        
+        client.loadFromLocal(dir + matches[index])     
+        await client.setup();   
     }
 
     program
@@ -143,7 +147,8 @@ async function main() {
             var envConfig = config.CONFIG[program._optionValues.env];
             var client = new SmartVault(envConfig, program._optionValues.datadir);
             try {
-                loadWalletByNameOrAddress(client, from);
+                await loadWalletByNameOrAddress(client, from);
+                
                 //console.log(envConfig.gasPrice, envConfig.gasLimit);
                 const res = await client.relayClient.transferTX(client.walletData.walletAddress, fromBech32(to), web3utils.toWei(amount), envConfig.gasPrice, envConfig.gasLimit, client.ownerAccount);    
 
@@ -187,7 +192,7 @@ async function main() {
     .action( async (amount, {from})=>{
         var client = new SmartVault(config.CONFIG[program._optionValues.env], program._optionValues.datadir);
         try {
-            loadWalletByNameOrAddress(client, from)        
+            await loadWalletByNameOrAddress(client, from)        
             var methodData = RelayerClient.getContract().methods.setDailyLimit(web3utils.toWei(amount)).encodeABI();    
             const res = await client.submitTransaction(methodData)
             if(res.success) {
@@ -207,7 +212,7 @@ async function main() {
     .action( async (address,  {from})=>{
         var client = new SmartVault(config.CONFIG[program._optionValues.env], program._optionValues.datadir);
         try {
-            loadWalletByNameOrAddress(client, from)        
+            await loadWalletByNameOrAddress(client, from)        
             var methodData = RelayerClient.getContract().methods.setDrainAddress(fromBech32(address)).encodeABI();    
             const res = await client.submitTransaction(methodData)
             if(res.success) {
@@ -228,7 +233,7 @@ async function main() {
         var client = new SmartVault(config.CONFIG[program._optionValues.env], program._optionValues.datadir);
         
         try {
-            loadWalletByNameOrAddress(client, from)        
+            await loadWalletByNameOrAddress(client, from)        
             const factoryInfo = await client.relayClient.getFactoryInfo();
 
             var info = await client.harmonyClient.getSmartVaultInfo(fromBech32(from))
@@ -261,7 +266,7 @@ async function main() {
         var client = new SmartVault(config.CONFIG[program._optionValues.env], program._optionValues.datadir);
         
         try {
-            loadWalletByNameOrAddress(client, from)   
+            await loadWalletByNameOrAddress(client, from)   
             var methodData = RelayerClient.getContract().methods.cancelRecovery().encodeABI();    
             const res = await client.submitTransaction(methodData)
 
