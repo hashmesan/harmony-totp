@@ -28,6 +28,10 @@ class Step1 extends Component {
     };
   }
 
+  componentDidMount() {
+    this.checkValidity();
+  }
+
   selectCountry = (value) => {
     const { user } = this.props;
     user.userCountryOfResidence = value;
@@ -42,7 +46,6 @@ class Step1 extends Component {
       this.state.validity;
 
     if (userName && userPassword && userEmail && userCountryOfResidence) {
-      console.log("here ");
       const { validity } = { ...this.state };
       validity["form"] = true;
       this.setState({ validity: validity });
@@ -84,6 +87,44 @@ class Step1 extends Component {
     } catch (e) {
       console.error("Error in creating smart wallet: ", e.message);
     }
+  };
+
+  checkValidity = () => {
+    const { validity } = { ...this.state };
+    const currentValidity = validity;
+
+    const { user } = this.props;
+
+    const userNamePattern = /^([a-zA-Z0-9\-]+)$/;
+    const passwordPattern = /^(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{7,}$/;
+    const emailPattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+    userNamePattern.test(user.userName) && user.userName.length > 7
+      ? (currentValidity["userName"] = true)
+      : (currentValidity["userName"] = false);
+
+    passwordPattern.test(user.userPassword)
+      ? (currentValidity["userPassword"] = true)
+      : (currentValidity["userPassword"] = false);
+
+    emailPattern.test(user.userEmail)
+      ? (currentValidity["userEmail"] = true)
+      : (currentValidity["userEmail"] = false);
+
+    user.userCountryOfResidence
+      ? (currentValidity["userCountryOfResidence"] = true)
+      : (currentValidity["userCountryOfResidence"] = false);
+
+    currentValidity.userName &&
+    currentValidity.userPassword &&
+    currentValidity.userEmail &&
+    currentValidity.userCountryOfResidence
+      ? (currentValidity["form"] = true)
+      : (currentValidity["form"] = false);
+
+    this.setState({ validity: currentValidity });
+
+    currentValidity.form && this.checkRentPriceAsync();
   };
 
   handleChange = (evt) => {
@@ -131,7 +172,7 @@ class Step1 extends Component {
 
       const { validity } = { ...this.state };
       const currentState = validity;
-      currentState[id] = validityCheck; //TODO: we use the id here because validity object has the same key names as user object
+      currentState[id] = validityCheck;
 
       this.setState({ validity: currentState });
     }
@@ -143,7 +184,6 @@ class Step1 extends Component {
       this.state.validity;
 
     if (userName && userPassword && userEmail && userCountryOfResidence) {
-      console.log("here ");
       const { validity } = { ...this.state };
       validity["form"] = true;
       this.setState({ validity: validity });
@@ -182,8 +222,8 @@ class Step1 extends Component {
     const dropdownPriorityOptions = ["CH"];
 
     return (
-      <div className="bg-white align-content-center border-top border-r-bank-grayscale-titanium justify-content-start p-5 h-100">
-        <div className="d-flex flex-column mb-5 pe-3">
+      <div className="bg-white align-content-center border-top border-r-bank-grayscale-titanium justify-content-start pt-5 pe-5 ps-4 h-100">
+        <div className="d-flex flex-column mb-5 ps-2 pt-3 pe-3">
           <div>
             <div className="fs-6 text-r-bank-grayscale-iron text-uppercase">
               Step 1
@@ -274,7 +314,7 @@ class Step1 extends Component {
                   Password
                 </label>
                 <div className="d-flex align-items-center gap-2">
-                  <div className="input-group">
+                  <div className="input-group input-group-seamless-append">
                     <input
                       type="password"
                       defaultValue={userPassword}
@@ -293,7 +333,13 @@ class Step1 extends Component {
                     />
                     <div className="input-group-append">
                       <span
-                        className="input-group-text bg-r-bank-white border-start-0 rounded-0 rounded-end"
+                        className={`input-group-text bg-r-bank-white border-start-0 rounded-0 rounded-end ${
+                          userPassword.length > 0
+                            ? validity.userPassword
+                              ? "" //"is-valid" -> Designer doesn't want green border if OK
+                              : "border-danger"
+                            : ""
+                        }`}
                         onClick={this.passwordShowHide}
                       >
                         <i
@@ -419,19 +465,21 @@ class Step1 extends Component {
           </div>
         </div>
 
-        <div className="d-flex justify-content-end p-3 fixed-bottom">
-          <button
-            type="button"
-            onClick={this.handleClick}
-            className={`btn rounded-pill ${
-              validity.form
-                ? "btn-r-bank-highlight text-rb-bank-primary"
-                : "btn-r-bank-grayscale-silver text-white"
-            }`}
-            disabled={!validity.form && "disabled"}
-          >
-            Continue
-          </button>
+        <div className="d-flex justify-content-end pe-5 pb-3 fixed-bottom">
+          <div className="pe-3 pb-3">
+            <button
+              type="button"
+              onClick={this.handleClick}
+              className={`btn rounded-pill ${
+                validity.form
+                  ? "btn-r-bank-highlight text-rb-bank-primary"
+                  : "btn-r-bank-grayscale-silver text-white"
+              }`}
+              disabled={!validity.form && "disabled"}
+            >
+              Continue
+            </button>
+          </div>
         </div>
       </div>
     );

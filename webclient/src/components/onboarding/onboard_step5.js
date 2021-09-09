@@ -11,8 +11,8 @@ class Step5 extends Component {
 
   render() {
     return (
-      <div className="bg-white align-content-center border-top border-r-bank-grayscale-titanium justify-content-start p-5 vh-100">
-        <div className="d-flex flex-column mb-5 pe-3">
+      <div className="bg-white align-content-center border-top border-r-bank-grayscale-titanium justify-content-start pt-5 pe-5 ps-4 vh-100">
+        <div className="d-flex flex-column mb-5 ps-2 pt-3 pe-3">
           <div>
             {" "}
             <div className="fs-6 text-r-bank-grayscale-iron text-uppercase">

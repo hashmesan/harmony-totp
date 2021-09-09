@@ -57,8 +57,8 @@ class Step2 extends Component {
     const { userEmail } = this.props.user;
 
     return (
-      <div className="bg-white align-content-center border-top border-r-bank-grayscale-titanium justify-content-start p-5 vh-100">
-        <div className="d-flex flex-column mb-5 pe-3">
+      <div className="bg-white align-content-center border-top border-r-bank-grayscale-titanium justify-content-start pt-5 pe-5 ps-4 vh-100">
+        <div className="d-flex flex-column mb-5 ps-2 pt-3 pe-3">
           <div>
             <div className="fs-6 text-r-bank-grayscale-iron text-uppercase">
               step 2
@@ -102,30 +102,32 @@ class Step2 extends Component {
                   </span>
                 </div>
               )}
-              <div className="d-flex justify-content-end p-3 gap-2 fixed-bottom">
-                <button
-                  id="backButton"
-                  type="button"
-                  onClick={this.handleClick}
-                  //className="btn btn-r-bank-grayscale-silver text-white rounded-pill"
-                  className="btn rounded-pill btn-r-bank-white text-rb-bank-primary"
-                >
-                  Back
-                </button>
-                <button
-                  id="continueButton"
-                  type="button"
-                  onClick={this.handleClick}
-                  //className="btn btn-r-bank-grayscale-silver text-white rounded-pill"
-                  className={`btn rounded-pill ${
-                    this.state.validated
-                      ? "btn-r-bank-highlight text-rb-bank-primary"
-                      : "btn-r-bank-grayscale-silver text-rb-bank-white"
-                  }`}
-                  disabled={!this.state.validated && "disabled"}
-                >
-                  Continue
-                </button>
+              <div className="d-flex justify-content-end pe-5 pb-3 fixed-bottom">
+                <div className="pe-3 pb-3">
+                  <button
+                    id="backButton"
+                    type="button"
+                    onClick={this.handleClick}
+                    //className="btn btn-r-bank-grayscale-silver text-white rounded-pill"
+                    className="btn rounded-pill btn-r-bank-white text-rb-bank-primary pe-4 me-1"
+                  >
+                    Back
+                  </button>
+                  <button
+                    id="continueButton"
+                    type="button"
+                    onClick={this.handleClick}
+                    //className="btn btn-r-bank-grayscale-silver text-white rounded-pill"
+                    className={`btn rounded-pill ${
+                      this.state.validated
+                        ? "btn-r-bank-highlight text-rb-bank-primary"
+                        : "btn-r-bank-grayscale-silver text-white"
+                    }`}
+                    disabled={!this.state.validated && "disabled"}
+                  >
+                    Continue
+                  </button>
+                </div>
               </div>
             </div>
           </div>

@@ -52,8 +52,8 @@ class Step3 extends Component {
     const qr_fixed = `https://chart.googleapis.com/chart?chs=200x200&chld=L|0&cht=qr&chl=${uri}`;
 
     return (
-      <div className="bg-white align-content-center border-top border-r-bank-grayscale-titanium justify-content-start p-5 vh-100">
-        <div className="d-flex flex-column mb-5 pe-3">
+      <div className="bg-white align-content-center border-top border-r-bank-grayscale-titanium justify-content-start pt-5 pe-5 ps-4 vh-100">
+        <div className="d-flex flex-column mb-5 ps-2 pt-3 pe-3">
           <div>
             <div className="fs-6 text-r-bank-grayscale-iron text-uppercase">
               step 3
@@ -94,15 +94,17 @@ class Step3 extends Component {
                   </span>
                 </div>
               )}
-              <div className="d-flex justify-content-end p-3 fixed-bottom">
-                <button
-                  type="button"
-                  onClick={this.handleClick}
-                  className="btn btn-r-bank-grayscale-silver text-white rounded-pill"
-                  disabled={!this.state.validated && "disabled"}
-                >
-                  Continue
-                </button>
+              <div className="d-flex justify-content-end pe-5 pb-3 fixed-bottom">
+                <div className="pe-3 pb-3">
+                  <button
+                    type="button"
+                    onClick={this.handleClick}
+                    className="btn btn-r-bank-grayscale-silver text-white rounded-pill"
+                    disabled={!this.state.validated && "disabled"}
+                  >
+                    Create Smart Wallet
+                  </button>
+                </div>
               </div>
             </div>
           </div>
