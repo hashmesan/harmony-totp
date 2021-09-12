@@ -75,7 +75,7 @@ class Step1 extends Component {
         .getAddress();
 
       const { wallet } = { ...this.state };
-      console.log("address: ", address);
+      console.log("address (should be 0x00.. if not existing: ", address);
 
       if (createdWallet === null) {
         wallet.isAvailable = false;

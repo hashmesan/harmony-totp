@@ -1,17 +1,16 @@
 import React, { useState, useContext } from "react";
 import { connect } from "redux-zero/react";
 import { Collapse } from "bootstrap";
+const web3utils = require("web3-utils");
 
 import { SmartVaultContext } from "../smartvault_provider";
 
 import actions from "../../redux/actions";
-import { add } from "lodash";
 
-const Step4 = ({ user }) => {
+const Step4 = ({ user, setOnboardingStep }) => {
   const [formData, setFormData] = useState({});
   const [guardians, setGuardians] = useState([]);
   const [isValid, setValidity] = useState(null);
-  const [collapsed, setCollapsed] = useState(false);
 
   const { smartvault } = useContext(SmartVaultContext);
   const zero = "0x0000000000000000000000000000000000000000";
@@ -21,9 +20,11 @@ const Step4 = ({ user }) => {
 
     const hns = formData.guardianName + ".crazy.one";
     const address = await smartvault.harmonyClient.ens.name(hns).getAddress();
+    const balance = await smartvault.harmonyClient.getBalance(address);
     const guardian = {
       hns: hns,
       address: address,
+      balance: balance,
     };
 
     console.log("address: ", address);
@@ -32,6 +33,10 @@ const Step4 = ({ user }) => {
     if (address !== zero) {
       setGuardians((prev) => [...prev, guardian]);
     }
+  };
+
+  const handleClick = () => {
+    setOnboardingStep(5);
   };
 
   const handleChange = (e) => {
@@ -78,7 +83,11 @@ const Step4 = ({ user }) => {
                 Added guardians{" "}
               </p>
               {guardians.map((guardian) => {
-                return <div key={guardian.hns}>Hello {guardian.hns}</div>;
+                return (
+                  <div key={guardian.hns}>
+                    Hello {guardian.hns} - {guardian.balance}
+                  </div>
+                );
               })}
             </div>
           )}
@@ -104,6 +113,17 @@ const Step4 = ({ user }) => {
               Add
             </button>
           </div>
+        </div>
+      </div>
+      <div className="d-flex justify-content-end pe-5 pb-3 fixed-bottom">
+        <div className="pe-3 pb-3">
+          <button
+            type="button"
+            onClick={handleClick}
+            className="btn rounded-pill btn-r-bank-highlight text-rb-bank-primary"
+          >
+            Continue
+          </button>
         </div>
       </div>
     </div>
