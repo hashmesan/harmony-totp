@@ -14,6 +14,7 @@ RUN apk update && apk upgrade && \
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 # where available (npm@5+)
 
+COPY contracts/deployed.json ../contracts/deployed.json 
 COPY lib ../lib
 COPY build ../build
 COPY relayer/package*.json .

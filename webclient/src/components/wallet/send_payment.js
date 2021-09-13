@@ -25,7 +25,7 @@ class SendPayment extends Component {
 		var self = this;
 		self.setState({ submitting: true });
 
-		this.context.smartvault.relayClient.transferTX(this.context.smartvault.walletData.walletAddress, fromBech32(this.state.destination), web3utils.toWei(this.state.sendAmount), 0, this.state.gasLimit, this.context.smartvault.ownerAccount).then(e => {
+		this.context.smartvault.relayClient.transferTX(this.context.smartvault.walletData.walletAddress, fromBech32(this.state.destination), web3utils.toWei(this.state.sendAmount), parseInt(web3utils.toWei(""+this.state.gasPrice,'gwei')), this.state.gasLimit, this.context.smartvault.ownerAccount).then(e => {
 			console.log("sigs", e);
 			setTimeout(() => {
 				self.setState({ submitting: false, destination: "", sendAmount: "" });
@@ -86,7 +86,7 @@ class SendPayment extends Component {
 						{this.state.error &&
 							<div className="row justify-content-md-center mt-4">
 								<div className="alert alert-danger w-50" role="alert">
-									{this.state.error && JSON.stringify(this.state.error)}
+									{this.state.error && this.state.error.message}
 								</div>
 							</div>}
 						<div className="form-group row mt-4">

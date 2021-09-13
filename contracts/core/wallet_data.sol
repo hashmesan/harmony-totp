@@ -14,6 +14,12 @@ library Core {
         uint expiration;
     }
 
+    struct CommitInfo {
+        bytes32 dataHash;
+        uint blockNumber;
+        bool revealed;
+    }
+
     enum OwnerSignature {
         Anyone,             // Anyone
         Required,           // Owner required
@@ -51,10 +57,10 @@ library Core {
         // recovery
         string hashStorageID;
         RecoveryInfo pendingRecovery;
-        mapping(bytes32 => bool) commitHash;
+        mapping(bytes32 => CommitInfo) commitHash;
 
         //
         address resolver;
-
+        uint nonce;
     }
 }

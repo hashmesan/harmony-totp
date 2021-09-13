@@ -31,7 +31,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
     address masterCopy;
     Core.Wallet public wallet;
     bool internal isImplementationContract;
-
+    uint public constant version = 1;
 
     // END OF DATA LAYOUT
     struct Call {
@@ -132,7 +132,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
 
         // Google Authenticator doesn't allow custom counter or change counter back; so we must allow room to fudge
         // allow some room if the counters were skipped at some point
-        require(counterProvided - wallet.counter  < 50, "Provided counter must not be more than 20 steps");
+        require(counterProvided - wallet.counter  < 50, "Provided counter must not be more than 50 steps");
 
         bool foundMatch = false;
         for (uint32 i = 0; i < wallet.rootHash.length; i++) {
@@ -219,7 +219,6 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
         require(address(this).balance >= amount, "not enough balance");  
 
         wallet.spentToday += amount;
-        //to.transfer(amount);
         (bool success,) = to.call{value: amount, gas: 100000}("");
         require(success, "MakeTransfer: External call failed");
         emit WalletTransfer(to, amount);             
@@ -310,18 +309,22 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
     }
 
     // recover with combination of commithash and signatures
-    function startRecoverCommit(bytes32 commitHash)  onlySelf() external {
-        wallet.commitHash[commitHash] = true;
+    function startRecoverCommit(bytes32 secretHash, bytes32 dataHash)  onlySelf() external {
+        require(wallet.commitHash[secretHash].blockNumber == 0, "COMMIT ALREADY EXIST");
+        wallet.commitHash[secretHash] = Core.CommitInfo(dataHash, block.number, false);
     }
 
     function startRecoveryReveal(address newOwner, bytes32[] calldata confirmMaterial)  onlySelf() onlyValidTOTP(confirmMaterial) external {
+        bytes32 secretHash = keccak256(abi.encodePacked(confirmMaterial[0]));
+        require(wallet.commitHash[secretHash].blockNumber != 0, "NO COMMIT");
+        require(wallet.commitHash[secretHash].revealed == false, "COMMIT ALREADY REVEALED");
+        require(block.number - wallet.commitHash[secretHash].blockNumber < 15, "Commit is too old");
+
         bytes32 hash = keccak256(abi.encodePacked(newOwner, confirmMaterial[0]));
-        require(wallet.commitHash[hash], "NO COMMIT");
+        require(hash == wallet.commitHash[secretHash].dataHash, "Datahash does not match");
 
-        //wallet.startRecovery(newOwner);
+        wallet.commitHash[secretHash].revealed = true;
         wallet.owner = newOwner;
-
-        delete wallet.commitHash[hash];
         wallet.counter = wallet.counter + 1;
     }
 

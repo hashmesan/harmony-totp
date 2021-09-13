@@ -108,17 +108,17 @@ module.exports = {
         network_id: "4",
         gas: 10000000
       },
-      harmonytestnet: {
+      testnet3: {
         provider: harmonyTestNetProvider,
         network_id: "1666700003",
         gas: 30000000
       },
-      harmonytestnet0: {
+      testnet0: {
         provider: harmonyTestNetProvider0,
         network_id: "1666700000",
         gas: 30000000
       },      
-      harmonymainnet: {
+      mainnet0: {
         provider: harmonyMainNetProvider,
         network_id: "1666600000",
         gas: 10000000

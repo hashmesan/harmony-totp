@@ -142,7 +142,7 @@ contract Relayer is Ownable
 
     function deployForwarder(uint salt_) internal returns (Forwarder) {
         Forwarder forwarder = _deployForwarder(salt_);
-        forwarder.init(payable(this));
+        forwarder.init(payable(address(this)));
         return forwarder;
     }
 
