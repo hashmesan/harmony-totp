@@ -257,7 +257,7 @@ class Step1 extends Component {
                         : ""
                     }`}
                     id="userName"
-                    placeholder="Please use at least 8 characters"
+                    placeholder="Required"
                     onChange={this.handleChange}
                     onBlur={this.handleBlur}
                     required
@@ -330,7 +330,7 @@ class Step1 extends Component {
                           : ""
                       }`}
                       id="userPassword"
-                      placeholder="Please use more than 6 characters and at least 1 capital letter and 1 special character"
+                      placeholder="Required"
                       onChange={this.handleChange}
                       onBlur={this.handleBlur}
                       required
@@ -406,7 +406,7 @@ class Step1 extends Component {
                         : ""
                     }`}
                     id="userEmail"
-                    placeholder="Please use a valid email address"
+                    placeholder="Required"
                     onChange={this.handleChange}
                     onBlur={this.handleBlur}
                     required
