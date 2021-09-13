@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
 import { connect } from "redux-zero/react";
+import { Link } from "react-router-dom";
 import { Modal } from "bootstrap";
 const web3utils = require("web3-utils");
 
@@ -29,112 +30,169 @@ const Step5 = ({ user }) => {
     setWalletAddress(depositInfo.walletAddress);
 
     const balance = await smartvault.harmonyClient.getBalance(walletAddress);
+    setBala;
     console.log("balance: ", balance);
 
     const submit = await smartvault.submitWallet();
   };
 
+  const handleClick = () => {
+    console.log("doing sth before");
+  };
+
   return (
-    <div className="bg-white align-content-center border-top border-r-bank-grayscale-titanium justify-content-start pt-5 pe-5 ps-4 vh-100">
+    <div className="bg-white align-content-center border-top border-no-bank-grayscale-titanium justify-content-start pt-5 pe-5 ps-4 h-100">
       <div className="d-flex flex-column mb-5 ps-2 pt-3 pe-3">
         <div>
           {" "}
-          <div className="fs-6 text-r-bank-grayscale-iron text-uppercase">
+          <div className="fs-6 text-no-bank-grayscale-iron text-uppercase">
             step 5
           </div>
-          <div className="fs-1 text-r-bank-primary">Add funds </div>
+          <div className="fs-1 text-no-bank-primary">Add funds </div>
         </div>
-        {/* show btn Modal */}
-        <button
-          type="button"
-          className="btn btn-primary"
-          data-bs-toggle="modal"
-          data-bs-target="#exampleModal"
-        >
-          Launch demo modal
-        </button>
-
-        {/* Modal */}
-        <div
-          className="modal fade"
-          id="exampleModal"
-          tabIndex="-1"
-          aria-labelledby="exampleModalLabel"
-          aria-hidden="true"
-        >
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title" id="exampleModalLabel">
-                  Modal title: {user.userName}
-                </h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                ></button>
-              </div>
-              <div className="modal-body">
-                <p>createFee: {createFee}</p>
-                <p>rentPrice: {rentPrice}</p>
-                <p>totalFee: {totalFee}</p>
-                <p>walletAddress: {walletAddress}</p>
-              </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  data-bs-dismiss="modal"
-                >
-                  Close
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={checkBalance}
-                >
-                  Save changes
-                </button>
+        <div className="pt-5">
+          {/* Add other wallet */}
+          <div className="d-flex align-items-center justify-content-between">
+            <i className="bi bi-wallet pe-4" style={{ fontSize: 60 }}></i>
+            <div>
+              <div className="h6 fw-bold">Add other wallet</div>
+              <div className="fs-6">
+                Fund your account using another Crypto provider such as
+                Coinbase, Binance, Argent or Metamask
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Accordion */}
-        <div className="accordion" id="accordionExample">
-          <div className="accordion-item">
-            <h2 className="accordion-header" id="headingOne">
-              <button
-                className="accordion-button"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#collapseOne"
-                aria-expanded="true"
-                aria-controls="collapseOne"
-              >
-                Accordion Item #1
-              </button>
-            </h2>
-            <div
-              id="collapseOne"
-              className="accordion-collapse collapse show"
-              aria-labelledby="headingOne"
-              data-bs-parent="#accordionExample"
+            <button
+              type="button"
+              className="btn"
+              data-bs-toggle="modal"
+              data-bs-target="#accountModal"
             >
-              <div className="accordion-body">
-                <strong>This is the first item's accordion body.</strong> It is
-                shown by default, until the collapse plugin adds the appropriate
-                classes that we use to style each element. These classes control
-                the overall appearance, as well as the showing and hiding via
-                CSS transitions. You can modify any of this with custom CSS or
-                overriding our default variables. It's also worth noting that
-                just about any HTML can go within the{" "}
-                <code>.accordion-body</code>, though the transition does limit
-                overflow.
+              <i className="bi bi-plus"></i>
+            </button>
+          </div>
+          <hr />
+          {/* Add bank account */}
+          <div className="d-flex align-items-center justify-content-between">
+            <i className="bi bi-credit-card pe-4" style={{ fontSize: 60 }}></i>
+            <div>
+              <div className="h6 fw-bold">Add bank account</div>
+              <div className="fs-6">
+                Fund your account using another Crypto provider such as
+                Coinbase, Binance, Argent or Metamask
+              </div>
+            </div>
+            <button
+              type="button"
+              className="btn"
+              data-bs-toggle="modal"
+              data-bs-target="#accountModal"
+            >
+              <i className="bi bi-plus"></i>
+            </button>
+          </div>
+          <hr />
+          {/* Connect Paypal Account */}
+          <div className="d-flex align-items-center justify-content-between">
+            <img src="public/paypal.svg" alt="" />
+            <div>
+              <div className="h6 fw-bold">Connect Paypal Account</div>
+              <div className="fs-6">
+                Fund your account using another Crypto provider such as
+                Coinbase, Binance, Argent or Metamask
+              </div>
+            </div>
+            <button
+              type="button"
+              className="btn"
+              data-bs-toggle="modal"
+              data-bs-target="#accountModal"
+            >
+              <i className="bi bi-plus"></i>
+            </button>
+          </div>
+          <hr />
+          {/* Connect Google / Apple Pay */}
+          <div className="d-flex align-items-center justify-content-between">
+            <img src="public/apple_google.svg" alt="" />{" "}
+            <div>
+              <div className="h6 fw-bold">Connect Google / Apple Pay</div>
+              <div className="fs-6">
+                Fund your account using another Crypto provider such as
+                Coinbase, Binance, Argent or Metamask
+              </div>
+            </div>
+            <button
+              type="button"
+              className="btn"
+              data-bs-toggle="modal"
+              data-bs-target="#accountModal"
+            >
+              <i className="bi bi-plus"></i>
+            </button>
+          </div>
+          <hr />
+          {/* Modal */}
+          <div
+            className="modal fade"
+            id="accountModal"
+            tabIndex="-1"
+            aria-labelledby="accountModalLabel"
+            aria-hidden="true"
+          >
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <div
+                    className="h5 modal-title fw-bold"
+                    id="accountModalLabel"
+                  >
+                    Add other wallet
+                  </div>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  <p>createFee: {createFee}</p>
+                  <p>rentPrice: {rentPrice}</p>
+                  <p>totalFee: {totalFee}</p>
+                  <p>walletAddress: {walletAddress}</p>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                  >
+                    Close
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={checkBalance}
+                  >
+                    Save changes
+                  </button>
+                </div>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+      <div className="d-flex justify-content-end pe-5 pb-3 fixed-bottom">
+        <div className="pe-3 pb-3">
+          <Link to="/portfolio">
+            <button
+              type="button"
+              onClick={handleClick}
+              className="btn rounded-pill btn-no-bank-highlight text-rb-bank-primary"
+            >
+              Continue
+            </button>
+          </Link>
         </div>
       </div>
     </div>

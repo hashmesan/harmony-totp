@@ -226,14 +226,14 @@ class Step1 extends Component {
     const dropdownPriorityOptions = ["CH"];
 
     return (
-      <div className="bg-white align-content-center border-top border-r-bank-grayscale-titanium justify-content-start pt-5 pe-5 ps-4 h-100">
+      <div className="bg-white align-content-center border-top border-no-bank-grayscale-titanium justify-content-start pt-5 pe-5 ps-4 h-100">
         <div className="d-flex flex-column mb-5 ps-2 pt-3 pe-3">
           <div>
-            <div className="fs-6 text-r-bank-grayscale-iron text-uppercase">
+            <div className="fs-6 text-no-bank-grayscale-iron text-uppercase">
               Step 1
             </div>
 
-            <div className="fs-1 text-r-bank-primary">Account setup</div>
+            <div className="fs-1 text-no-bank-primary">Account setup</div>
           </div>
 
           <div className="pt-5">
@@ -241,7 +241,7 @@ class Step1 extends Component {
               <div className="form-group align-items-start mb-1">
                 <label
                   htmlFor="userName"
-                  className="form-label mb-0 text-r-bank-grayscale-iron"
+                  className="form-label mb-0 text-no-bank-grayscale-iron"
                 >
                   Username
                 </label>
@@ -313,7 +313,7 @@ class Step1 extends Component {
               <div className="form-group has-feedback align-items-start mb-1">
                 <label
                   htmlFor="userPassword"
-                  className="form-label mb-0 text-r-bank-grayscale-iron"
+                  className="form-label mb-0 text-no-bank-grayscale-iron"
                 >
                   Password
                 </label>
@@ -337,7 +337,7 @@ class Step1 extends Component {
                     />
                     <div className="input-group-append">
                       <span
-                        className={`input-group-text bg-r-bank-white border-start-0 rounded-0 rounded-end ${
+                        className={`input-group-text bg-no-bank-white border-start-0 rounded-0 rounded-end ${
                           userPassword.length > 0
                             ? validity.userPassword
                               ? "" //"is-valid" -> Designer doesn't want green border if OK
@@ -347,11 +347,11 @@ class Step1 extends Component {
                         onClick={this.passwordShowHide}
                       >
                         <i
-                          className="bi bi-eye text-r-bank-black fs-5"
+                          className="bi bi-eye text-no-bank-black fs-5"
                           id="show_eye"
                         ></i>
                         <i
-                          className="bi bi-eye-slash d-none text-r-bank-black fs-5"
+                          className="bi bi-eye-slash d-none text-no-bank-black fs-5"
                           id="hide_eye"
                         ></i>
                       </span>
@@ -390,7 +390,7 @@ class Step1 extends Component {
               <div className="form-group align-items-start mb-1">
                 <label
                   htmlFor="userEmail"
-                  className="form-label mb-0 text-r-bank-grayscale-iron"
+                  className="form-label mb-0 text-no-bank-grayscale-iron"
                 >
                   Email
                 </label>
@@ -441,7 +441,7 @@ class Step1 extends Component {
               <div className="form-group align-items-start mb-1">
                 <label
                   htmlFor="UserResidence"
-                  className="form-label mb-0 text-r-bank-grayscale-iron"
+                  className="form-label mb-0 text-no-bank-grayscale-iron"
                 >
                   Country of Residence
                 </label>
@@ -452,8 +452,8 @@ class Step1 extends Component {
                     onChange={this.selectCountry}
                     className={`w-100 form-select ${
                       userCountryOfResidence
-                        ? "r-bank-primary"
-                        : "text-r-bank-grayscale-iron"
+                        ? "no-bank-primary"
+                        : "text-no-bank-grayscale-iron"
                     }`}
                   />
                   <div>
@@ -476,8 +476,8 @@ class Step1 extends Component {
               onClick={this.handleClick}
               className={`btn rounded-pill ${
                 validity.form
-                  ? "btn-r-bank-highlight text-rb-bank-primary"
-                  : "btn-r-bank-grayscale-silver text-white"
+                  ? "btn-no-bank-highlight text-rb-bank-primary"
+                  : "btn-no-bank-grayscale-silver text-white"
               }`}
               disabled={!validity.form && "disabled"}
             >

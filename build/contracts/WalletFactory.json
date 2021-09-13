@@ -61,7 +61,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -80,7 +81,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -93,7 +95,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -203,7 +206,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -228,7 +232,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.8.0+commit.c7dfd78e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_walletImplementation\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"signHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"Debug\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"wallet\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"WalletCreated\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"WALLET_CREATION\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"salt\",\"type\":\"uint256\"}],\"name\":\"computeWalletAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"resolver\",\"type\":\"address\"},{\"internalType\":\"string[2]\",\"name\":\"domain\",\"type\":\"string[2]\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"bytes32[]\",\"name\":\"rootHash\",\"type\":\"bytes32[]\"},{\"internalType\":\"uint8\",\"name\":\"merkelHeight\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"drainAddr\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"dailyLimit\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"salt\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"password\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"email\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"countryOfResidence\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"feeReceipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"feeAmount\",\"type\":\"uint256\"}],\"internalType\":\"struct WalletFactory.WalletConfig\",\"name\":\"config\",\"type\":\"tuple\"}],\"name\":\"createWallet\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"wallet\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"created\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"wallet\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getCreated\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"wallet\",\"type\":\"address\"},{\"internalType\":\"string[2]\",\"name\":\"domain\",\"type\":\"string[2]\"}],\"internalType\":\"struct WalletFactory.CreateRecord[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"walletImplementation\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/wallet_factory.sol\":\"WalletFactory\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/token/ERC1155/IERC1155.sol\":{\"keccak256\":\"0xfce1eb6398eae0e2b50251140866a70a3106193f101972c878bba1dbf44929ec\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://4f0709c3f462b28b400f57db181254ad970967c3b49a8948ef5e05929b106ffe\",\"dweb:/ipfs/QmNe3sRmPKw1T7q7m733tk7tFKpi3jo9PCisDPMbjeg3kJ\"]},\"@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol\":{\"keccak256\":\"0x7de6e64d4a8075e803a972cc77c4c91463e0c3777e4110eacfb5d4a71759b2fa\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://b83b3b09ef36374c1c104ee896797dadf2e81466d2143b481d3f1ddc7d9f3873\",\"dweb:/ipfs/QmSWtqs28RHDezRWBbmEfqiPYwsGTKj44NRbuxvZ96cqMU\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x027b891937d20ccf213fdb9c31531574256de774bda99d3a70ecef6e1913ed2a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://087318b21c528119f649899f5b5580566dd8d7b0303d4904bd0e8580c3545f14\",\"dweb:/ipfs/Qmbn5Mj7aUn8hJuQ8VrQjjEXRsXyJKykgnjR9p4C3nfLtL\"]},\"@openzeppelin/contracts/token/ERC721/IERC721.sol\":{\"keccak256\":\"0xf101e8720213560fab41104d53b3cc7ba0456ef3a98455aa7f022391783144a0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://3e7820bcf567e6892d937c3cb10db263a4042e446799bca602535868d822384e\",\"dweb:/ipfs/QmPG2oeDjKncqsEeyYGjAN7CwAJmMgHterXGGnpzhha4z7\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol\":{\"keccak256\":\"0xd9517254724276e2e8de3769183c1f738f445f0095c26fd9b86d3c6687e887b9\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://0e604bcdcd5e5b2fb299ad09769cde6db19d5aa1929d1b5e939234a0f10d7eb8\",\"dweb:/ipfs/Qmd8hXE3GZfBHuWx3RNiYgFW2ci7KvHtib8DiwzJ2dgo9V\"]},\"@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0x3336baae5cf23e94274d75336e2d412193be508504aee185e61dc7d58cd05c8a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://39a05eec7083dfa0cc7e0cbfe6cd1bd085a340af1ede93fdff3ad047c5fb3d8e\",\"dweb:/ipfs/QmVApz5fCUq2QC8gKTsNNdCmcedJ3ETHp68zR5N3WUKS4r\"]},\"@openzeppelin/contracts/utils/introspection/IERC165.sol\":{\"keccak256\":\"0xa28007762d9da9db878dd421960c8cb9a10471f47ab5c1b3309bfe48e9e79ff4\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://796ab6e88af7bf0e78def0f059310c903af6a312b565344e0ff524a0f26e81c6\",\"dweb:/ipfs/QmcsVgLgzWdor3UnAztUkXKNGcysm1MPneWksF72AvnwBx\"]},\"project:/contracts/core/wallet_data.sol\":{\"keccak256\":\"0x0f896c6f47de7af044b475b299ac8c923adcd127f99bb7dafbffeb5ea88a2f1c\",\"license\":\"GPL-3.0-only\",\"urls\":[\"bzz-raw://b9015103213ad2830fb650e5754ef9e98184c75a6a3730bf81fea227f251bdca\",\"dweb:/ipfs/QmZynpdoWQVCFNMUUviuU5DrZ8HA7iHSnoUsxkYiCLHZD6\"]},\"project:/contracts/ens/ens_resolver.sol\":{\"keccak256\":\"0x93c0182f99a7f98803ecf0aa1dd75c2eeb4cc3ee3b0274d6128ef063ed1b62e1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://e3038cc6ccfdfb75c840f294ca070f4b91b0c4914e985a8d6e2a3de3ab778ec3\",\"dweb:/ipfs/QmcKxhjuf8iC5w6bbgKRTPQM3GXDavG3NfJU4dMy7jUxdL\"]},\"project:/contracts/ens/registrar_interface.sol\":{\"keccak256\":\"0x7861efd78eaf577dbca5386a044618fb6b454db2f507637a68386ca40af09012\",\"license\":\"GPL-2.0-or-later\",\"urls\":[\"bzz-raw://5fc14c9a9facd67ca4ea114ef47efe601f6d8fd9dcff0416d3447a3e582de4e0\",\"dweb:/ipfs/QmNj7MafBtLHnrqAQDb1pmU2w4xkMeUpZBiZtm24agqvH5\"]},\"project:/contracts/external/create2.sol\":{\"keccak256\":\"0x2c597acce474bd116d0650e5f68f4f04d82ed80fb0ad08fa2c808c5ecf3cf324\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://f10ad502239525b9f2d1fe534815d1d037f11b4c23a0c78b7f310ce235c10be0\",\"dweb:/ipfs/QmVXLUADfAyU3RFi1VMW9fFfthvxLtHpjrw2MutLskuRAM\"]},\"project:/contracts/external/signatureutil.sol\":{\"keccak256\":\"0x877b6002dbe1397aa3bf49a7070a8a858f38894e2b2e29266182947cf4c588b3\",\"license\":\"GPL-2.0-or-later\",\"urls\":[\"bzz-raw://a1d6e697ac68f97555befc3bce07506dde78bfec02946ce10bc43627ff1a6d44\",\"dweb:/ipfs/QmW4EGtqzPLiTRbgiwtBb2JJ2hRokEmDptmFN4jn3KwhN4\"]},\"project:/contracts/external/walletproxy.sol\":{\"keccak256\":\"0xf93be23c6c45c2c27e7d079a451348d5e9e5cfe845996b54252bcdf2eb3785b3\",\"license\":\"LGPL-3.0-or-later\",\"urls\":[\"bzz-raw://ae919d0660dc9a33dbc5f289b89c5520bdaf8b0eb0e3a824264cedbe328c1474\",\"dweb:/ipfs/QmTAtfkvwCL9DW14JrU1sSnyPkdQK8m36wdVUyswVsDKkR\"]},\"project:/contracts/features/daily_limit.sol\":{\"keccak256\":\"0x8ccc3ff8c3975e2b3708e961e99139ffabbadf636f69ec5aec792cff9ee12572\",\"license\":\"GPL-3.0-only\",\"urls\":[\"bzz-raw://cc15feec742196ce35337b0d4a1d28bed84ce9412d7b65d875f5a0fb25427445\",\"dweb:/ipfs/QmWvCKWut9dRhH1MNHj63wT2UW41CbHzRxcx5Jg9fDjouK\"]},\"project:/contracts/features/guardians.sol\":{\"keccak256\":\"0xd7f736de5f43c65ae59a3bc481c3a2f5527de3a0f1ab71618f24fe8cac1e441c\",\"license\":\"GPL-3.0-only\",\"urls\":[\"bzz-raw://94cb207d089f415d5a5552e18d3421e1e19328ac1c891783364ade9949d066fd\",\"dweb:/ipfs/Qmak3Jewqh7g9Rz2HWdnj3z9dynWEvytFcXdMLfGb4D6xV\"]},\"project:/contracts/features/metatx.sol\":{\"keccak256\":\"0x44586b44944836d718f7a289d79634d367784509d4aabfbb5d38dcec861006f2\",\"license\":\"GPL-3.0-only\",\"urls\":[\"bzz-raw://2b66f133b6d2f5cc76ccb07c423c607d1e126d37c2c79e83d79e2c5f4b6f5ce5\",\"dweb:/ipfs/Qmavs76AzYDiwyMNQxTdyE3A7eWYV1NtfnrTq4y7KMRu1U\"]},\"project:/contracts/features/name_service.sol\":{\"keccak256\":\"0xb9e24d874fb8afec7fbc2c4fb893799696cfe272560337e733031fa3bbacaf6f\",\"license\":\"GPL-3.0-only\",\"urls\":[\"bzz-raw://bfd1c3d558a960386f337397be50c4ca12648a76aaf710e283b23fe8379d38e7\",\"dweb:/ipfs/QmVgm3eCws36FiKpLdoJF1MRhP1N2TrCidWqYbb28hg7cT\"]},\"project:/contracts/features/recovery.sol\":{\"keccak256\":\"0x073cc096066b978d98391b0f8ae37e335b4e1c68d6b51c77f2c2318175c87668\",\"license\":\"GPL-3.0-only\",\"urls\":[\"bzz-raw://704170b74ef70a1ef648947ff0b49ba273dd5f1c16a6a8662dc8b4c6fb058bb2\",\"dweb:/ipfs/QmXnj3hcyU2hBebDrn5q1LrvKutCTAkfTnvqcVCzzYXbre\"]},\"project:/contracts/otp_wallet.sol\":{\"keccak256\":\"0x338399bd8d1cca78881dc118373516215fc305b735c956a9a903f9b92b6e8479\",\"license\":\"GPL-3.0-only\",\"urls\":[\"bzz-raw://fab58da21b677cc99e65dfede7bfc69f3ac9e2455c3bfbdf90a37349fe280590\",\"dweb:/ipfs/QmR2gJfmgPhJVjDWeAMGLZiFp3z8Gh7AA5KM12ap2QvWW9\"]},\"project:/contracts/wallet_factory.sol\":{\"keccak256\":\"0xcf2d3537a6eac67029e104d502826f0b9892f65e20e306030c88c091161b0970\",\"license\":\"GPL-2.0-or-later\",\"urls\":[\"bzz-raw://d2b6829d399de57cc49e2510ca3e182492afc629856fdc1c5eccfb3b1e068f58\",\"dweb:/ipfs/QmXKy1J2jim8UnHXQMhRr5Jh1GebdvCviaqUwRLuuSBJFe\"]}},\"version\":1}",
@@ -22158,8 +22163,8 @@
         }
       },
       "links": {},
-      "address": "0x7290d037574F544C7b9343FE2f139905e14c998F",
-      "transactionHash": "0xbcd637b74b434c3d7c7faf8238556f1247c03c7a5094d5c918c958f3759f2c4c"
+      "address": "0x8CFbeBf99844E67e834Fdc21fCc7A9838F663818",
+      "transactionHash": "0xf4e7d228fc272fd7a6af212b942ec0de693da21b3d2b1e974d96e959603e17dc"
     },
     "1666600000": {
       "events": {
@@ -22248,8 +22253,8 @@
         }
       },
       "links": {},
-      "address": "0x6E658283991601BC38091A7eC3f235b3B0bB7527",
-      "transactionHash": "0x629a4dfea02ac535865d9787d318c0957bce162ff6ed0069905192743ac1fb5d"
+      "address": "0xd4d337dc9B2a3442f8aB6b73E1bD3df2AF06C16d",
+      "transactionHash": "0xc1e72db613c70c4f10bf39373c88334fa31714dc78388f01233c178a1e208126"
     },
     "1666700003": {
       "events": {
@@ -22523,7 +22528,8 @@
     }
   },
   "schemaVersion": "3.4.3",
-  "updatedAt": "2021-09-10T20:11:07.528Z",
+  "updatedAt": "2021-09-13T08:59:17.603Z",
+  "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
     "methods": {},

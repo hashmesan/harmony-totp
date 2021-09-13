@@ -49,14 +49,14 @@ const Step4 = ({ user, setOnboardingStep }) => {
   };
 
   return (
-    <div className="bg-white align-content-center border-top border-r-bank-grayscale-titanium justify-content-start pt-5 pe-5 ps-4 vh-100">
+    <div className="bg-white align-content-center border-top border-no-bank-grayscale-titanium justify-content-start pt-5 pe-5 ps-4 h-100">
       <div className="d-flex mb-5 ps-2 pt-3 pe-3">
         <div>
           {" "}
-          <div className="fs-6 text-r-bank-grayscale-iron text-uppercase">
+          <div className="fs-6 text-no-bank-grayscale-iron text-uppercase">
             step 4
           </div>
-          <div className="fs-1 text-r-bank-primary">
+          <div className="fs-1 text-no-bank-primary">
             Fortify wallet security{" "}
           </div>
           <div className="d-flex justify-content-start pt-5">
@@ -79,7 +79,7 @@ const Step4 = ({ user, setOnboardingStep }) => {
           </div>
           {guardians.length > 0 && (
             <div>
-              <p className="text-r-bank-grayscale-iron pt-3">
+              <p className="text-no-bank-grayscale-iron pt-3">
                 Added guardians{" "}
               </p>
               {guardians.map((guardian) => {
@@ -92,7 +92,7 @@ const Step4 = ({ user, setOnboardingStep }) => {
             </div>
           )}
           <div className="justify-content-start pt-3">
-            <p className="text-r-bank-grayscale-iron pt-5">
+            <p className="text-no-bank-grayscale-iron pt-5">
               Who would you want to add?
             </p>
 
@@ -120,7 +120,7 @@ const Step4 = ({ user, setOnboardingStep }) => {
           <button
             type="button"
             onClick={handleClick}
-            className="btn rounded-pill btn-r-bank-highlight text-rb-bank-primary"
+            className="btn rounded-pill btn-no-bank-highlight text-rb-bank-primary"
           >
             Continue
           </button>

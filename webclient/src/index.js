@@ -21,8 +21,10 @@ import Wallet from "./components/wallet";
 import Recover from "./components/recover";
 import Landing from "./components/landing";
 import Onboard from "./components/onboarding/onboard";
+import portfolio from "./components/portfolio";
 
 import AccountProvider from "./components/smartvault_provider";
+import Portfolio from "./components/portfolio/index";
 
 Number.prototype.toFixedNoRounding = function (n) {
   const reg = new RegExp("^-?\\d+(?:\\.\\d{0," + n + "})?", "g");
@@ -45,7 +47,7 @@ const App = connect(mapToProps)(({ environment }) => (
         <Switch>
           <Route exact path="/">
             {getLocalWallet(environment, false) ? (
-              <Redirect to="/wallet" />
+              <Redirect to="/portfolio" />
             ) : (
               <Redirect to="/landing" />
             )}
@@ -64,6 +66,9 @@ const App = connect(mapToProps)(({ environment }) => (
           </Route>
           <Route path="/recover">
             <Recover />
+          </Route>
+          <Route path="/portfolio">
+            <Portfolio />
           </Route>
         </Switch>
       </div>

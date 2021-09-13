@@ -57,20 +57,22 @@ class Step2 extends Component {
     const { userEmail } = this.props.user;
 
     return (
-      <div className="bg-white align-content-center border-top border-r-bank-grayscale-titanium justify-content-start pt-5 pe-5 ps-4 vh-100">
+      <div className="bg-white align-content-center border-top border-no-bank-grayscale-titanium justify-content-start pt-5 pe-5 ps-4 h-100">
         <div className="d-flex flex-column mb-5 ps-2 pt-3 pe-3">
           <div>
-            <div className="fs-6 text-r-bank-grayscale-iron text-uppercase">
+            <div className="fs-6 text-no-bank-grayscale-iron text-uppercase">
               step 2
             </div>
 
-            <div className="fs-1 text-r-bank-primary">Verify email address</div>
+            <div className="fs-1 text-no-bank-primary">
+              Verify email address
+            </div>
             <div className="pt-5">
               <div className=" mb-4">
                 Enter the code we just sent you at{" "}
                 <span className="fw-bold">{userEmail}</span>
               </div>
-              <p className="text-r-bank-grayscale-iron fs-6">Code</p>
+              <p className="text-no-bank-grayscale-iron fs-6">Code</p>
               <StyledOTPContainer className="row justify-content-start ">
                 <OtpInput
                   inputStyle="inputStyle"
@@ -83,10 +85,10 @@ class Step2 extends Component {
                 />
               </StyledOTPContainer>
               <p className="mt-5">
-                <span className="text-r-bank-grayscale-iron">
+                <span className="text-no-bank-grayscale-iron">
                   Didn’t receive a code?{" "}
                   <span
-                    className="fw-bold text-r-bank-primary"
+                    className="fw-bold text-no-bank-primary"
                     onClick={this.handleEmail}
                   >
                     {" "}
@@ -108,8 +110,8 @@ class Step2 extends Component {
                     id="backButton"
                     type="button"
                     onClick={this.handleClick}
-                    //className="btn btn-r-bank-grayscale-silver text-white rounded-pill"
-                    className="btn rounded-pill btn-r-bank-white text-rb-bank-primary pe-4 me-1"
+                    //className="btn btn-no-bank-grayscale-silver text-white rounded-pill"
+                    className="btn rounded-pill btn-no-bank-white text-rb-bank-primary pe-4 me-1"
                   >
                     Back
                   </button>
@@ -117,11 +119,11 @@ class Step2 extends Component {
                     id="continueButton"
                     type="button"
                     onClick={this.handleClick}
-                    //className="btn btn-r-bank-grayscale-silver text-white rounded-pill"
+                    //className="btn btn-no-bank-grayscale-silver text-white rounded-pill"
                     className={`btn rounded-pill ${
                       this.state.validated
-                        ? "btn-r-bank-highlight text-rb-bank-primary"
-                        : "btn-r-bank-grayscale-silver text-white"
+                        ? "btn-no-bank-highlight text-rb-bank-primary"
+                        : "btn-no-bank-grayscale-silver text-white"
                     }`}
                     disabled={!this.state.validated && "disabled"}
                   >
