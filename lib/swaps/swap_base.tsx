@@ -91,14 +91,16 @@ export default abstract class SwapBase<ISwap> {
     }
 
     async getDescription(tx, me, client) {
+        var routerAddress = this.getRouterAddress(this.client.config.ENV);
+
         async function getTokenInfo(token) {
             var indexIn = tx.events.indexOf(token)
             var address = tx.logs[indexIn].address
             return await client.getERC20Info(address);
         }
         // transfer from router means going out
-        var inToken = tx.events.filter(e=> e.name == "Transfer" && (e.args.from == me || Object.values(UNISWAP_ADDRESS).includes(e.args.from)));
-        var outToken = tx.events.filter(e=> e.name == "Transfer" && (e.args.to == me || Object.values(UNISWAP_ADDRESS).includes(e.args.to)));
+        var inToken = tx.events.filter(e=> e.name == "Transfer" && (e.args.from == me || Object.values(routerAddress).includes(e.args.from)));
+        var outToken = tx.events.filter(e=> e.name == "Transfer" && (e.args.to == me || Object.values(routerAddress).includes(e.args.to)));
 
         if(inToken.length > 0 && outToken.length > 0) {
             //console.log(inToken, outToken);
