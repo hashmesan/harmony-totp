@@ -28,12 +28,10 @@ const actions = (store) => ({
   }),
 
   addGuardian: (state, value) => {
-    const newArray = state.guardians;
-    console.log("state & co: ", state.guardians, value, newArray);
-
-    newArray.push(value);
-    console.log("state & co: ", state.guardians, value, newArray);
-    return { guardians: newArray };
+    return {
+      ...state,
+      guardians: [...state.guardians, value],
+    };
   },
 });
 
