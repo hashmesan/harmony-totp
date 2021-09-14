@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { Modal } from "bootstrap";
 const web3utils = require("web3-utils");
 
+//import { useAuth } from "../../context/AuthContext";
+
 import { SmartVaultContext } from "../smartvault_provider";
 
 import actions from "../../redux/actions";
@@ -20,6 +22,7 @@ const Step5 = ({ user }) => {
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState("");
 
+  //const { signup } = useAuth();
   const { smartvault } = useContext(SmartVaultContext);
 
   const checkBalance = async () => {
@@ -38,6 +41,11 @@ const Step5 = ({ user }) => {
 
   const handleClick = () => {
     console.log("doing sth before");
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    //signup("tamas@test.com", "somePassword");
   };
 
   return (
