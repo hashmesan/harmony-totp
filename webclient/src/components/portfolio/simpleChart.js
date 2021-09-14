@@ -11,19 +11,26 @@ const SimpleChart = () => {
   const resizeObserver = useRef();
 
   useEffect(() => {
+    const priceDataFiltered = priceData.map(({ time, close }) => ({
+      time: time,
+      value: close,
+    }));
+
     chart.current = createChart(chartContainerRef.current, {
       width: chartContainerRef.current.clientWidth,
       height: 500, //"300px", //chartContainerRef.current.clientHeight,
       layout: {
-        backgroundColor: "#253248",
+        backgroundColor: "#fff",
         textColor: "rgba(255, 255, 255, 0.9)",
       },
       grid: {
         vertLines: {
           color: "#334158",
+          visible: false,
         },
         horzLines: {
           color: "#334158",
+          visible: false,
         },
       },
       crosshair: {
@@ -34,6 +41,7 @@ const SimpleChart = () => {
       },
       timeScale: {
         borderColor: "#485c7b",
+        visible: false,
       },
     });
 
@@ -55,8 +63,9 @@ const SimpleChart = () => {
       lineWidth: 2,
     });
 
-    areaSeries.setData(priceData);
+    areaSeries.setData(priceDataFiltered);
 
+    /*
     const volumeSeries = chart.current.addHistogramSeries({
       color: "#182233",
       lineWidth: 2,
@@ -71,6 +80,7 @@ const SimpleChart = () => {
     });
 
     volumeSeries.setData(volumeData);
+    */
   }, []);
 
   // Resize chart on container resizes.
