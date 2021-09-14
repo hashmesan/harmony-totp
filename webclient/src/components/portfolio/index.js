@@ -7,8 +7,12 @@ import { SmartVaultContext } from "../smartvault_provider";
 
 import actions from "../../redux/actions";
 
+import SimpleChart from "./simpleChart";
+import ComplexChart from "./complexChart";
+
 const Portfolio = ({ setLocation }) => {
   const { smartvault } = useContext(SmartVaultContext);
+
   useEffect(() => {
     setLocation("Portfolio");
   });
@@ -16,15 +20,12 @@ const Portfolio = ({ setLocation }) => {
   return (
     <div className="container-fluid">
       <div className="row min-h-25">
-        <div className="col-5">
-          <img
-            src="public/funding_sources_mock.png"
-            className="img-fluid h-100 "
-            alt=""
-          />
+        <div className="col-6">
+          <SimpleChart />
         </div>
-        <div className="col-7">
-          <img src="public/chart_mock.png" className="img-fluid h-100" alt="" />
+        <div className="col-6">
+          {/*<img src="public/chart_mock.png" className="img-fluid h-100" alt="" /> */}
+          <ComplexChart />
         </div>
       </div>
       <div className="row">
