@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from "react";
-import { createChart, CrosshairMode } from "lightweight-charts";
+import { createChart, CrosshairMode, LineStyle } from "lightweight-charts";
 
 // TODO: Switch to real data
 import { priceData } from "./dataMock/priceData";
@@ -30,12 +30,11 @@ const SimpleChart = () => {
         },
         horzLines: {
           color: "#334158",
-          visible: false,
+          style: LineStyle.SparseDotted,
+          visible: true,
         },
       },
-      crosshair: {
-        mode: CrosshairMode.Normal,
-      },
+
       priceScale: {
         borderColor: "#485c7b",
       },
@@ -43,8 +42,12 @@ const SimpleChart = () => {
         borderColor: "#485c7b",
         visible: false,
       },
+      localization: {
+        priceFormatter: (price) => "$" + price,
+      },
     });
 
+    /*
     const candleSeries = chart.current.addCandlestickSeries({
       upColor: "#4bffb5",
       downColor: "#ff4976",
@@ -55,11 +58,11 @@ const SimpleChart = () => {
     });
 
     candleSeries.setData(priceData);
-
+    */
     const areaSeries = chart.current.addAreaSeries({
-      topColor: "rgba(38,198,218, 0.56)",
-      bottomColor: "rgba(38,198,218, 0.04)",
-      lineColor: "rgba(38,198,218, 1)",
+      topColor: "rgba(239,239,238, 1)",
+      bottomColor: "rgba(239,239,238, 0.2)",
+      lineColor: "rgba(0,36,46, 1)",
       lineWidth: 2,
     });
 

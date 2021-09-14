@@ -28,9 +28,69 @@ const Portfolio = ({ setLocation }) => {
             alt=""
           />
         </div>
-        <div className="col-8 border border-no-bank-grayscale-silver">
-          {/*<img src="public/chart_mock.png" className="img-fluid h-100" alt="" /> */}
-          <SimpleChart />
+        <div className="col-8 border border-no-bank-grayscale-silver justify-content-between">
+          <div className="row">
+            <div className="col">
+              <SimpleChart />
+            </div>
+          </div>
+
+          <div className="row">
+            <div
+              class="btn-group"
+              role="group"
+              aria-label="Basic outlined example"
+            >
+              <button
+                type="button"
+                class="btn btn-outline-no-bank-grayscale-iron"
+              >
+                1h
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-no-bank-grayscale-iron"
+              >
+                24h
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-no-bank-grayscale-iron"
+              >
+                1 week
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-no-bank-grayscale-iron"
+              >
+                1 month
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-no-bank-grayscale-iron"
+              >
+                YTD
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-no-bank-grayscale-iron"
+              >
+                1 year
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-no-bank-grayscale-iron"
+              >
+                5 years
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-no-bank-grayscale-iron"
+              >
+                MAX
+              </button>
+            </div>
+          </div>
         </div>
       </div>
       <div className="row">
