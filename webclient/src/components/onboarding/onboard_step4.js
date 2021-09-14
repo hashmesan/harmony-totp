@@ -7,10 +7,83 @@ import { SmartVaultContext } from "../smartvault_provider";
 
 import actions from "../../redux/actions";
 
-const Step4 = ({ user, setOnboardingStep }) => {
+const RenderAccordion = (props) => {
+  console.log("guardian details: ", props.guardian);
+
+  const { guardian } = props;
+
+  return (
+    <div className="accordion" id="accordionGuardians">
+      <div className="accordion-item">
+        <h2 className="accordion-header">
+          <button
+            className="accordion-button bg-r-bank-white p-3"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseOne"
+            aria-expanded="true"
+            aria-controls="collapseOne"
+          >
+            <div>
+              <p className="text-r-bank-primary pt-2 pb-1 m-0">
+                <strong>{guardian.hns}</strong>
+              </p>
+              <p className="text-r-bank-grayscale-iron pt-1 pb-2 m-0">
+                {guardian.address}
+              </p>
+            </div>
+          </button>
+        </h2>
+        <div
+          id={`collapseOne`}
+          className="accordion-collapse collapse show"
+          aria-labelledby="headingOne"
+          data-bs-parent="#accordionExample"
+        >
+          <div className="accordion-body p-3">
+            <div className="form-check form-switch m-0 pt-2 pb-3">
+              <input
+                id="canRestoreAccount"
+                type="checkbox"
+                value=""
+                className="form-check-input"
+                data-onstyle="primary"
+                defaultChecked="true"
+              />
+              <label className="form-check-label" htmlFor="canRestoreAccount">
+                Authorization to restore account
+              </label>
+            </div>
+            <div className="form-check form-switch m-0 pt-2 pb-3">
+              <input
+                id="canApproveTransaction"
+                type="checkbox"
+                className="form-check-input"
+              />
+              <label
+                className="form-check-label"
+                htmlFor="canApproveTransaction"
+              >
+                Guardian approved transactions
+              </label>
+            </div>
+            <div className="pt-2 pb-2">
+              <button
+                className="btn rounded-pill btn-r-bank-highlight text-rb-bank-primary"
+                type="button"
+              >
+                Remove guardian
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Step4 = ({ user, guardians, setOnboardingStep, addGuardian }) => {
   const [formData, setFormData] = useState({});
-  const [guardians, setGuardians] = useState([]);
-  const [isValid, setValidity] = useState(null);
 
   const { smartvault } = useContext(SmartVaultContext);
   const zero = "0x0000000000000000000000000000000000000000";
@@ -20,18 +93,16 @@ const Step4 = ({ user, setOnboardingStep }) => {
 
     const hns = formData.guardianName + ".crazy.one";
     const address = await smartvault.harmonyClient.ens.name(hns).getAddress();
-    const balance = await smartvault.harmonyClient.getBalance(address);
     const guardian = {
       hns: hns,
       address: address,
-      balance: balance,
+      canApproveTransaction: false,
+      canRestoreAccount: true,
     };
-
-    console.log("address: ", address);
 
     // TODO: Check if hns not already in guardians.hns
     if (address !== zero) {
-      setGuardians((prev) => [...prev, guardian]);
+      addGuardian(guardian);
     }
   };
 
@@ -42,82 +113,9 @@ const Step4 = ({ user, setOnboardingStep }) => {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-
       // Trimming any whitespace
       [e.target.name]: e.target.value.trim(),
     });
-  };
-
-  const RenderAccordion = (props) => {
-    console.log("guardian details: ", props.guardian);
-
-    const guardian = props.guardian;
-
-    return (
-      <div className="accordion" id="accordionGuardians">
-        <div className="accordion-item">
-          <h2 className="accordion-header">
-            <button
-              className="accordion-button bg-r-bank-white p-3"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#collapseOne"
-              aria-expanded="true"
-              aria-controls="collapseOne"
-            >
-              <div>
-                <p className="text-r-bank-primary pt-2 pb-1 m-0">
-                  <strong>{guardian.hns}</strong>
-                </p>
-                <p className="text-r-bank-grayscale-iron pt-1 pb-2 m-0">
-                  {guardian.address}
-                </p>
-              </div>
-            </button>
-          </h2>
-          <div
-            id={`collapseOne`}
-            className="accordion-collapse collapse show"
-            aria-labelledby="headingOne"
-            data-bs-parent="#accordionExample"
-          >
-            <div className="accordion-body p-3">
-              <div className="form-check form-switch m-0 pt-2 pb-3">
-                <input
-                  id="canRestoreAccount"
-                  type="checkbox"
-                  value=""
-                  className="form-check-input"
-                  data-onstyle="primary"
-                  defaultChecked="true"
-                />
-                <label class="form-check-label" htmlFor="canRestoreAccount">
-                  Authorization to restore account
-                </label>
-              </div>
-              <div className="form-check form-switch m-0 pt-2 pb-3">
-                <input
-                  id="canApproveTransaction"
-                  type="checkbox"
-                  className="form-check-input"
-                />
-                <label class="form-check-label" htmlFor="canApproveTransaction">
-                  Guardian approved transactions
-                </label>
-              </div>
-              <div className="pt-2 pb-2">
-                <button
-                  className="btn rounded-pill btn-r-bank-highlight text-rb-bank-primary"
-                  type="button"
-                >
-                  Remove guardian
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
   };
 
   return (
@@ -201,5 +199,5 @@ const Step4 = ({ user, setOnboardingStep }) => {
   );
 };
 
-const mapToProps = ({ user }) => ({ user });
+const mapToProps = ({ user, guardians }) => ({ user, guardians });
 export default connect(mapToProps, actions)(Step4);

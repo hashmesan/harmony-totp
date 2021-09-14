@@ -22,6 +22,14 @@ const initialState = {
     step1: null,
     step2: null,
   },
+  guardians: [
+    {
+      hns: "tamas-kovacs.crazy.one",
+      address: "0xA17DCDD308190a352Bb20b67B98F3122Bf1deD18",
+      canApproveTransaction: false,
+      canRestoreAccount: true,
+    },
+  ],
   wallet: {
     isAvailable: null,
     error: "",

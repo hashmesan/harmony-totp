@@ -18,10 +18,9 @@ const SimpleChart = () => {
 
     chart.current = createChart(chartContainerRef.current, {
       width: chartContainerRef.current.clientWidth,
-      height: 500, //"300px", //chartContainerRef.current.clientHeight,
+      height: 300, //"300px", //chartContainerRef.current.clientHeight,
       layout: {
-        backgroundColor: "#fff",
-        textColor: "rgba(255, 255, 255, 0.9)",
+        textColor: "#92918f",
       },
       grid: {
         vertLines: {
@@ -41,24 +40,14 @@ const SimpleChart = () => {
       timeScale: {
         borderColor: "#485c7b",
         visible: false,
+        fixLeftEdge: true,
+        fixRightEdge: true,
       },
       localization: {
         priceFormatter: (price) => "$" + price,
       },
     });
 
-    /*
-    const candleSeries = chart.current.addCandlestickSeries({
-      upColor: "#4bffb5",
-      downColor: "#ff4976",
-      borderDownColor: "#ff4976",
-      borderUpColor: "#4bffb5",
-      wickDownColor: "#838ca1",
-      wickUpColor: "#838ca1",
-    });
-
-    candleSeries.setData(priceData);
-    */
     const areaSeries = chart.current.addAreaSeries({
       topColor: "rgba(239,239,238, 1)",
       bottomColor: "rgba(239,239,238, 0.2)",
@@ -67,23 +56,6 @@ const SimpleChart = () => {
     });
 
     areaSeries.setData(priceDataFiltered);
-
-    /*
-    const volumeSeries = chart.current.addHistogramSeries({
-      color: "#182233",
-      lineWidth: 2,
-      priceFormat: {
-        type: "volume",
-      },
-      overlay: true,
-      scaleMargins: {
-        top: 0.8,
-        bottom: 0,
-      },
-    });
-
-    volumeSeries.setData(volumeData);
-    */
   }, []);
 
   // Resize chart on container resizes.

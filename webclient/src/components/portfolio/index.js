@@ -8,8 +8,8 @@ import { SmartVaultContext } from "../smartvault_provider";
 import actions from "../../redux/actions";
 
 import SimpleChart from "./simpleChart";
-import SimplestChart from "./simplestChart";
 import ComplexChart from "./complexChart";
+import ChartHeader from "./chartHeader";
 
 const Portfolio = ({ setLocation }) => {
   const { smartvault } = useContext(SmartVaultContext);
@@ -28,11 +28,12 @@ const Portfolio = ({ setLocation }) => {
             alt=""
           />
         </div>
-        <div className="col-8 border border-no-bank-grayscale-silver justify-content-between">
-          <div className="row">
-            <div className="col">
-              <SimpleChart />
-            </div>
+        <div className="col-8 border border-no-bank-grayscale-silver justify-content-center">
+          <div className="row p-3">
+            <ChartHeader />
+          </div>
+          <div className="row p-3">
+            <SimpleChart />
           </div>
 
           <div className="row">
