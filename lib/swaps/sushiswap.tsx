@@ -59,39 +59,12 @@ export default class Sushiswap extends SwapBase<ISwap> {
 
     async fetchPairData(tokenA: SToken, tokenB: SToken) {
         const address = Pair.getAddress(tokenA, tokenB);
-        console.log("Address?", address);
-
         const provider = new JsonRpcProvider(this.client.config.RPC_URL);
         const [reserves0, reserves1, blocktime] = await new Contract(address, IUniswapV2Pair.abi, provider).getReserves()
         const balances = tokenA.sortsBefore(tokenB) ? [reserves0, reserves1] : [reserves1, reserves0]
         return new Pair(CurrencyAmount.fromRawAmount(tokenA, balances[0]), CurrencyAmount.fromRawAmount(tokenB, balances[1]))    
     }
 
-    async getAmountOut(amountIn: string, coinIn: SToken, coinOut: SToken) {
-        const c = new this.client.harmonyClient.web3.eth.Contract(UniswapContractJSON.abi, this.getRouterAddress(this.client.config.ENV))
-        const path = [coinIn.address, coinOut.address]
-
-        const amountsOut = await c.methods.getAmountsOut(amountIn, path).call()
-        console.log("SUSHI-getAmountOut", amountIn, amountsOut)
-        return new Pair(CurrencyAmount.fromRawAmount(coinIn, amountsOut[0]), CurrencyAmount.fromRawAmount(coinOut, amountsOut[1]))
-    }
-
-    /**
-     * 
-     * @param amountToBuy - asset to buy
-     * @param coinIn - asset to send
-     * @param coinToBuy - asset to buy
-     * @returns amount of coinIn required to buy
-     */
-    async getAmountIn(amountToBuy: string, coinToSend: SToken, coinToBuy: SToken) {
-        console.log("Buy", coinToBuy.symbol, amountToBuy, coinToBuy.symbol,coinToSend.symbol)
-
-        const c = new this.client.harmonyClient.web3.eth.Contract(UniswapContractJSON.abi, this.getRouterAddress(this.client.config.ENV))
-        const path = [coinToSend.address,coinToBuy.address]
-
-        const amountsIn = await c.methods.getAmountsIn(amountToBuy, path).call()
-        return new Pair(CurrencyAmount.fromRawAmount(coinToBuy, amountToBuy), CurrencyAmount.fromRawAmount(coinToSend, amountsIn[0]))
-    }
 
     async getBestAmountIn(from: Token, to: Token, amountOut: string) {
         const fromToken = this.getToken(this.client.config.ENV, from);
@@ -101,7 +74,7 @@ export default class Sushiswap extends SwapBase<ISwap> {
         const tokenOut = CurrencyAmount.fromRawAmount(fromToken, amountOut);
         const res = Trade.bestTradeExactIn([pairData], tokenOut, toToken, { maxHops: 1, maxNumResults: 1 });
         const amountIn = res[0].minimumAmountOut(ONE_BIPS)
-        return {minimum: amountIn, executionPrice: res[0].executionPrice.toFixed(6), midPrice: res[0].outputAmount};
+        return {amountWithSlippage: amountIn, executionPrice: res[0].executionPrice.toFixed(6), amount: res[0].outputAmount};
     }
 
     /**
@@ -115,12 +88,10 @@ export default class Sushiswap extends SwapBase<ISwap> {
         const fromToken = this.getToken(this.client.config.ENV, from);
         const toToken = this.getToken(this.client.config.ENV, to);
         const pairData = await this.fetchPairData(fromToken, toToken);
-
-        console.log("getBestAmountOut::Execution Price: ", pairData.token1Price.toFixed(6)); // ONE->USD  is  ONE/USD
         const ONE_BIPS = new Percent(JSBI.BigInt(100), JSBI.BigInt(10000))
         const tokenIn = CurrencyAmount.fromRawAmount(toToken, amountToBuy);
         const res = Trade.bestTradeExactOut([pairData], fromToken, tokenIn, { maxHops: 1, maxNumResults: 1 });
         const amountOut = res[0].maximumAmountIn(ONE_BIPS)
-        return amountOut;
+        return {amountWithSlippage: amountOut, executionPrice: res[0].executionPrice.toFixed(6), amount: res[0].inputAmount};
     }
 }
