@@ -48,6 +48,78 @@ const Step4 = ({ user, setOnboardingStep }) => {
     });
   };
 
+  const RenderAccordion = (props) => {
+    console.log("guardian details: ", props.guardian);
+
+    const guardian = props.guardian;
+
+    return (
+      <div className="accordion" id="accordionGuardians">
+        <div className="accordion-item">
+          <h2 className="accordion-header">
+            <button
+              className="accordion-button bg-r-bank-white p-3"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapseOne"
+              aria-expanded="true"
+              aria-controls="collapseOne"
+            >
+              <div>
+                <p className="text-r-bank-primary pt-2 pb-1 m-0">
+                  <strong>{guardian.hns}</strong>
+                </p>
+                <p className="text-r-bank-grayscale-iron pt-1 pb-2 m-0">
+                  {guardian.address}
+                </p>
+              </div>
+            </button>
+          </h2>
+          <div
+            id={`collapseOne`}
+            className="accordion-collapse collapse show"
+            aria-labelledby="headingOne"
+            data-bs-parent="#accordionExample"
+          >
+            <div className="accordion-body p-3">
+              <div className="form-check form-switch m-0 pt-2 pb-3">
+                <input
+                  id="canRestoreAccount"
+                  type="checkbox"
+                  value=""
+                  className="form-check-input"
+                  data-onstyle="primary"
+                  defaultChecked="true"
+                />
+                <label class="form-check-label" htmlFor="canRestoreAccount">
+                  Authorization to restore account
+                </label>
+              </div>
+              <div className="form-check form-switch m-0 pt-2 pb-3">
+                <input
+                  id="canApproveTransaction"
+                  type="checkbox"
+                  className="form-check-input"
+                />
+                <label class="form-check-label" htmlFor="canApproveTransaction">
+                  Guardian approved transactions
+                </label>
+              </div>
+              <div className="pt-2 pb-2">
+                <button
+                  className="btn rounded-pill btn-r-bank-highlight text-rb-bank-primary"
+                  type="button"
+                >
+                  Remove guardian
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="bg-white align-content-center border-top border-no-bank-grayscale-titanium justify-content-start pt-5 pe-5 ps-4 h-100">
       <div className="d-flex mb-5 ps-2 pt-3 pe-3">
@@ -59,7 +131,7 @@ const Step4 = ({ user, setOnboardingStep }) => {
           <div className="fs-1 text-no-bank-primary">
             Fortify wallet security{" "}
           </div>
-          <div className="d-flex justify-content-start pt-5">
+          <div className="d-flex justify-content-start pt-5 pb-2">
             <img
               src="public/add_guardian.svg"
               height="96"
@@ -77,22 +149,21 @@ const Step4 = ({ user, setOnboardingStep }) => {
               </p>
             </div>
           </div>
-          {guardians.length > 0 && (
-            <div>
-              <p className="text-no-bank-grayscale-iron pt-3">
-                Added guardians{" "}
-              </p>
-              {guardians.map((guardian) => {
-                return (
-                  <div key={guardian.hns}>
-                    Hello {guardian.hns} - {guardian.balance}
-                  </div>
-                );
-              })}
-            </div>
-          )}
           <div className="justify-content-start pt-3">
-            <p className="text-no-bank-grayscale-iron pt-5">
+            <div>
+              {guardians.length > 0 && (
+                <div>
+                  <p className="text-r-bank-grayscale-iron pt-3">
+                    Added guardians{" "}
+                  </p>
+                  {guardians.map((guardian) => {
+                    return <RenderAccordion guardian={guardian} />;
+                  })}
+                </div>
+              )}
+            </div>
+
+            <p className="text-r-bank-grayscale-iron pt-3">
               Who would you want to add?
             </p>
 

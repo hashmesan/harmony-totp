@@ -11,7 +11,7 @@ class Header extends Component {
   }
 
   componentDidMount() {
-    this.props.setEnvironment("development");
+    this.props.setEnvironment("testnet0");
   }
 
   toggleNav = () => {
