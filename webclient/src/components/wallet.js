@@ -26,6 +26,9 @@ import Viper from "./wallet/viper";
 import Address from "./common/address";
 import AccountProvider from "./smartvault_provider";
 import { SmartVaultContext, SmartVaultConsumer } from "./smartvault_provider";
+import ThemeProvider from "./Theme";
+import {ConfirmModal, ConfirmMulticall } from './wallet/confirm_modal.tsx';
+import { connect } from "redux-zero/react";
 
 class Wallet extends Component {
     constructor(props) {
@@ -48,13 +51,15 @@ class Wallet extends Component {
     }
 
     render() {
-        //console.log(this.context.smartvault)
+        console.log(this.props)
+
         var walletData = this.context.smartvault.walletData;
         if (walletData == null || walletData.created != true) {
             return <Redirect to="/create"/>
         }
 
         return (
+            <ThemeProvider>
             <SmartVaultConsumer>
                 {({smartvault}) => (
                 
@@ -112,16 +117,21 @@ class Wallet extends Component {
                         </div> 
                     </div>
                     <Notifications/>     
+                    <ConfirmMulticall opened={this.props.showSignModal} />
                 </div>
                 )}
             </SmartVaultConsumer>
+            </ThemeProvider>
         );
     }
 }
 Wallet.contextType = SmartVaultContext;
 
+const mapToProps = ({ showSignModal, confirmMessage }) => ({ showSignModal, confirmMessage });
+const WalletWithProps = connect(mapToProps, null)(Wallet);
+
 export default function WalletWithProvider() {
-    return (<AccountProvider loadAccount={true}><Wallet/></AccountProvider>)
+    return (<AccountProvider loadAccount={true}><WalletWithProps/></AccountProvider>)
 }
 /*
  curl -H "Content-Type:application/json" -X GET "https://api.s0.t.hmny.io/address?id=one1mcjmmtystwsr0xtglzhl4vyarsfrdvdn2ecx75&tx_view=ALL"

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useContext } from 'react';
 const {
 	toBech32,
 	fromBech32,
@@ -6,21 +6,30 @@ const {
 const web3utils = require("web3-utils");
 import { SmartVaultContext, SmartVaultConsumer } from "../smartvault_provider";
 import Notifications, {notify} from 'react-notify-toast';
+import { Button,Title,TextInput, NumberInput, Group, Modal, Text, Card} from '@mantine/core';
+import { useForm } from '@mantine/hooks';
+import { connect } from "redux-zero/react";
+import actions from "../../redux/actions";
 
-class SendPayment extends Component {
-	constructor(props) {
-		super(props)
-		this.state = {gasLimit: "", gasPrice:"", gasFee:""}
-	}
+function SendPayment({confirmMetasign}) {
+	const context = useContext(SmartVaultContext);
+	const form = useForm({
+		initialValues: {
 
-	componentDidMount() {
-		this.setState({
-			gasLimit: this.context.smartvault.config.gasLimit,
-			gasPrice: web3utils.fromWei(this.context.smartvault.config.gasPrice + "", "gwei"),
-			gasFee: web3utils.toBN(this.context.smartvault.config.gasLimit).mul(web3utils.toBN(this.context.smartvault.config.gasPrice))
-		});
-	}
-	transfer(e) {
+		},
+	
+		validationRules: {
+		},
+	  });
+
+	// componentDidMount() {
+	// 	this.setState({
+	// 		gasLimit: this.context.smartvault.config.gasLimit,
+	// 		gasPrice: web3utils.fromWei(this.context.smartvault.config.gasPrice + "", "gwei"),
+	// 		gasFee: web3utils.toBN(this.context.smartvault.config.gasLimit).mul(web3utils.toBN(this.context.smartvault.config.gasPrice))
+	// 	});
+	// }
+	function transfer(e) {
 		e.preventDefault();
 		var self = this;
 		self.setState({ submitting: true });
@@ -39,70 +48,41 @@ class SendPayment extends Component {
 		})
 	}
 
-	updateFee() {
+	function updateFee() {
 		this.setState({ gasFee: web3utils.toBN(this.state.gasLimit).mul(web3utils.toBN(web3utils.toWei(this.state.gasPrice, 'gwei'))) })
 	}
 
-	render() {
-		return (
-			<SmartVaultConsumer>
-                {({smartvault}) => (				
-			<div className="card">
-				<div className="card-body">
-					<h3 className="card-title text-center">SEND PAYMENT</h3>
-					<form>
-						<div className="form-group">
-							<label htmlFor="inputEmail3" className="col-form-label">Destination Address</label>
-							<div className="">
-								<input type="text" className="form-control" id="inputEmail3" value={this.state.destination} onChange={(e) => this.setState({ destination: e.target.value })} />
-							</div>
-						</div>
-						<div className="form-group">
-							<label htmlFor="inputEmail3" className="col-form-label">Amount</label>
-							<div className="">
-								<input type="number" className="form-control" id="inputEmail3" value={this.state.sendAmount} onChange={(e) => this.setState({ sendAmount: e.target.value })} />
-							</div>
-						</div>
-						<div className="form-group row">
-							<div className="col-4">
-								<label htmlFor="inputEmail3" className="col-form-label">Gas Price (gwei)</label>
-								<div className="">
-									<input type="number" className="form-control" id="inputEmail3" value={this.state.gasPrice} onChange={(e) => this.setState({ gasPrice: e.target.value }, this.updateFee)} />
-								</div>
-							</div>
-							<div className="col-4">
-								<label htmlFor="inputEmail3" className="col-form-label">Gas Limit</label>
-								<div className="">
-									<input type="number" className="form-control" id="inputEmail3" value={this.state.gasLimit} onChange={(e) => this.setState({ gasLimit: e.target.value }, this.updateFee)} />
-								</div>
-							</div>
-							<div className="col-4">
-								<label htmlFor="inputEmail3" className="col-form-label">Gas Fee (max)</label>
-								<div className="">
-									<input type="number" className="form-control" id="inputEmail3" disabled value={web3utils.fromWei(this.state.gasFee)} />
-								</div>
-							</div>
-						</div>
-						{this.state.error &&
-							<div className="row justify-content-md-center mt-4">
-								<div className="alert alert-danger w-50" role="alert">
-									{this.state.error && this.state.error.message}
-								</div>
-							</div>}
-						<div className="form-group row mt-4">
-							<label htmlFor="inputEmail3" className="col-sm-4 col-form-label"></label>
-							<div className="col-sm-8">
-								{!this.state.submitting && <button className="btn btn-primary" onClick={this.transfer.bind(this)}>Submit Transaction</button>}
-								{this.state.submitting && <button className="btn btn-primary" disabled>Submitting..(wait)</button>}
-							</div>
-						</div>
-					</form>
-				</div>
-			</div>)}
-			</SmartVaultConsumer>
-		);
+	function submitForm() {
+		confirmMetasign({message: "blah"})
 	}
-}
-SendPayment.contextType = SmartVaultContext;
 
-export default SendPayment;
+	console.log("Actions=", confirmMetasign)
+
+	return (
+		<SmartVaultConsumer>
+			{({smartvault}) => (				
+		<div className="card">
+			<div className="card-body">
+				<Title order={1}  style={{ marginBottom: 10 }}>SEND PAYMENT</Title>
+				<form onSubmit={form.onSubmit((values) => submitForm(values))}>
+					<TextInput placeholder="one..." label="Recipient Address" 
+						radius="md" size="lg" required
+						error={form.errors.address && 'Specify valid address'}
+						value={form.values.address} onChange={(e) => form.setFieldValue('address',e.target.value)} />
+					
+					<TextInput placeholder="0" label="Amount" radius="md"  style={{marginTop: 20}}
+						size="lg" required 
+						error={form.errors.sendAmount && 'Specify valid sendAmount'}
+						value={form.values.sendAmount} onChange={(e) => form.setFieldValue('sendAmount', e.target.value)}/>
+
+					<Button size="lg"  type="submit" fullWidth style={{marginTop: 20}}>
+						Submit Transaction
+					</Button>
+				</form>
+			</div>
+		</div>)}
+		</SmartVaultConsumer>
+	);
+}
+
+export default connect(null, actions)(SendPayment);
