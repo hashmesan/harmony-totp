@@ -36,20 +36,21 @@ class OnboardNav extends Component {
 
     return (
       <React.Fragment>
-        <div className="bg-r-bank-grayscale-platin border border-r-bank-grayscale-titanium align-content-center justify-content-start p-5 vh-100">
-          <div className="d-flex flex-column ps-3">
+        <div className="bg-no-bank-grayscale-platin border border-no-bank-grayscale-titanium align-content-center justify-content-start p-5 min-vh-100">
+          <div className="d-flex flex-column ps-3 pt-3">
             <div>
-              <div className="fs-6 text-r-bank-grayscale-iron text-uppercase">
-                pen an account
+              <div className="fs-6 text-no-bank-grayscale-iron text-uppercase">
+                Open an account
               </div>
 
-              <div className="fs-1 text-r-bank-grayscale-iron">
+              <div className="fs-1 text-no-bank-grayscale-iron">
                 How it works
               </div>
             </div>
             <div className="pt-5">
               <div
                 className="d-flex align-items-start"
+                style={{ cursor: "pointer" }}
                 onClick={() => this.handleClick(1)}
               >
                 <Number
@@ -62,7 +63,7 @@ class OnboardNav extends Component {
                   <span
                     className={
                       onboardingStep !== 1
-                        ? "text-r-bank-grayscale-iron"
+                        ? "text-no-bank-grayscale-iron"
                         : "fw-bold"
                     }
                   >
@@ -86,6 +87,7 @@ class OnboardNav extends Component {
               <hr />
               <div
                 className="d-flex align-items-start py-2"
+                style={{ cursor: "pointer" }}
                 id="2"
                 onClick={() => this.handleClick(2)}
               >
@@ -99,7 +101,7 @@ class OnboardNav extends Component {
                   <span
                     className={
                       onboardingStep !== 2
-                        ? "text-r-bank-grayscale-iron"
+                        ? "text-no-bank-grayscale-iron"
                         : "fw-bold"
                     }
                   >
@@ -118,6 +120,7 @@ class OnboardNav extends Component {
               <hr />
               <div
                 className="d-flex align-items-start py-2"
+                style={{ cursor: "pointer" }}
                 onClick={() => this.handleClick(3)}
               >
                 <Number
@@ -130,7 +133,7 @@ class OnboardNav extends Component {
                   <span
                     className={
                       onboardingStep !== 3
-                        ? "text-r-bank-grayscale-iron"
+                        ? "text-no-bank-grayscale-iron"
                         : "fw-bold"
                     }
                   >
@@ -150,6 +153,7 @@ class OnboardNav extends Component {
               <hr />
               <div
                 className="d-flex align-items-start py-2"
+                style={{ cursor: "pointer" }}
                 onClick={() => this.handleClick(4)}
               >
                 <Number
@@ -162,7 +166,7 @@ class OnboardNav extends Component {
                   <span
                     className={
                       onboardingStep !== 4
-                        ? "text-r-bank-grayscale-iron"
+                        ? "text-no-bank-grayscale-iron"
                         : "fw-bold"
                     }
                   >
@@ -181,6 +185,7 @@ class OnboardNav extends Component {
               <hr />
               <div
                 className="d-flex align-items-start py-2"
+                style={{ cursor: "pointer" }}
                 onClick={() => this.handleClick(5)}
               >
                 <Number
@@ -193,7 +198,7 @@ class OnboardNav extends Component {
                   <span
                     className={
                       onboardingStep !== 5
-                        ? "text-r-bank-grayscale-iron"
+                        ? "text-no-bank-grayscale-iron"
                         : "fw-bold"
                     }
                   >
@@ -206,8 +211,8 @@ class OnboardNav extends Component {
                         set up to start investing in the space of decentralized
                         finance!
                       </p>
-                      <p className="text-r-bank-grayscale-iron mt-3">
-                        R-Bank only charges the fees of third party providers
+                      <p className="text-no-bank-grayscale-iron mt-3">
+                        nobank only charges the fees of third party providers
                         and does not earn anything on top-ups.
                       </p>
                     </div>

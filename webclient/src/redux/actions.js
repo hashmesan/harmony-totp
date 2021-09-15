@@ -18,6 +18,21 @@ const actions = (store) => ({
   setUser: (state, value) => ({
     user: value,
   }),
+
+  setValidity: (state, value) => ({
+    formValidity: value,
+  }),
+
+  setWallet: (state, value) => ({
+    wallet: value,
+  }),
+
+  addGuardian: (state, value) => {
+    return {
+      ...state,
+      guardians: [...state.guardians, value],
+    };
+  },
 });
 
 export default actions;

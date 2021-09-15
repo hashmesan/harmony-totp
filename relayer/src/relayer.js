@@ -1,4 +1,4 @@
-require('dotenv').config()
+require("dotenv").config();
 var Transactions = require("./web3/transactions");
 var ipfs = require("./ipfs");
 const web3utils = require("web3-utils");
@@ -6,72 +6,96 @@ const CREATE_FEE = web3utils.toWei("0.09", "ether");
 
 // accepts createwallet, then forwards to our own relayer
 const createWallet = (input, callback) => {
-  new Transactions(input.env || "testnet").createWallet(input.config).then(fd=>{
-    callback(200, {result: "Success", tx: fd})
-  }).catch(ex=>{
-    console.log(ex)
-    callback(500,ex.message)
-  })
-}
+  new Transactions(input.env || "testnet")
+    .createWallet(input.config)
+    .then((fd) => {
+      callback(200, { result: "Success", tx: fd });
+    })
+    .catch((ex) => {
+      console.log(ex);
+      callback(500, ex.message);
+    });
+};
 
 const getDepositAddress = (input, callback) => {
-  new Transactions(input.env || "testnet").getDepositAddress(input.data).then(res => {
-    callback(200, {result: res});
-  }).catch(ex=>{
-    console.log(ex)
-    callback(500, ex.message)
-  })
+  new Transactions(input.env || "testnet")
+    .getDepositAddress(input.data)
+    .then((res) => {
+      callback(200, { result: res });
+    })
+    .catch((ex) => {
+      console.log(ex);
+      callback(500, ex.message);
+    });
 };
 
 // be sure not to use the same calling address, circular loop!!!!
 const getRefundInfo = (input, callback) => {
+  console.log("before");
   var tx = new Transactions(input.env || "testnet");
-  callback(200, {result: {createFee: CREATE_FEE, refundAddress: tx.defaultAddress}});
+
+  callback(200, {
+    result: { createFee: CREATE_FEE, refundAddress: tx.defaultAddress },
+  });
 };
 
 const submitMetaTx = (input, callback) => {
-  new Transactions(input.env || "testnet").submitMetaTx(input.data).then(res=>{
-    callback(200, {result: res});
-  }).catch(ex=>{
-    console.error(ex);
-    callback(500,ex.message)
-  })
+  new Transactions(input.env || "testnet")
+    .submitMetaTx(input.data)
+    .then((res) => {
+      callback(200, { result: res });
+    })
+    .catch((ex) => {
+      console.error(ex);
+      callback(500, ex.message);
+    });
 };
 
 const storeHash = (input, callback) => {
-  ipfs.storeHash(input.env, input.data.wallet, input.data.hashes).then(res=>{
-    callback(200, {result: res});
-  }).catch(ex=>{
-    console.log(ex);
-    callback(500,ex.message)
-  })
+  ipfs
+    .storeHash(input.env, input.data.wallet, input.data.hashes)
+    .then((res) => {
+      callback(200, { result: res });
+    })
+    .catch((ex) => {
+      console.log(ex);
+      callback(500, ex.message);
+    });
 };
 
 const getHash = (input, callback) => {
-  ipfs.getHash(input.env, input.address).then(res=>{
-    callback(200, {result: res});
-  }).catch(ex=>{
-    callback(500, ex.message)
-  })
+  ipfs
+    .getHash(input.env, input.address)
+    .then((res) => {
+      callback(200, { result: res });
+    })
+    .catch((ex) => {
+      callback(500, ex.message);
+    });
 };
 
-
 const getFactoryInfo = (input, callback) => {
-  new Transactions(input.env || "testnet").getFactoryInfo().then(res => {
-    callback(200, {result: res});
-  }).catch(ex=>{
-    console.log(ex)
-    callback(500,ex.message)
-  })
+  new Transactions(input.env || "testnet")
+    .getFactoryInfo()
+    .then((res) => {
+      callback(200, { result: res });
+    })
+    .catch((ex) => {
+      console.log(ex);
+      callback(500, ex.message);
+    });
 };
 
 const getContractCreated = (input, callback) => {
-  new Transactions(input.env || "testnet").getContractCreated().then(res => {
-    callback(200, {result: res});
-  }).catch(ex=>{
-    console.log(ex)
-    callback(500,ex.message)
-  })
+  new Transactions(input.env || "testnet")
+    .getContractCreated()
+    .then((res) => {
+      callback(200, { result: res });
+    })
+    .catch((ex) => {
+      console.log(ex);
+      callback(500, ex.message);
+    });
 };
 
 /* 
@@ -91,22 +115,39 @@ curl -X POST -H 'Content-Type: application/json' -d '{"operation": "getContractC
 */
 
 const createRequest = (input, callback) => {
-    //console.log(input)
-    const operation = input.operation
-    switch(operation) {
-      case "createWallet": createWallet(input, callback); break;
-      case "getDepositAddress": getDepositAddress(input, callback); break;
-      case "getRefundInfo": getRefundInfo(input, callback); break;
-      case "submitMetaTx": submitMetaTx(input, callback); break;
-      case "storeHash": storeHash(input, callback); break;
-      case "getHash": getHash(input, callback); break;
-      case "getWallet": getWallet(input, callback); break;
-      case "getFactoryInfo": getFactoryInfo(input, callback); break;
-      case "getContractCreated": getContractCreated(input, callback); break;
-      default: callback(400, "Invalid operation");
-    }
+  //console.log(input)
+  const operation = input.operation;
+  switch (operation) {
+    case "createWallet":
+      createWallet(input, callback);
+      break;
+    case "getDepositAddress":
+      getDepositAddress(input, callback);
+      break;
+    case "getRefundInfo":
+      getRefundInfo(input, callback);
+      break;
+    case "submitMetaTx":
+      submitMetaTx(input, callback);
+      break;
+    case "storeHash":
+      storeHash(input, callback);
+      break;
+    case "getHash":
+      getHash(input, callback);
+      break;
+    case "getWallet":
+      getWallet(input, callback);
+      break;
+    case "getFactoryInfo":
+      getFactoryInfo(input, callback);
+      break;
+    case "getContractCreated":
+      getContractCreated(input, callback);
+      break;
+    default:
+      callback(400, "Invalid operation");
+  }
+};
 
-
-}
-
-module.exports.createRequest = createRequest
+module.exports.createRequest = createRequest;

@@ -35,9 +35,19 @@ const CONFIG = {
     gasPrice: 1000000000,
     gasLimit: 200000,
   },
+  firebaseConfig: {
+    apiKey: "AIzaSyCjZCZDwel6uR8ghVX6ad82I2wyMbCI2YE",
+    authDomain: "no-bank.firebaseapp.com",
+    projectId: "no-bank",
+    storageBucket: "no-bank.appspot.com",
+    messagingSenderId: "513156150099",
+    appId: "1:513156150099:web:ce6ff84bf06bc6f9eda7a6",
+    measurementId: "G-LJD5SCD27K",
+  },
 };
 
-const DEFAULT_TOKEN_LIST = "https://d1xrz6ki9z98vb.cloudfront.net/venomswap/lists/venomswap-default.tokenlist.json";
+const DEFAULT_TOKEN_LIST =
+  "https://d1xrz6ki9z98vb.cloudfront.net/venomswap/lists/venomswap-default.tokenlist.json";
 
 function getApiUrl(env) {
   return CONFIG[env].API_URL;
@@ -64,12 +74,12 @@ function setLocalWallet(env, data, pending) {
 }
 
 module.exports = {
-    CONFIG,
-    getApiUrl,
-    getStorageKey,
-    getLocalWallet,
-    getExplorerUrl,
-    setLocalWallet,
-    DEFAULT_TOKEN_LIST
-}
+  CONFIG,
+  getApiUrl,
+  getStorageKey,
+  getLocalWallet,
+  getExplorerUrl,
+  setLocalWallet,
+  DEFAULT_TOKEN_LIST,
+};
 //export default CONFIG;

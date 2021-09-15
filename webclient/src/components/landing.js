@@ -17,22 +17,22 @@ class Landing extends Component {
   render() {
     return (
       <div>
-        <div className="container-fluid">
-          <div className="row my-5 p-3">
+        <div className="container-fluid pe-0">
+          <div className="row my-5">
             <div className="col-md-6">
               <p className="display-4">
-                R-Bank is your trusted partner and gateway to Decentralized
+                nobank is your trusted partner and gateway to Decentralized
                 Finance!
               </p>
-              <p className="fs-4 text-r-bank-grayscale-iron">
-                Secure, understandable and easy to use – R-Bank enables you to
+              <p className="fs-4 text-no-bank-grayscale-iron">
+                Secure, understandable and easy to use – nobank enables you to
                 make educated financial investments in a world growing ever more
                 complex.
               </p>
               <p className="text-black">Interested? Sign up now!</p>
               <Link to="/onboard">
                 <button
-                  className="btn btn-r-bank-highlight text-r-bank-primary rounded-pill fs-6 "
+                  className="btn btn-no-bank-highlight text-no-bank-primary rounded-pill fs-6 "
                   type="button"
                 >
                   Onboard
@@ -46,15 +46,15 @@ class Landing extends Component {
               />
             </div>
           </div>
-          <div className="row p-3 bg-r-bank-grayscale-platin ">
+          <div className="row p-3 bg-no-bank-grayscale-platin ">
             <div className="row justify-content-center">
-              <div className="col h1 text-r-bank-primary text-center">
-                Why R-Bank?
+              <div className="col h1 text-no-bank-primary text-center">
+                Why nobank?
               </div>
             </div>
             <div className="row py-3">
               <div className="col-md-4 px-3 pt-5">
-                <div className="card bg-r-bank-grayscale-platin border-0">
+                <div className="card bg-no-bank-grayscale-platin border-0">
                   <img
                     src="public/wallet_steffi.svg"
                     className="card-img-top thumbnail image-fluid mx-auto"
@@ -64,7 +64,7 @@ class Landing extends Component {
                   <div className="card-body mt-3">
                     <p className="card-text text-center fs-6">
                       <span className="fw-bold">
-                        R-Bank offers you a bullet proof smart wallet,
+                        nobank offers you a bullet proof smart wallet,
                       </span>
                       with advanced safety features natively available e.g.
                       wallet recovery or locking in case of an emergency.
@@ -73,7 +73,7 @@ class Landing extends Component {
                 </div>
               </div>
               <div className="col-md-4 px-3 pt-5">
-                <div className="card bg-r-bank-grayscale-platin border-0">
+                <div className="card bg-no-bank-grayscale-platin border-0">
                   <img
                     src="public/compass_steffi.svg"
                     className="card-img-top  mx-auto"
@@ -83,7 +83,7 @@ class Landing extends Component {
                   <div className="card-body mt-3">
                     <p className="card-text text-center fs-6">
                       <span className="fw-bold">
-                        R-Bank takes you by the hand and guides you through the
+                        nobank takes you by the hand and guides you through the
                         complex world of crypto investments.{" "}
                       </span>
                       We offer comprehensive product descriptions and highlight
@@ -94,7 +94,7 @@ class Landing extends Component {
                 </div>
               </div>
               <div className="col-md-4 px-3 pt-5">
-                <div className="card bg-r-bank-grayscale-platin border-0">
+                <div className="card bg-no-bank-grayscale-platin border-0">
                   <img
                     src="public/safe_steffi.svg"
                     className="card-img-top mx-auto"
@@ -104,7 +104,7 @@ class Landing extends Component {
                   <div className="card-body mt-3">
                     <p className="card-text text-center fs-6">
                       <span className="fw-bold">
-                        R-Bank offers you a bullet proof smart wallet,
+                        nobank offers you a bullet proof smart wallet,
                       </span>
                       with advanced safety features natively available e.g.
                       wallet recovery or locking in case of an emergency.
@@ -115,12 +115,12 @@ class Landing extends Component {
             </div>
           </div>
         </div>
-        <div className="footer mt-auto py-3 bg-r-bank-primary ">
+        <div className="footer mt-auto py-3 bg-no-bank-primary ">
           <div className="container-fluid d-flex align-items-center justify-content-between">
             <div>
               <Link to="/" className="navbar-brand m-0">
                 <img
-                  src="public/logo_R_white.svg"
+                  src="public/logo_no_white.svg"
                   alt=""
                   className="img-fluid m-1 h-75"
                 />
@@ -145,7 +145,7 @@ class Landing extends Component {
             <div>
               <Link
                 to="/impressum"
-                className="m-0 text-r-bank-grayscale-silver f-6"
+                className="m-0 text-no-bank-grayscale-silver f-6"
               >
                 impressum
               </Link>

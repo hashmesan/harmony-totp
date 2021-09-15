@@ -22,6 +22,7 @@ class Step3 extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      validated: false,
       error: "",
       otp: "",
     };
@@ -31,7 +32,7 @@ class Step3 extends Component {
     this.setState({ otp });
     const match = this.context.smartvault.validateOTP(otp);
     if (match) {
-      this.setState({ error: "none" });
+      this.setState({ error: "none", validated: true });
     } else {
       this.setState({ error: "OTP does not match" });
       return;
@@ -51,14 +52,14 @@ class Step3 extends Component {
     const qr_fixed = `https://chart.googleapis.com/chart?chs=200x200&chld=L|0&cht=qr&chl=${uri}`;
 
     return (
-      <div className="bg-white align-content-center border-top border-r-bank-grayscale-titanium justify-content-start p-5 vh-100">
-        <div className="d-flex flex-column mb-5 pe-3">
+      <div className="bg-white align-content-center border-top border-no-bank-grayscale-titanium justify-content-start pt-5 pe-5 ps-4 h-100">
+        <div className="d-flex flex-column mb-5 ps-2 pt-3 pe-3">
           <div>
-            <div className="fs-6 text-r-bank-grayscale-iron text-uppercase">
+            <div className="fs-6 text-no-bank-grayscale-iron text-uppercase">
               step 3
             </div>
 
-            <div className="fs-1 text-r-bank-primary">
+            <div className="fs-1 text-no-bank-primary">
               Link Google Authenticator
             </div>
             <div className="pt-5">
@@ -73,7 +74,7 @@ class Step3 extends Component {
                 className="img-thumbnail my-3"
               />
 
-              <p className="text-r-bank-grayscale-iron fs-6">Code</p>
+              <p className="text-no-bank-grayscale-iron fs-6">Code</p>
               <StyledOTPContainer className="row justify-content-start ">
                 <OtpInput
                   inputStyle="inputStyle"
@@ -85,16 +86,25 @@ class Step3 extends Component {
                   separator={<span></span>}
                 />
               </StyledOTPContainer>
-
-              <div className="d-flex justify-content-end p-3 fixed-bottom">
-                <button
-                  type="button"
-                  onClick={this.handleClick}
-                  className="btn btn-r-bank-grayscale-silver text-white rounded-pill"
-                  disabled={this.state.error !== "none" && "disabled"}
-                >
-                  Continue
-                </button>
+              {this.state.validated && (
+                <div className="mt-2">
+                  <i className="bi bi-check-circle text-success fs-5" />
+                  <span className="ps-3 text-success">
+                    Validation completed
+                  </span>
+                </div>
+              )}
+              <div className="d-flex justify-content-end pe-5 pb-3 fixed-bottom">
+                <div className="pe-3 pb-3">
+                  <button
+                    type="button"
+                    onClick={this.handleClick}
+                    className="btn btn-no-bank-grayscale-silver text-white rounded-pill"
+                    disabled={!this.state.validated && "disabled"}
+                  >
+                    Create Smart Wallet
+                  </button>
+                </div>
               </div>
             </div>
           </div>
