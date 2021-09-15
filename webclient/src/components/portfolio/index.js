@@ -44,49 +44,49 @@ const Portfolio = ({ setLocation }) => {
             >
               <button
                 type="button"
-                className=ame="btn btn-outline-no-bank-grayscale-iron"
+                className="btn btn-outline-no-bank-grayscale-iron"
               >
                 1h
               </button>
               <button
                 type="button"
-                className=ame="btn btn-outline-no-bank-grayscale-iron"
+                className="btn btn-outline-no-bank-grayscale-iron"
               >
                 24h
               </button>
               <button
                 type="button"
-                className=ame="btn btn-outline-no-bank-grayscale-iron"
+                className="btn btn-outline-no-bank-grayscale-iron"
               >
                 1 week
               </button>
               <button
                 type="button"
-                className=ame="btn btn-outline-no-bank-grayscale-iron"
+                className="btn btn-outline-no-bank-grayscale-iron"
               >
                 1 month
               </button>
               <button
                 type="button"
-                className=ame="btn btn-outline-no-bank-grayscale-iron"
+                className="btn btn-outline-no-bank-grayscale-iron"
               >
                 YTD
               </button>
               <button
                 type="button"
-                className=ame="btn btn-outline-no-bank-grayscale-iron"
+                className="btn btn-outline-no-bank-grayscale-iron"
               >
                 1 year
               </button>
               <button
                 type="button"
-                className=ame="btn btn-outline-no-bank-grayscale-iron"
+                className="btn btn-outline-no-bank-grayscale-iron"
               >
                 5 years
               </button>
               <button
                 type="button"
-                className=ame="btn btn-outline-no-bank-grayscale-iron"
+                className="btn btn-outline-no-bank-grayscale-iron"
               >
                 MAX
               </button>

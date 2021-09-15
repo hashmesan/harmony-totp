@@ -33,7 +33,7 @@ const Step5 = ({ user }) => {
     setWalletAddress(depositInfo.walletAddress);
 
     const balance = await smartvault.harmonyClient.getBalance(walletAddress);
-    setBala;
+    setBalance(balance);
     console.log("balance: ", balance);
 
     const submit = await smartvault.submitWallet();
