@@ -1,7 +1,9 @@
 import createStore from "redux-zero";
 import CONFIG from "../config";
 
-const initialState = { environment: localStorage.getItem("environment") || "mainnet0", config: CONFIG[localStorage.getItem("environment") || "mainnet0"]};
+const initialState = { environment: localStorage.getItem("environment") || "mainnet0", 
+                        config: CONFIG[localStorage.getItem("environment") || "mainnet0"],
+                        showSignModal: false, confirmMessage: { raw : "0x248b1701000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000020000000000000000000000000a7749ddd58d9640923bf3171eee95f0148450574000000000000000000000000000000000000000000000000016345785d8a000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000"}};
 const store = createStore(initialState);
 
 export default store;

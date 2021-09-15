@@ -29,6 +29,7 @@ import { SmartVaultContext, SmartVaultConsumer } from "./smartvault_provider";
 import ThemeProvider from "./Theme";
 import {ConfirmModal, ConfirmMulticall } from './wallet/confirm_modal.tsx';
 import { connect } from "redux-zero/react";
+import { SmartConfirmModal } from './wallet/confirm_modal';
 
 class Wallet extends Component {
     constructor(props) {
@@ -51,7 +52,7 @@ class Wallet extends Component {
     }
 
     render() {
-        console.log(this.props)
+        //console.log(this.props)
 
         var walletData = this.context.smartvault.walletData;
         if (walletData == null || walletData.created != true) {
@@ -117,7 +118,7 @@ class Wallet extends Component {
                         </div> 
                     </div>
                     <Notifications/>     
-                    <ConfirmMulticall opened={this.props.showSignModal} />
+                    <SmartConfirmModal opened={this.props.showSignModal} confirmMessage={this.props.confirmMessage} />
                 </div>
                 )}
             </SmartVaultConsumer>
