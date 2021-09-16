@@ -19,6 +19,8 @@ import Create from './components/create';
 import Wallet from './components/wallet';
 import Recover from './components/recover';
 import Stats from './components/stats';
+import { SiteSidebar } from "./components/site_sidebar";
+import ThemeProvider from "./components/Theme";
 
 Number.prototype.toFixedNoRounding = function(n) {
     const reg = new RegExp("^-?\\d+(?:\\.\\d{0," + n + "})?", "g")
@@ -35,24 +37,32 @@ const version = VERSION+"-"+BRANCH;
 const mapToProps = ({ environment }) => ({ environment });
 const App = connect(mapToProps)(({environment}) => (
     <Router>
+        <ThemeProvider>
+        <div>
         <Header/>
-        <Switch>
-            <Route exact path="/">
-                {getLocalWallet(environment, false) ?<Redirect to="/wallet"/> : <Redirect to="/create"/>}
-            </Route>
-            <Route path="/create">
-                <Create/>
-            </Route>
-            <Route path="/wallet">
-                <Wallet/>
-            </Route>
-            <Route path="/recover">
-                <Recover/>
-            </Route>
-            <Route path="/stats">
-                <Stats/>
-            </Route>            
-        </Switch>
+            <div style={{display: "flex",alignItems: "stretch"}}>
+                <SiteSidebar/>
+                <div  style={{paddingTop: 40, paddingLeft: 30}}>
+                    <Switch>
+                        <Route exact path="/">
+                            {getLocalWallet(environment, false) ?<Redirect to="/wallet"/> : <Redirect to="/create"/>}
+                        </Route>
+                        <Route path="/create">
+                            <Create/>
+                        </Route>
+                        <Route path="/wallet">
+                            <Wallet/>
+                        </Route>
+                        <Route path="/recover">
+                            <Recover/>
+                        </Route>
+                        <Route path="/stats">
+                            <Stats/>
+                        </Route>            
+                    </Switch>    
+                </div>         
+            </div>
+        </div>
         <footer className="my-5 pt-5 text-muted text-center text-small">
             <p className="mb-1">Smartvault (beta) powered by Harmony Blockchain | Opensource (GPL) | Version: {version}</p>
             <ul className="list-inline">
@@ -60,7 +70,8 @@ const App = connect(mapToProps)(({environment}) => (
             <li className="list-inline-item"><a href="https://github.com/hashmesan/harmony-totp">Github</a></li>
             <li className="list-inline-item"><a href="https://github.com/hashmesan/harmony-totp/issues">Report issues</a></li>
             </ul>
-        </footer>
+        </footer>   
+        </ThemeProvider>
     </Router>    
 ))
 

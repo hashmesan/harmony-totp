@@ -31,6 +31,7 @@ import {ConfirmModal, ConfirmMulticall } from './wallet/confirm_modal.tsx';
 import { connect } from "redux-zero/react";
 import { SmartConfirmModal } from './wallet/confirm_modal';
 
+
 class Wallet extends Component {
     constructor(props) {
         super(props)
@@ -60,7 +61,6 @@ class Wallet extends Component {
         }
 
         return (
-            <ThemeProvider>
             <SmartVaultConsumer>
                 {({smartvault}) => (
                 
@@ -122,7 +122,6 @@ class Wallet extends Component {
                 </div>
                 )}
             </SmartVaultConsumer>
-            </ThemeProvider>
         );
     }
 }

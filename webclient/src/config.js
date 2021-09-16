@@ -2,7 +2,7 @@ const CONFIG = {
     "mainnet0" : {
         ENV: "mainnet0",
         API_URL: "https://api.smartvault.one:8443/",
-        EXPLORER_URL: "https://explorer.hmny.io:8888",
+        EXPLORER_URL: "https://explorer.harmony.one",
         RPC_URL: "https://api.s0.t.hmny.io",
         ENS_ADDRESS: "0x3fa4135B88cE1035Fed373F0801118a3340B37e7",
         gasPrice: 1000000000, // 1 Gwei
@@ -12,7 +12,7 @@ const CONFIG = {
     "testnet0" : {
         ENV: "testnet0",
         API_URL: "https://api.smartvault.one:8443/",
-        EXPLORER_URL: "https://explorer.pops.one:8888",
+        EXPLORER_URL: "https://explorer.pops.one",
         RPC_URL: "https://api.s0.b.hmny.io",
         ENS_ADDRESS: "0x51766DEF619112F76dF1FD7C361e0C6F47eE19de",
         gasPrice: 1000000000,

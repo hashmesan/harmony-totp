@@ -20,7 +20,7 @@ class Header extends Component {
         const hasWallet = (getLocalWallet(this.props.environment) && JSON.parse(getLocalWallet(this.props.environment)).created == true)
 
         return (
-            <div className="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
+            <div className="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 bg-white border-bottom shadow-sm">
                 <div className="my-0 mr-md-auto font-weight-normal"><a href="/"><img src="public/logo_smartvault.png" height="50"/></a></div>
                 {!hasWallet? 
                 <nav className="my-2 my-md-0 mr-md-3">
