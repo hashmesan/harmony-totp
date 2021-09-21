@@ -23,3 +23,11 @@ Visit http://localhost:8080
 ## Deployment
 
 Built docker at the parent directory
+
+## Load test
+
+```
+yarn global add loadtest
+```
+
+

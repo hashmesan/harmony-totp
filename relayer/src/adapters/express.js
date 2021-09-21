@@ -4,6 +4,15 @@ const app = express()
 const cors = require('cors')
 
 app.use(cors());
+app.use(clientErrorHandler)
+
+function clientErrorHandler (err, req, res, next) {
+  if (req.xhr) {
+    res.status(500).send({ error: 'Something failed!' })
+  } else {
+    next(err)
+  }
+}
 
 function init (createRequest, port) {
   return () => {
@@ -13,7 +22,7 @@ function init (createRequest, port) {
     app.post('/', (req, res) => {
       //console.log('POST Data: ', req.body)
       createRequest(req.body, (status, result) => {
-        //console.log('Result: ', result)
+        //console.log('Result: ',status, JSON.stringify(result))
         res.status(status).json(result)
       })
     })

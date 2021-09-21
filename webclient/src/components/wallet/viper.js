@@ -175,7 +175,7 @@ class Stats extends Component {
     render() {
         return (
             <div className="card mb-3">
-                <div className="card-header">ViperSwap</div>
+                <div className="card-header">ViperSwap <a className="float-right" href="https://info.viper.exchange/home" target="_blank">Analytics</a></div>
                 <div className="card-body text-secondary p-5">
                     <form>
 						<div className="form-group">
