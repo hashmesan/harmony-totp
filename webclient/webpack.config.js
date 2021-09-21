@@ -27,12 +27,17 @@ module.exports = {
             use: 'ts-loader',
             exclude: /node_modules/,
           },
+          {
+            test: /\.css?$/,
+            use: ['css-loader'],
+          },          
         ],
       },
     entry: {
       main: ['@babel/polyfill', './src/index.js'],
       worker: ['@babel/polyfill', './src/worker/generate.js'],
     },
+    devtool: 'inline-source-map',
     output: {
         filename: '[name].[contenthash].js',
         path: path.resolve(__dirname, 'dist')
