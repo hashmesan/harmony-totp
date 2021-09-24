@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "redux-zero/react";
 import styled from "@emotion/styled";
 import OtpInput from "react-otp-input";
+import { Link } from "react-router-dom";
 
 import { SmartVaultContext } from "../../context/SmartvaultContext";
 
@@ -96,14 +97,16 @@ class Step3 extends Component {
               )}
               <div className="d-flex justify-content-end pe-5 pb-3 fixed-bottom">
                 <div className="pe-3 pb-3">
-                  <button
-                    type="button"
-                    onClick={this.handleClick}
-                    className="btn btn-no-bank-grayscale-silver text-white rounded-pill"
-                    disabled={!this.state.validated && "disabled"}
-                  >
-                    Create Smart Wallet
-                  </button>
+                  <Link to="/onboard/4">
+                    <button
+                      type="button"
+                      onClick={this.handleClick}
+                      className="btn btn-no-bank-grayscale-silver text-white rounded-pill"
+                      disabled={!this.state.validated && "disabled"}
+                    >
+                      Create Smart Wallet
+                    </button>
+                  </Link>
                 </div>
               </div>
             </div>

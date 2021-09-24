@@ -1,61 +1,80 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { connect } from "redux-zero/react";
 import { Link } from "react-router-dom";
 import { Modal } from "bootstrap";
 const web3utils = require("web3-utils");
-
-//import { useAuth } from "../../context/AuthContext";
+const { toBech32, fromBech32 } = require("@harmony-js/crypto");
 
 import { SmartVaultContext } from "../../context/SmartvaultContext";
-import { useAuthState } from "../../context/FirebaseAuthContext";
+import { getApiUrl, getStorageKey, setLocalWallet } from "../../config";
 
 import actions from "../../redux/actions";
 
 import PaypalLogo from "../../../public/paypal.svg";
 import AppleGoogleLogo from "../../../public/apple_google.svg";
 
-const Step5 = () => {
+const Step5 = ({ environment }) => {
+  const [walletAddress, setWalletAddress] = useState(null);
   const [balance, setBalance] = useState(0);
 
   const [createFee, setCreateFee] = useState(0);
   const [rentPrice, setRentPrice] = useState(0);
   const [totalFee, setTotalFee] = useState(0);
-  const [walletAddress, setWalletAddress] = useState(0);
 
-  const [deposits, setDeposits] = useState("0");
-  const [busy, setBusy] = useState(false);
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState("checking balance");
 
   const { smartvault } = useContext(SmartVaultContext);
-  const { user } = useAuthState();
+  const depositInfo = smartvault.getDepositInfo();
 
-  const checkBalance = async () => {
-    const depositInfo = await smartvault.getDepositInfo();
-    const balance = await smartvault.harmonyClient.getBalance(
-      depositInfo.walletAddress
-    );
-    console.log("state: ", depositInfo.walletAddress);
+  useEffect(() => {
+    const checkFees = async () => {
+      setCreateFee(web3utils.fromWei(depositInfo.createFee));
+      setRentPrice(web3utils.fromWei(depositInfo.rentPrice));
+      setTotalFee(web3utils.fromWei(depositInfo.totalFee));
 
-    setCreateFee(depositInfo.createFee);
-    setRentPrice(depositInfo.rentPrice);
-    setTotalFee(depositInfo.totalFee);
-    setWalletAddress(depositInfo.walletAddress);
-    setBalance(balance);
+      setWalletAddress(depositInfo.walletAddress);
+    };
 
-    const submit = await smartvault.submitWallet((status) =>
-      console.log("status: ", status)
-    );
+    const checkBalance = async () => {
+      const balance = await smartvault.harmonyClient.getBalance(
+        depositInfo.walletAddress
+      );
+
+      setBalance(web3utils.fromWei(balance));
+    };
+    checkFees();
+    checkBalance();
+
+    const interval = setInterval(() => {
+      checkBalance();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const submitWalletCreation = async () => {
+    if (balance > totalFee) {
+      const submit = await smartvault.submitWallet((status) => {
+        setStatus(status);
+        console.log("status: ", status);
+      });
+      saveWalletToLocalStorage();
+    } else {
+      console.log("not enough money");
+    }
+  };
+
+  const saveWalletToLocalStorage = () => {
+    localStorage.removeItem(getStorageKey(environment, true));
+    var storeData = smartvault.walletData;
+    delete storeData["leaves_arr"];
+    setLocalWallet(environment, JSON.stringify(storeData), false);
   };
 
   const handleClick = () => {
-    console.log("doing sth before");
+    console.log("handling click");
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-  };
-
-  console.log(user, smartvault);
   return (
     <div className="bg-white align-content-center border-top border-no-bank-grayscale-titanium justify-content-start pt-5 pe-5 ps-4 h-100">
       <div className="d-flex flex-column mb-5 ps-2 pt-3 pe-3">
@@ -175,7 +194,19 @@ const Step5 = () => {
                   <p>createFee: {createFee}</p>
                   <p>rentPrice: {rentPrice}</p>
                   <p>totalFee: {totalFee}</p>
+                  <p>totalBalance: {balance}</p>
                   <p>walletAddress: {walletAddress}</p>
+                  {
+                    <img
+                      src={
+                        "https://chart.googleapis.com/chart?chs=200x200&chld=L|0&cht=qr&chl=" +
+                        walletAddress
+                      }
+                      width="200"
+                      height="200"
+                    />
+                  }
+                  <p>Status: {status}</p>
                 </div>
                 <div className="modal-footer">
                   <button
@@ -188,29 +219,21 @@ const Step5 = () => {
                   <button
                     type="button"
                     className="btn btn-primary"
-                    onClick={checkBalance}
+                    onClick={submitWalletCreation}
                   >
-                    Save changes
+                    Create Wallet
                   </button>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={checkBalance}
-          className="btn rounded-pill btn-no-bank-highlight text-rb-bank-primary"
-        >
-          TEST
-        </button>
       </div>
       <div className="d-flex justify-content-end pe-5 pb-3 fixed-bottom">
         <div className="pe-3 pb-3">
           <Link to="/portfolio">
             <button
               type="button"
-              onClick={handleClick}
               className="btn rounded-pill btn-no-bank-highlight text-rb-bank-primary"
             >
               Continue
@@ -222,5 +245,5 @@ const Step5 = () => {
   );
 };
 
-const mapToProps = () => ({});
+const mapToProps = ({ environment }) => ({ environment });
 export default connect(mapToProps, actions)(Step5);
