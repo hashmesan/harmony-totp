@@ -3,7 +3,7 @@ import { connect } from "redux-zero/react";
 import styled from "@emotion/styled";
 import OtpInput from "react-otp-input";
 
-import { SmartVaultContext } from "../smartvault_provider";
+import { SmartVaultContext } from "../../context/SmartvaultContext";
 
 import actions from "../../redux/actions";
 

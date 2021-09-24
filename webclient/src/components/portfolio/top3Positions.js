@@ -1,13 +1,18 @@
 import React, { useState, useEffect, useContext } from "react";
-import { SmartVaultContext, SmartVaultConsumer } from "../smartvault_provider";
+import {
+  SmartVaultContext,
+  SmartVaultConsumer,
+} from "../../context/SmartvaultContext";
 import { connect } from "redux-zero/react";
 import actions from "../../redux/actions";
-import { useHistory } from "react-router-dom";
+import { useHistory, useRouteMatch } from "react-router-dom";
 
 import TokenCategory from "./tokenCategory";
 
 const Top3Positions = (props) => {
   const history = useHistory();
+  const { url } = useRouteMatch();
+
   const handleRowClick = (address) => {
     history.push(`/token/${address}`);
   };
@@ -15,7 +20,9 @@ const Top3Positions = (props) => {
   return (
     <>
       <div className="d-flex align-items-center justify-content-between">
-        <div className="fs-4 text-no-bank-grayscale-iron">Top 3 portofolio Positions</div>
+        <div className="fs-4 text-no-bank-grayscale-iron">
+          Top 3 portofolio Positions
+        </div>
 
         <i className="bi bi-arrow-up-right fs-5"></i>
       </div>
@@ -59,7 +66,12 @@ const Top3Positions = (props) => {
               </td>
             </tr> */}
 
-            <tr className="pointer" onClick={() => handleRowClick("0x0e80905676226159cc3ff62b1876c907c91f7395")}>
+            <tr
+              className="pointer"
+              onClick={() =>
+                handleRowClick("0x0e80905676226159cc3ff62b1876c907c91f7395")
+              }
+            >
               <td>
                 <div className="d-flex  align-items-center">
                   <span className="me-3">oneBUSD</span>
@@ -81,7 +93,12 @@ const Top3Positions = (props) => {
               </td>
             </tr>
 
-            <tr className="pointer" onClick={() => handleRowClick("0x268d6ff391b41b36a13b1693bd25f87fb4e4b392")}>
+            <tr
+              className="pointer"
+              onClick={() =>
+                handleRowClick("0x268d6ff391b41b36a13b1693bd25f87fb4e4b392")
+              }
+            >
               <td>
                 <div className="d-flex  align-items-center">
                   <span className="me-3">1ETH</span>
@@ -103,7 +120,12 @@ const Top3Positions = (props) => {
               </td>
             </tr>
 
-            <tr className="pointer" onClick={() => handleRowClick("0x6c4387c4f570aa8cadcaffc5e73ecb3d0f8fc593")}>
+            <tr
+              className="pointer"
+              onClick={() =>
+                handleRowClick("0x6c4387c4f570aa8cadcaffc5e73ecb3d0f8fc593")
+              }
+            >
               <td>
                 <div className="d-flex  align-items-center">
                   <span className="me-3">1WBTC</span>

@@ -3,7 +3,7 @@ import { connect } from "redux-zero/react";
 
 const web3utils = require("web3-utils");
 
-import { SmartVaultContext } from "../smartvault_provider";
+import { SmartVaultContext } from "../../context/SmartvaultContext";
 
 import actions from "../../redux/actions";
 
@@ -26,7 +26,7 @@ const Portfolio = ({ setLocation }) => {
   const unrealizedPnL = 31851;
 
   useEffect(() => {
-    setLocation("Portfolio");
+    setLocation("portfolio");
   });
 
   return (

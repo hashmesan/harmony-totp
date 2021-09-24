@@ -1,11 +1,16 @@
-import React, { Component } from "react";
+import React, { Component, useCallback } from "react";
 
 import web3utils from "web3-utils";
 import { CountryDropdown } from "react-country-region-selector";
 import { connect } from "redux-zero/react";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+} from "firebase/auth";
 
 import actions from "../../redux/actions";
-import { SmartVaultContext } from "../smartvault_provider";
+import { SmartVaultContext } from "../../context/SmartvaultContext";
 
 class Step1 extends Component {
   constructor(props) {
@@ -75,7 +80,6 @@ class Step1 extends Component {
         .getAddress();
 
       const { wallet } = { ...this.state };
-      console.log("address (should be 0x00.. if not existing: ", address);
 
       if (createdWallet === null) {
         wallet.isAvailable = false;
@@ -147,7 +151,7 @@ class Step1 extends Component {
     if (id == "userName") {
       const userNamePattern = /^([a-zA-Z0-9\-]+)$/; //one wallet can only have chars, numbers and - as a 1 special char
 
-      const validityCheck = userNamePattern.test(value) && value.length > 7;
+      const validityCheck = userNamePattern.test(value) && value.length > 6;
 
       const { validity } = { ...this.state };
       const currentState = validity;
@@ -158,7 +162,7 @@ class Step1 extends Component {
     }
     //Validity check for password
     else if (id == "userPassword") {
-      const passwordPattern = /^(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{7,}$/;
+      const passwordPattern = /^(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{6,}$/;
 
       const validityCheck = passwordPattern.test(value);
 
@@ -194,10 +198,31 @@ class Step1 extends Component {
     }
   };
 
+  createUser = async () => {
+    const { userEmail, userPassword } = this.props.user;
+    const auth = getAuth();
+    try {
+      const user = await createUserWithEmailAndPassword(
+        auth,
+        userEmail,
+        userPassword
+      );
+
+      const currentUser = auth.currentUser;
+      const otp = await sendEmailVerification(currentUser, {
+        url: window.location.href,
+        handleCodeInApp: true,
+      });
+    } catch (e) {
+      alert(e.message);
+    }
+  };
+
   handleClick = () => {
     const { userName, userPassword, userEmail, userCountryOfResidence } =
       this.state.validity;
     if (userName && userPassword && userEmail && userCountryOfResidence) {
+      this.createUser();
       this.checkRentPriceAsync();
       this.props.setOnboardingStep(2);
     }
@@ -257,7 +282,7 @@ class Step1 extends Component {
                         : ""
                     }`}
                     id="userName"
-                    placeholder="Required"
+                    placeholder="6+ Characters"
                     onChange={this.handleChange}
                     onBlur={this.handleBlur}
                     required
@@ -302,7 +327,7 @@ class Step1 extends Component {
                     )}
                   {userName.length > 0 && !validity.userName && (
                     <div>
-                      Please use at least 8 characters. They must be letters,
+                      Please use at least 6 characters. They must be letters,
                       numbers or hyphen. First and last character can't be a
                       hyphen.
                     </div>
@@ -330,7 +355,7 @@ class Step1 extends Component {
                           : ""
                       }`}
                       id="userPassword"
-                      placeholder="Required"
+                      placeholder="6+ Characters, 1 Capital letter, 1 special Character"
                       onChange={this.handleChange}
                       onBlur={this.handleBlur}
                       required
@@ -406,7 +431,7 @@ class Step1 extends Component {
                         : ""
                     }`}
                     id="userEmail"
-                    placeholder="Required"
+                    placeholder="name@mail.com"
                     onChange={this.handleChange}
                     onBlur={this.handleBlur}
                     required

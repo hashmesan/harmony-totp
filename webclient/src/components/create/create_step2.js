@@ -4,7 +4,10 @@ import styled from "@emotion/styled";
 import { withRouter } from "react-router-dom";
 import { connect } from "redux-zero/react";
 import actions from "../../redux/actions";
-import { SmartVaultContext, SmartVaultConsumer } from "../smartvault_provider";
+import {
+  SmartVaultContext,
+  SmartVaultConsumer,
+} from "../../context/SmartvaultContext";
 
 const StyledOTPContainer = styled.div`
   .inputStyle {

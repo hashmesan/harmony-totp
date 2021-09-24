@@ -1,9 +1,16 @@
 // Settings
-$enable-validation-icons: false;
+$enable-validation-icons: false; //input field icon off
+$enable-negative-margins: true;
 
 // Default & New variables (fonts & colors)
 //$font-size-base: 0.85rem;
 $font-family-base: "Inter", sans-serif;
+
+$form-check-input-checked-bg-color: #000; //toggle button background shall be black
+$nav-pills-link-active-bg: #efefee;
+$nav-pills-link-active-color: #92918f;
+$nav-link-color: #92918f;
+$nav-pills-border-radius: 0;
 
 // First override some or all individual color variables
 // $primary: #fdb90d;
@@ -22,6 +29,7 @@ $no-bank-white: #fff;
 $no-bank-blue: #00042c;
 $no-bank-black: #000;
 $no-bank-silver: #bbb;
+
 $no-bank-grayscale-platin: #efefee;
 $no-bank-grayscale-titanium: #e5e4e2;
 $no-bank-grayscale-silver: #cac9c7;
@@ -72,7 +80,12 @@ $custom-colors: (
 $theme-colors: map-merge($custom-colors, $theme-colors);
 $theme-colors-rgb: map-loop($theme-colors, to-rgb, "$value");
 $utilities-colors: map-merge($utilities-colors, $theme-colors-rgb);
-$utilities-text-colors: map-loop($utilities-colors, rgba-css-var, "$key", "text");
+$utilities-text-colors: map-loop(
+  $utilities-colors,
+  rgba-css-var,
+  "$key",
+  "text"
+);
 $utilities-bg-colors: map-loop($utilities-colors, rgba-css-var, "$key", "bg");
 
 // New classes

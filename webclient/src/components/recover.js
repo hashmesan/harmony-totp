@@ -5,7 +5,7 @@ import { HashRouter as Router, Switch, Route, Link } from "react-router-dom";
 
 import FindWallet from "./recover/recover_step1";
 import ProvideCode from "./recover/recover_step2";
-import AccountProvider from "./smartvault_provider";
+import AccountProvider from "../context/SmartvaultContext";
 
 class RecoverPage extends Component {
   constructor(props) {

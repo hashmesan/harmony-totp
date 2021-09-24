@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
-import { SmartVaultContext, SmartVaultConsumer } from "../smartvault_provider";
+import {
+  SmartVaultContext,
+  SmartVaultConsumer,
+} from "../../context/SmartvaultContext";
 import { connect } from "redux-zero/react";
 import actions from "../../redux/actions";
 const web3utils = require("web3-utils");
@@ -22,9 +25,18 @@ const TokenRecord = (props) => {
 
   //temporary: mapping testnet tokenAddress to mainnet one
   const tokenAddressMap = new Map([
-    ["0x268d6ff391b41b36a13b1693bd25f87fb4e4b392", "0x6983d1e6def3690c4d616b13597a09e6193ea013"],
-    ["0x0e80905676226159cc3ff62b1876c907c91f7395", "0xe176ebe47d621b984a73036b9da5d834411ef734"],
-    ["0x7466d7d0c21fa05f32f5a0fa27e12bdc06348ce2", "0xcf664087a5bb0237a0bad6742852ec6c8d69a27a"],
+    [
+      "0x268d6ff391b41b36a13b1693bd25f87fb4e4b392",
+      "0x6983d1e6def3690c4d616b13597a09e6193ea013",
+    ],
+    [
+      "0x0e80905676226159cc3ff62b1876c907c91f7395",
+      "0xe176ebe47d621b984a73036b9da5d834411ef734",
+    ],
+    [
+      "0x7466d7d0c21fa05f32f5a0fa27e12bdc06348ce2",
+      "0xcf664087a5bb0237a0bad6742852ec6c8d69a27a",
+    ],
   ]);
 
   useEffect(() => {
@@ -41,7 +53,10 @@ const TokenRecord = (props) => {
       setBalance(tokenInfo.balance);
       setChainlinkPrice(tokenInfo.price);
 
-      if (tokenAddressMap.has(props.address) && props.environment != "mainnet") {
+      if (
+        tokenAddressMap.has(props.address) &&
+        props.environment != "mainnet"
+      ) {
         address = tokenAddressMap.get(props.address);
       } else {
         address = props.address;
@@ -68,12 +83,18 @@ const TokenRecord = (props) => {
     const sushiPriceForUser = Math.round(sushiPrice * 1000) / 1000;
 
     const yesterdayPrice = data.token.dayData[1].priceUSD;
-    const priceChange24 = ((sushiPrice - yesterdayPrice) / yesterdayPrice) * 100;
+    const priceChange24 =
+      ((sushiPrice - yesterdayPrice) / yesterdayPrice) * 100;
 
     price = sushiPriceForUser;
     priceChange = Math.round(priceChange24 * 100) / 100;
 
-    props.setHoldingTokens({ address: tokenAddress, name: name, latestPrice: price, priceChange: priceChange });
+    props.setHoldingTokens({
+      address: tokenAddress,
+      name: name,
+      latestPrice: price,
+      priceChange: priceChange,
+    });
   }
 
   return (
@@ -93,5 +114,9 @@ const TokenRecord = (props) => {
   );
 };
 
-const mapToProps = ({ environment, ONElatestPrice, setHoldingTokens }) => ({ environment, ONElatestPrice, setHoldingTokens });
+const mapToProps = ({ environment, ONElatestPrice, setHoldingTokens }) => ({
+  environment,
+  ONElatestPrice,
+  setHoldingTokens,
+});
 export default connect(mapToProps, actions)(TokenRecord);

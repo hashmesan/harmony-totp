@@ -7,7 +7,7 @@ EXPOSE 8080
 WORKDIR /app/relayer
 
 RUN apk update && apk upgrade && \
-	apk add --no-cache git make gcc g++ python
+  apk add --no-cache git make gcc g++ python
 
 
 # Install app dependencies

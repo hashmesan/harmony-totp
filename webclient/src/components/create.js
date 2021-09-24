@@ -12,7 +12,7 @@ import {
   getLocalWallet,
   setLocalWallet,
 } from "../config";
-import AccountProvider from "./smartvault_provider";
+import AccountProvider from "../context/SmartvaultContext";
 
 class Create extends Component {
   constructor(props) {

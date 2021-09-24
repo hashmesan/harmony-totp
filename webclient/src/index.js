@@ -1,28 +1,23 @@
-import React, { Component } from "react";
-var ReactDOM = require("react-dom");
+import React from "react";
+import ReactDOM from "react-dom";
+import App from "./App";
 
-import { HashRouter as Router, Switch, Route, Redirect } from "react-router-dom";
+import { Provider } from "redux-zero/react";
+import store from "./redux/store";
+
+import AccountProvider from "./context/SmartvaultContext";
+import { AuthProvider } from "./context/FirebaseAuthContext";
+
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  useQuery,
+  gql,
+} from "@apollo/client";
 
 import "./custom.scss";
 import "bootstrap-icons/font/bootstrap-icons.css";
-
-import { Provider, connect } from "redux-zero/react";
-import { getLocalWallet } from "./config";
-
-import store from "./redux/store";
-import Header from "./components/header";
-import Create from "./components/create";
-import Wallet from "./components/wallet";
-import Recover from "./components/recover";
-import Landing from "./components/landing";
-import Onboard from "./components/onboarding/onboard";
-import portfolio from "./components/portfolio";
-
-import AccountProvider from "./components/smartvault_provider";
-import Portfolio from "./components/portfolio/index";
-import Token from "./components/portfolio/token";
-import Account from "./components/portfolio/account";
-import { ApolloClient, InMemoryCache, ApolloProvider, useQuery, gql } from "@apollo/client";
 
 Number.prototype.toFixedNoRounding = function (n) {
   const reg = new RegExp("^-?\\d+(?:\\.\\d{0," + n + "})?", "g");
@@ -41,56 +36,15 @@ const sushiGraphClient = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-const mapToProps = ({ environment }) => ({ environment });
-const App = connect(mapToProps)(({ environment }) => (
-  <Router>
-    <AccountProvider>
-      <ApolloProvider client={sushiGraphClient}>
-        <div className="container-fluid bg-white p-0">
-          <Header />
-          <Switch>
-            <Route exact path="/">
-              {getLocalWallet(environment, false) ? <Redirect to="/portfolio" /> : <Redirect to="/landing" />}
-            </Route>
-            <Route path="/landing">
-              <Landing />
-            </Route>
-            <Route path="/create">
-              <Create />
-            </Route>
-            <Route path="/onboard">
-              <Onboard />
-            </Route>
-            <Route path="/wallet">
-              <Wallet />
-            </Route>
-            <Route path="/recover">
-              <Recover />
-            </Route>
-            <Route path="/portfolio">
-              <Portfolio />
-            </Route>
-            <Route path="/account">
-              <Account />
-            </Route>
-            <Route path="/token/:address">
-              <Token />
-            </Route>
-          </Switch>
-        </div>
-      </ApolloProvider>
-    </AccountProvider>
-  </Router>
-));
-
-class MainScreen extends Component {
-  render() {
-    return (
-      <Provider store={store}>
-        <App />
-      </Provider>
-    );
-  }
-}
-
-ReactDOM.render(<MainScreen />, document.getElementById("container"));
+ReactDOM.render(
+  <Provider store={store}>
+    <ApolloProvider client={sushiGraphClient}>
+      <AuthProvider>
+        <AccountProvider>
+          <App />
+        </AccountProvider>
+      </AuthProvider>
+    </ApolloProvider>
+  </Provider>,
+  document.getElementById("container")
+);

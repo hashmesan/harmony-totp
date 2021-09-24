@@ -7,8 +7,10 @@ const BundleAnalyzerPlugin =
 
 module.exports = {
   devServer: {
-    //contentBase: path.join(__dirname, "public"),
     compress: false,
+    historyApiFallback: true,
+    contentBase: "./",
+    hot: true,
   },
   node: {
     fs: "empty",
@@ -55,6 +57,19 @@ module.exports = {
           },
         },
       },
+      {
+        test: /\.(jpg|png|gif|svg)$/,
+        use: [
+          {
+            loader: "url-loader",
+            options: {
+              limit: 1000000,
+              fallback: "file-loader",
+              name: "images/[name].[hash].[ext]",
+            },
+          },
+        ],
+      },
     ],
   },
   optimization: {
@@ -65,8 +80,10 @@ module.exports = {
     worker: ["@babel/polyfill", "./src/worker/generate.js"],
   },
   output: {
-    filename: "[name].[contenthash].js",
-    path: path.resolve(__dirname, "dist"),
+    filename: "[name].[hash].js",
+    path: path.join(__dirname, "public"),
+    //path: path.resolve(__dirname, "dist"),
+    publicPath: "/",
   },
   resolve: {
     extensions: [".tsx", ".ts", ".js"],

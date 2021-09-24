@@ -11,7 +11,10 @@ import {
   getLocalWallet,
   setLocalWallet,
 } from "../../config";
-import { SmartVaultContext, SmartVaultConsumer } from "../smartvault_provider";
+import {
+  SmartVaultContext,
+  SmartVaultConsumer,
+} from "../../context/SmartvaultContext";
 const ethers = require("ethers");
 
 var StyledOTPContainer = styled.div`

@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
-import { SmartVaultContext, SmartVaultConsumer } from "../smartvault_provider";
+import {
+  SmartVaultContext,
+  SmartVaultConsumer,
+} from "../../context/SmartvaultContext";
 import { connect } from "redux-zero/react";
 import actions from "../../redux/actions";
 
@@ -16,7 +19,10 @@ const Transactions = (props) => {
       <hr />
       <div className="row">
         <div className="col-3">
-          <p className="text-no-bank-primary" style={{ overflowWrap: "anywhere" }}>
+          <p
+            className="text-no-bank-primary"
+            style={{ overflowWrap: "anywhere" }}
+          >
             24.08.21
           </p>
         </div>
@@ -24,7 +30,9 @@ const Transactions = (props) => {
           <div className="d-flex justify-content-between">
             <div className="ms-n3">
               <span className="text-no-bank-primary">noGold</span>
-              <span className="ms-2 font-sm text-no-bank-primary bg-no-bank-grayscale-titanium  rounded-pill px-3 py-1">stablecoin</span>
+              <span className="ms-2 font-sm text-no-bank-primary bg-no-bank-grayscale-titanium  rounded-pill px-3 py-1">
+                stablecoin
+              </span>
             </div>
             <div>
               <span className="text-no-bank-primary">41</span>
@@ -32,7 +40,9 @@ const Transactions = (props) => {
             </div>
           </div>
           <div className="d-flex justify-content-between">
-            <div className="text-no-bank-grayscale-iron text-wrap ms-n3">UBS Personal Account</div>
+            <div className="text-no-bank-grayscale-iron text-wrap ms-n3">
+              UBS Personal Account
+            </div>
             <div>
               <span className="text-no-bank-grayscale-iron">-73’734.40</span>
               <span className="ms-2 text-no-bank-grayscale-iron">CHF</span>

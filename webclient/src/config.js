@@ -10,6 +10,7 @@ const CONFIG = {
   },
   testnet0: {
     ENV: "testnet0",
+    //API_URL: "https://api.smartvault.one:8443/",
     API_URL: "https://api.smartvault.one:8443/",
     EXPLORER_URL: "https://h.api.explorer.pops.one/v0/shard/0",
     RPC_URL: "https://api.s0.b.hmny.io",

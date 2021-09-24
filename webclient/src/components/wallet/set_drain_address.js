@@ -1,7 +1,10 @@
 import React, { Component } from "react";
 const { toBech32, fromBech32 } = require("@harmony-js/crypto");
 const web3utils = require("web3-utils");
-import { SmartVaultContext, SmartVaultConsumer } from "../smartvault_provider";
+import {
+  SmartVaultContext,
+  SmartVaultConsumer,
+} from "../../context/SmartvaultContext";
 import RelayerClient from "../../../../lib/relayer_client";
 import Notifications, { notify } from "react-notify-toast";
 

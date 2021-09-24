@@ -4,7 +4,10 @@ const ethers = require("ethers");
 const web3utils = require("web3-utils");
 import { connect } from "redux-zero/react";
 import actions from "../../redux/actions";
-import { SmartVaultContext, SmartVaultConsumer } from "../smartvault_provider";
+import {
+  SmartVaultContext,
+  SmartVaultConsumer,
+} from "../../context/SmartvaultContext";
 
 class ChooseName extends Component {
   constructor(props) {

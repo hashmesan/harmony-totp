@@ -5,6 +5,12 @@ import styled from "@emotion/styled";
 
 import actions from "../redux/actions";
 
+import LandingMockup from "../../public/landing_mockup.svg";
+import WalletSteffi from "../../public/wallet_steffi.svg";
+import CompassSteffi from "../../public/compass_steffi.svg";
+import SafeSteffi from "../../public/safe_steffi.svg";
+import LogoWhite from "../../public/logo_no_white.svg";
+
 class Landing extends Component {
   constructor(props) {
     super(props);
@@ -40,10 +46,7 @@ class Landing extends Component {
               </Link>
             </div>
             <div className="col-md-6">
-              <img
-                src="public/landing_mockup.svg"
-                className="img-fluid w-100"
-              />
+              <img src={LandingMockup} className="img-fluid w-100" />
             </div>
           </div>
           <div className="row p-3 bg-no-bank-grayscale-platin ">
@@ -56,7 +59,7 @@ class Landing extends Component {
               <div className="col-md-4 px-3 pt-5">
                 <div className="card bg-no-bank-grayscale-platin border-0">
                   <img
-                    src="public/wallet_steffi.svg"
+                    src={WalletSteffi}
                     className="card-img-top thumbnail image-fluid mx-auto"
                     style={{ maxHeight: "80px" }}
                     alt="..."
@@ -75,7 +78,7 @@ class Landing extends Component {
               <div className="col-md-4 px-3 pt-5">
                 <div className="card bg-no-bank-grayscale-platin border-0">
                   <img
-                    src="public/compass_steffi.svg"
+                    src={CompassSteffi}
                     className="card-img-top  mx-auto"
                     style={{ maxHeight: "80px" }}
                     alt="..."
@@ -96,7 +99,7 @@ class Landing extends Component {
               <div className="col-md-4 px-3 pt-5">
                 <div className="card bg-no-bank-grayscale-platin border-0">
                   <img
-                    src="public/safe_steffi.svg"
+                    src={SafeSteffi}
                     className="card-img-top mx-auto"
                     style={{ maxHeight: "80px" }}
                     alt="..."
@@ -119,11 +122,7 @@ class Landing extends Component {
           <div className="container-fluid d-flex align-items-center justify-content-between">
             <div>
               <Link to="/" className="navbar-brand m-0">
-                <img
-                  src="public/logo_no_white.svg"
-                  alt=""
-                  className="img-fluid m-1 h-75"
-                />
+                <img src={LogoWhite} alt="" className="img-fluid m-1 h-75" />
               </Link>
             </div>
             <div className="d-flex align-items-center justify-content-between">

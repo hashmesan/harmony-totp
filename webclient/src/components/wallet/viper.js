@@ -6,7 +6,10 @@ import { getLocalWallet } from "../../config";
 import RelayerClient from "../../../../lib/relayer_client";
 import { CONFIG } from "../../config";
 import axios from "axios";
-import { SmartVaultContext, SmartVaultConsumer } from "../smartvault_provider";
+import {
+  SmartVaultContext,
+  SmartVaultConsumer,
+} from "../../context/SmartvaultContext";
 import { getBestAmountOut, getBestAmountIn, swapToken } from "./viper_helper";
 const web3utils = require("web3-utils");
 import TokenSelect, { NativeToken, default_list } from "./token_select";

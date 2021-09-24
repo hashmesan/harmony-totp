@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
-import { SmartVaultContext, SmartVaultConsumer } from "../smartvault_provider";
+import {
+  SmartVaultContext,
+  SmartVaultConsumer,
+} from "../../context/SmartvaultContext";
 import { connect } from "redux-zero/react";
 import actions from "../../redux/actions";
 const web3utils = require("web3-utils");
@@ -52,7 +55,8 @@ const Positions = (props) => {
   if (data) {
     const yesterdayONEPrice = data.token.dayData[1].priceUSD;
 
-    const priceONEChange24 = ((props.ONElatestPrice - yesterdayONEPrice) / yesterdayONEPrice) * 100;
+    const priceONEChange24 =
+      ((props.ONElatestPrice - yesterdayONEPrice) / yesterdayONEPrice) * 100;
     priceONEChangeO24ForUser = Math.round(priceONEChange24 * 100) / 100;
   }
 
@@ -80,7 +84,8 @@ const Positions = (props) => {
             <td></td>
             <td>{priceONEChangeO24ForUser} %</td>
           </tr>
-          {holdingTokensInfo && holdingTokensInfo.map((token) => <TokenRecord address={token} />)}
+          {holdingTokensInfo &&
+            holdingTokensInfo.map((token) => <TokenRecord address={token} />)}
         </tbody>
       </table>
     </div>

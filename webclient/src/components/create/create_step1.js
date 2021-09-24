@@ -3,7 +3,10 @@ import { withRouter } from "react-router-dom";
 const web3utils = require("web3-utils");
 import { connect } from "redux-zero/react";
 import actions from "../../redux/actions";
-import { SmartVaultContext, SmartVaultConsumer } from "../smartvault_provider";
+import {
+  SmartVaultContext,
+  SmartVaultConsumer,
+} from "../../context/SmartvaultContext";
 
 class ChooseName extends Component {
   constructor(props) {
@@ -15,7 +18,7 @@ class ChooseName extends Component {
       showCost: false,
       dailyLimit: 10000,
       drainAddress: "",
-    
+
       //R Bank user data
       password: "",
       email: "",
@@ -37,8 +40,6 @@ class ChooseName extends Component {
 
   // check if name is valid
   validate(e) {
-    console.log(this, e);
-
     var self = this;
     self.setState({ busy: true });
     this.context.smartvault

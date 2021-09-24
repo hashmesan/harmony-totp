@@ -6,11 +6,15 @@ const web3utils = require("web3-utils");
 
 //import { useAuth } from "../../context/AuthContext";
 
-import { SmartVaultContext } from "../smartvault_provider";
+import { SmartVaultContext } from "../../context/SmartvaultContext";
+import { useAuthState } from "../../context/FirebaseAuthContext";
 
 import actions from "../../redux/actions";
 
-const Step5 = ({ user }) => {
+import PaypalLogo from "../../../public/paypal.svg";
+import AppleGoogleLogo from "../../../public/apple_google.svg";
+
+const Step5 = () => {
   const [balance, setBalance] = useState(0);
 
   const [createFee, setCreateFee] = useState(0);
@@ -22,21 +26,25 @@ const Step5 = ({ user }) => {
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState("");
 
-  //const { signup } = useAuth();
   const { smartvault } = useContext(SmartVaultContext);
+  const { user } = useAuthState();
 
   const checkBalance = async () => {
     const depositInfo = await smartvault.getDepositInfo();
+    const balance = await smartvault.harmonyClient.getBalance(
+      depositInfo.walletAddress
+    );
+    console.log("state: ", depositInfo.walletAddress);
+
     setCreateFee(depositInfo.createFee);
     setRentPrice(depositInfo.rentPrice);
     setTotalFee(depositInfo.totalFee);
     setWalletAddress(depositInfo.walletAddress);
-
-    const balance = await smartvault.harmonyClient.getBalance(walletAddress);
     setBalance(balance);
-    console.log("balance: ", balance);
 
-    const submit = await smartvault.submitWallet();
+    const submit = await smartvault.submitWallet((status) =>
+      console.log("status: ", status)
+    );
   };
 
   const handleClick = () => {
@@ -45,9 +53,9 @@ const Step5 = ({ user }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    //signup("tamas@test.com", "somePassword");
   };
 
+  console.log(user, smartvault);
   return (
     <div className="bg-white align-content-center border-top border-no-bank-grayscale-titanium justify-content-start pt-5 pe-5 ps-4 h-100">
       <div className="d-flex flex-column mb-5 ps-2 pt-3 pe-3">
@@ -101,7 +109,7 @@ const Step5 = ({ user }) => {
           <hr />
           {/* Connect Paypal Account */}
           <div className="d-flex align-items-center justify-content-between">
-            <img src="public/paypal.svg" alt="" />
+            <img src={PaypalLogo} alt="" />
             <div>
               <div className="h6 fw-bold">Connect Paypal Account</div>
               <div className="fs-6">
@@ -121,7 +129,7 @@ const Step5 = ({ user }) => {
           <hr />
           {/* Connect Google / Apple Pay */}
           <div className="d-flex align-items-center justify-content-between">
-            <img src="public/apple_google.svg" alt="" />{" "}
+            <img src={AppleGoogleLogo} alt="" />{" "}
             <div>
               <div className="h6 fw-bold">Connect Google / Apple Pay</div>
               <div className="fs-6">
@@ -189,6 +197,13 @@ const Step5 = ({ user }) => {
             </div>
           </div>
         </div>
+        <button
+          type="button"
+          onClick={checkBalance}
+          className="btn rounded-pill btn-no-bank-highlight text-rb-bank-primary"
+        >
+          TEST
+        </button>
       </div>
       <div className="d-flex justify-content-end pe-5 pb-3 fixed-bottom">
         <div className="pe-3 pb-3">
@@ -207,5 +222,5 @@ const Step5 = ({ user }) => {
   );
 };
 
-const mapToProps = ({ user }) => ({ user });
+const mapToProps = () => ({});
 export default connect(mapToProps, actions)(Step5);
