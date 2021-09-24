@@ -35,6 +35,8 @@ const initialState = {
     error: "",
     rentPrice: null,
   },
+  ONElatestPrice: null,
+  holdingTokens: []
 };
 
 const store = createStore(initialState);

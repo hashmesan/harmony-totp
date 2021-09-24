@@ -1,0 +1,36 @@
+// Bars can be individually coloured with 'color' prop.
+// const green = 'rgba(75, 255, 181, 0.4)';
+// const red = 'rgba(255, 73, 118, 0.4)';
+
+export const pnlData = [
+  { time: "2019-04-29", value: 194325 },
+  { time: "2019-04-30", value: 214325 },
+  { time: "2019-05-01", value: 244745 },
+  { time: "2019-05-02", value: 274245 },
+  { time: "2019-05-03", value: 224425 },
+  { time: "2019-05-04", value: 234325 },
+  { time: "2019-05-05", value: 254625 },
+  { time: "2019-05-06", value: 274385 },
+  { time: "2019-05-07", value: 273325 },
+  { time: "2019-05-08", value: 284325 },
+  { time: "2019-05-09", value: 257325 },
+  { time: "2019-05-10", value: 229325 },
+  { time: "2019-05-11", value: 244325 },
+  { time: "2019-05-12", value: 274385 },
+  { time: "2019-05-13", value: 284255 },
+  { time: "2019-05-14", value: 294365 },
+  { time: "2019-05-15", value: 264455 },
+  { time: "2019-05-16", value: 264325 },
+  { time: "2019-05-17", value: 274325 },
+  { time: "2019-05-18", value: 286725 },
+  { time: "2019-05-19", value: 284325 },
+  { time: "2019-05-20", value: 294325 },
+  { time: "2019-05-21", value: 294325 },
+  { time: "2019-05-22", value: 298325 },
+  { time: "2019-05-23", value: 291325 },
+  { time: "2019-05-24", value: 301325 },
+  { time: "2019-05-25", value: 314325 },
+  { time: "2019-05-26", value: 320234 },
+  { time: "2019-05-27", value: 323234 },
+  { time: "2019-05-28", value: 301739 },
+];

@@ -1,12 +1,7 @@
 import React, { Component } from "react";
 var ReactDOM = require("react-dom");
 
-import {
-  HashRouter as Router,
-  Switch,
-  Route,
-  Redirect,
-} from "react-router-dom";
+import { HashRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 
 import "./custom.scss";
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -25,6 +20,9 @@ import portfolio from "./components/portfolio";
 
 import AccountProvider from "./components/smartvault_provider";
 import Portfolio from "./components/portfolio/index";
+import Token from "./components/portfolio/token";
+import Account from "./components/portfolio/account";
+import { ApolloClient, InMemoryCache, ApolloProvider, useQuery, gql } from "@apollo/client";
 
 Number.prototype.toFixedNoRounding = function (n) {
   const reg = new RegExp("^-?\\d+(?:\\.\\d{0," + n + "})?", "g");
@@ -38,40 +36,49 @@ Number.prototype.toFixedNoRounding = function (n) {
   return b > 0 ? a + "0".repeat(b) : a;
 };
 
+const sushiGraphClient = new ApolloClient({
+  uri: "https://sushi.graph.t.hmny.io/subgraphs/name/sushiswap/harmony-exchange",
+  cache: new InMemoryCache(),
+});
+
 const mapToProps = ({ environment }) => ({ environment });
 const App = connect(mapToProps)(({ environment }) => (
   <Router>
     <AccountProvider>
-      <div className="container-fluid bg-white p-0">
-        <Header />
-        <Switch>
-          <Route exact path="/">
-            {getLocalWallet(environment, false) ? (
-              <Redirect to="/portfolio" />
-            ) : (
-              <Redirect to="/landing" />
-            )}
-          </Route>
-          <Route path="/landing">
-            <Landing />
-          </Route>
-          <Route path="/create">
-            <Create />
-          </Route>
-          <Route path="/onboard">
-            <Onboard />
-          </Route>
-          <Route path="/wallet">
-            <Wallet />
-          </Route>
-          <Route path="/recover">
-            <Recover />
-          </Route>
-          <Route path="/portfolio">
-            <Portfolio />
-          </Route>
-        </Switch>
-      </div>
+      <ApolloProvider client={sushiGraphClient}>
+        <div className="container-fluid bg-white p-0">
+          <Header />
+          <Switch>
+            <Route exact path="/">
+              {getLocalWallet(environment, false) ? <Redirect to="/portfolio" /> : <Redirect to="/landing" />}
+            </Route>
+            <Route path="/landing">
+              <Landing />
+            </Route>
+            <Route path="/create">
+              <Create />
+            </Route>
+            <Route path="/onboard">
+              <Onboard />
+            </Route>
+            <Route path="/wallet">
+              <Wallet />
+            </Route>
+            <Route path="/recover">
+              <Recover />
+            </Route>
+            <Route path="/portfolio">
+              <Portfolio />
+            </Route>
+            <Route path="/account">
+              <Account />
+            </Route>
+            <Route path="/token/:address">
+              <Token />
+            </Route>
+          </Switch>
+        </div>
+      </ApolloProvider>
     </AccountProvider>
   </Router>
 ));

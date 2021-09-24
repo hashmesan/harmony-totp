@@ -1,20 +1,13 @@
 import React, { useRef, useEffect } from "react";
 import { createChart, CrosshairMode, LineStyle } from "lightweight-charts";
 
-// TODO: Switch to real data
-import { priceData } from "./dataMock/priceData";
-import { volumeData } from "./dataMock/volumeData";
-
-const SimpleChart = () => {
+const SimpleChart = (props) => {
   const chartContainerRef = useRef();
   const chart = useRef();
   const resizeObserver = useRef();
 
   useEffect(() => {
-    const priceDataFiltered = priceData.map(({ time, close }) => ({
-      time: time,
-      value: close,
-    }));
+    console.log(props);
 
     chart.current = createChart(chartContainerRef.current, {
       width: chartContainerRef.current.clientWidth,
@@ -28,14 +21,14 @@ const SimpleChart = () => {
           visible: false,
         },
         horzLines: {
-          color: "#334158",
+          color: "#92918F",
           style: LineStyle.SparseDotted,
           visible: true,
         },
       },
 
       priceScale: {
-        borderColor: "#485c7b",
+        borderVisible: false,
       },
       timeScale: {
         borderColor: "#485c7b",
@@ -43,9 +36,10 @@ const SimpleChart = () => {
         fixLeftEdge: true,
         fixRightEdge: true,
       },
-      localization: {
-        priceFormatter: (price) => "$" + price,
-      },
+
+      // localization: {
+      //   priceFormatter: (price) => "$" + price,
+      // },
     });
 
     const areaSeries = chart.current.addAreaSeries({
@@ -55,7 +49,7 @@ const SimpleChart = () => {
       lineWidth: 2,
     });
 
-    areaSeries.setData(priceDataFiltered);
+    areaSeries.setData(props.priceData);
   }, []);
 
   // Resize chart on container resizes.

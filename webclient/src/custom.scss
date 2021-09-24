@@ -29,6 +29,10 @@ $no-bank-grayscale-iron: #92918f;
 $no-bank-grayscale-slate: #322f31;
 
 $no-bank-secondary-yellow-green: #bdd62f;
+$no-bank-secondary-lemon: #f0f729;
+$no-bank-secondary-turquoise-green: #b4e1b9;
+
+$enable-negative-margins: true;
 
 $custom-colors: (
   "no-bank-primary": $no-bank-primary,
@@ -43,7 +47,22 @@ $custom-colors: (
   "no-bank-grayscale-iron": $no-bank-grayscale-iron,
   "no-bank-grayscale-slate": $no-bank-grayscale-slate,
   "no-bank-secondary-yellow-green": $no-bank-secondary-yellow-green,
+  "no-bank-secondary-lemon": $no-bank-secondary-lemon,
+  "no-bank-secondary-turquoise-green": $no-bank-secondary-turquoise-green,
 );
+
+.font-sm {
+  font-size: 12px;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.cancel-col-padding {
+  margin-left: -0.8rem;
+  margin-right: -0.8rem;
+}
 
 // Helpers import
 @import "~bootstrap/scss/functions";
@@ -53,12 +72,7 @@ $custom-colors: (
 $theme-colors: map-merge($custom-colors, $theme-colors);
 $theme-colors-rgb: map-loop($theme-colors, to-rgb, "$value");
 $utilities-colors: map-merge($utilities-colors, $theme-colors-rgb);
-$utilities-text-colors: map-loop(
-  $utilities-colors,
-  rgba-css-var,
-  "$key",
-  "text"
-);
+$utilities-text-colors: map-loop($utilities-colors, rgba-css-var, "$key", "text");
 $utilities-bg-colors: map-loop($utilities-colors, rgba-css-var, "$key", "bg");
 
 // New classes

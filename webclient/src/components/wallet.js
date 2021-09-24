@@ -20,6 +20,7 @@ import SendHRC20 from "./wallet/send_erc20";
 import SetDailyLimit from "./wallet/set_daily_limit";
 import SetDrainAddress from "./wallet/set_drain_address";
 import Upgrade from "./wallet/upgrade";
+
 import Assets from "./wallet/assets";
 import Dapps from "./wallet/dapps";
 import Viper from "./wallet/viper";
@@ -45,6 +46,7 @@ class Wallet extends Component {
     }
     componentDidMount() {
         this.loadHistory();
+        console.log(this.context.smartvault);
     }
 
     render() {
@@ -73,11 +75,12 @@ class Wallet extends Component {
                                 </div>
                             </div>
                         </div>
+
                         <div className="col-8 mt-5">
                             <Router>
                                 <Switch>
                                     <Route exact path="/wallet">
-                                        <Assets/>
+                                        <Assets/>           
                                         <Transactions data={this.state.transactionsData}/>                                    
                                     </Route>
                                     <Route exact path="/wallet/dapps">

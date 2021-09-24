@@ -1,39 +1,32 @@
 import React, { useRef, useEffect } from "react";
 
-const portfolioValue = 301739;
-const dailyPnL = -1294;
-const unrealizedPnL = 31851;
 const baseCCY = " CHF";
 
-const ChartHeader = () => {
+const ChartHeader = (props) => {
   return (
     <div>
       <div className="row">
         <div className="col">
-          <div className="row fs-6 text-no-bank-grayscale-iron">
-            Total portfolio value
-          </div>
+          <div className="row fs-6 text-no-bank-grayscale-iron">Total portfolio value</div>
           <div className="row fs-4 text-no-bank-primary">
-            {portfolioValue.toLocaleString()} {baseCCY}
+            {props.portfolioValue.toLocaleString()} {baseCCY}
           </div>
         </div>
         <div className="col">
-          <div className="row fs-6 text-no-bank-grayscale-iron">Daily P&L</div>
-          <div className="row">
-            <div className="col fs-4 text-danger">
-              {" "}
-              {dailyPnL.toLocaleString()}
-              {baseCCY}
+          <div className="fs-6 text-no-bank-grayscale-iron">Daily P&L</div>
+
+          <div className="fs-4 text-danger">
+            <span>{props.dailyPnL.toLocaleString()}</span>
+            <span>{baseCCY}</span>
+            <span>
               <i className="bi bi-caret-down-fill text-danger p-1" />
-            </div>
+            </span>
           </div>
         </div>
         <div className="col">
-          <div className="row fs-6 text-no-bank-grayscale-iron">
-            Unrealized P&L
-          </div>
+          <div className="row fs-6 text-no-bank-grayscale-iron">Unrealized P&L</div>
           <div className="row fs-4 text-success">
-            {unrealizedPnL.toLocaleString()}
+            {props.unrealizedPnL.toLocaleString()}
             {baseCCY}
           </div>
         </div>

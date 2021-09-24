@@ -33,6 +33,17 @@ const actions = (store) => ({
       guardians: [...state.guardians, value],
     };
   },
+
+  setONE: (state, value) => ({
+    ONElatestPrice: value,
+  }),
+
+  setHoldingTokens: (state, value) => {
+    return {
+      ...state,
+      holdingTokens: [...state.holdingTokens, value],
+    };
+  },
 });
 
 export default actions;
