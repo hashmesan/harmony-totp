@@ -179,7 +179,7 @@ const Token = (props) => {
           <div className="d-flex align-items-center">
             <div className="fs-4 me-2 text-no-bank-grayscale-iron fw-bold">{name}</div>
             {/* temporary */}
-            {address == "0x0e80905676226159cc3ff62b1876c907c91f7395" ? <TokenCategory category={"stablecoin"} /> : <TokenCategory category={"token"} />}
+            {address == "0x04d6e90e42d0543b45b3d5a0aded6be3022286bd" ? <TokenCategory category={"stablecoin"} /> : <TokenCategory category={"token"} />}
           </div>
           <button type="button" className="btn rounded-pill btn-no-bank-highlight text-rb-bank-primary px-5 py-2">
             Trade

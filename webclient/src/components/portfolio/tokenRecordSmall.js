@@ -84,7 +84,8 @@ const TokenRecordSmall = (props) => {
       <td>
         <div className="d-flex  align-items-center">
           <span className="me-3">{symbol}</span>
-          <TokenCategory category={"token"} />
+          {/* temporary */}
+          {props.address == "0x04d6e90e42d0543b45b3d5a0aded6be3022286bd" ? <TokenCategory category={"stablecoin"} /> : <TokenCategory category={"token"} />}
           <i className="bi bi-star-fill ms-3"></i>
         </div>
       </td>
