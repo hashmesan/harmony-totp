@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { Switch, Route, useRouteMatch } from "react-router-dom";
+import { getAnalytics, logEvent } from "firebase/analytics";
 
 import { connect } from "redux-zero/react";
 import actions from "../../redux/actions";
@@ -10,11 +11,13 @@ import OnboardingSteps from "./onboardingSteps";
 import Step1 from "./step1";
 
 const Onboarding = ({ setLocation }) => {
-  let { path, url } = useRouteMatch();
+  const { path, url } = useRouteMatch();
+  const analytics = getAnalytics();
 
   useEffect(() => {
     setLocation("Onboarding");
-  });
+    logEvent(analytics, "Onboarding started");
+  }, []);
 
   return (
     <div className="container-fluid p-0 min-vh-100">

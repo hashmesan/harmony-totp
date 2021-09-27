@@ -4,11 +4,13 @@ import { Link } from "react-router-dom";
 
 import actions from "../../redux/actions";
 import { getAuth } from "firebase/auth";
+import { getAnalytics, logEvent } from "firebase/analytics";
 
 const Step2 = ({ user, setOnboardingStep }) => {
   const [emailValidated, setEmailValidated] = useState(false);
   const { userEmail } = user;
   const auth = getAuth();
+  const analytics = getAnalytics();
 
   useEffect(() => {
     const checkEmailValidity = () => {
@@ -27,6 +29,10 @@ const Step2 = ({ user, setOnboardingStep }) => {
 
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    logEvent(analytics, "onboarding", { step: 2 });
+  });
 
   const handleEmail = () => {
     console.log("handling email");
