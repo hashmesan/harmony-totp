@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import { connect } from "redux-zero/react";
 const web3utils = require("web3-utils");
 const { toBech32, fromBech32 } = require("@harmony-js/crypto");
+import { Link } from "react-router-dom";
 
 import { SmartVaultContext } from "../../context/SmartvaultContext";
 
@@ -505,13 +506,15 @@ const Step4 = ({
       </div>
       <div className="d-flex justify-content-end pe-5 pb-3 fixed-bottom">
         <div className="pe-3 pb-3">
-          <button
-            type="button"
-            onClick={handleClick}
-            className="btn rounded-pill btn-no-bank-highlight text-rb-bank-primary"
-          >
-            Continue
-          </button>
+          <Link to="/onboard/5">
+            <button
+              type="button"
+              onClick={handleClick}
+              className="btn rounded-pill btn-no-bank-highlight text-rb-bank-primary"
+            >
+              Continue
+            </button>
+          </Link>
         </div>
       </div>
     </div>

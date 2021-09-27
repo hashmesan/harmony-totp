@@ -1,22 +1,38 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "redux-zero/react";
+import { Link } from "react-router-dom";
 
 import actions from "../../redux/actions";
-import { getAuth, isEmailVerified } from "firebase/auth";
+import { getAuth } from "firebase/auth";
+import { getAnalytics, logEvent } from "firebase/analytics";
 
 const Step2 = ({ user, setOnboardingStep }) => {
   const [emailValidated, setEmailValidated] = useState(false);
   const { userEmail } = user;
   const auth = getAuth();
+  const analytics = getAnalytics();
 
   useEffect(() => {
     const checkEmailValidity = () => {
-      auth.currentUser.reload();
-      auth.currentUser.emailVerified && setEmailValidated(true);
+      if (auth.currentUser != null) {
+        auth.currentUser.reload();
+        auth.currentUser.emailVerified && setEmailValidated(true);
+        console.log("checking email");
+      }
     };
 
-    setInterval(checkEmailValidity, 1000);
+    checkEmailValidity();
+
+    const interval = setInterval(() => {
+      checkEmailValidity();
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    logEvent(analytics, "onboarding", { step: 2 });
+  });
 
   const handleEmail = () => {
     console.log("handling email");
@@ -69,29 +85,33 @@ const Step2 = ({ user, setOnboardingStep }) => {
             )}
             <div className="d-flex justify-content-end pe-5 pb-3 fixed-bottom">
               <div className="pe-3 pb-3">
-                <button
-                  id="backButton"
-                  type="button"
-                  onClick={handleClick}
-                  //className="btn btn-no-bank-grayscale-silver text-white rounded-pill"
-                  className="btn rounded-pill btn-no-bank-white text-rb-bank-primary pe-4 me-1"
-                >
-                  Back
-                </button>
-                <button
-                  id="continueButton"
-                  type="button"
-                  onClick={handleClick}
-                  //className="btn btn-no-bank-grayscale-silver text-white rounded-pill"
-                  className={`btn rounded-pill ${
-                    emailValidated
-                      ? "btn-no-bank-highlight text-rb-bank-primary"
-                      : "btn-no-bank-grayscale-silver text-white"
-                  }`}
-                  disabled={!emailValidated && "disabled"}
-                >
-                  Continue
-                </button>
+                <Link to="/onboard/1">
+                  <button
+                    id="backButton"
+                    type="button"
+                    onClick={handleClick}
+                    //className="btn btn-no-bank-grayscale-silver text-white rounded-pill"
+                    className="btn rounded-pill btn-no-bank-white text-rb-bank-primary pe-4 me-1"
+                  >
+                    Back
+                  </button>
+                </Link>
+                <Link to="/onboard/3">
+                  <button
+                    id="continueButton"
+                    type="button"
+                    onClick={handleClick}
+                    //className="btn btn-no-bank-grayscale-silver text-white rounded-pill"
+                    className={`btn rounded-pill ${
+                      emailValidated
+                        ? "btn-no-bank-highlight text-rb-bank-primary"
+                        : "btn-no-bank-grayscale-silver text-white"
+                    }`}
+                    disabled={!emailValidated && "disabled"}
+                  >
+                    Continue
+                  </button>
+                </Link>
               </div>
             </div>
           </div>

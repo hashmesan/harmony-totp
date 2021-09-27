@@ -36,8 +36,8 @@ const NavElement = ({ onboardingStep, setOnboardingStep, nr, text, title }) => {
     <div>
       <div
         className="d-flex align-items-start"
-        style={{ cursor: "pointer" }}
-        onClick={handleClick}
+        //style={{ cursor: "pointer" }}
+        //onClick={handleClick}
       >
         <Number filled={isActive && "filled"} className="fs-6 flex-shrink-0">
           {nr}

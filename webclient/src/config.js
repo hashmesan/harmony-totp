@@ -11,7 +11,7 @@ const CONFIG = {
   testnet0: {
     ENV: "testnet0",
     //API_URL: "https://api.smartvault.one:8443/",
-    API_URL: "https://api.smartvault.one:8443/",
+    API_URL: "https://no-bank.herokuapp.com/",
     EXPLORER_URL: "https://h.api.explorer.pops.one/v0/shard/0",
     RPC_URL: "https://api.s0.b.hmny.io",
     ENS_ADDRESS: "0x51766DEF619112F76dF1FD7C361e0C6F47eE19de",
@@ -20,7 +20,7 @@ const CONFIG = {
   },
   testnet3: {
     ENV: "testnet3",
-    API_URL: "https://api.smartvault.one:8443/",
+    API_URL: "https://api.smartvault.one:8443",
     EXPLORER_URL: "https://explorer.pops.one:8888",
     RPC_URL: "https://api.s3.b.hmny.io",
     ENS_ADDRESS: "0x4fb1C434101ced0773a3bc77D541B3465023639f",
