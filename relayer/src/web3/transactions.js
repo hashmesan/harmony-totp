@@ -65,8 +65,7 @@ class Transactions {
     console.log("createWallet count: ", count);
 
     const factory = await this.getWalletFactory();
-    console.log("createWallet factory: ", factory);
-
+    console.log("creating Wallet with Factory");
     var tx = await factory.createWallet(config, {
       from: this.defaultAddress,
       gas: 712388,
