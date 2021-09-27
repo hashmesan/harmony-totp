@@ -3,7 +3,6 @@ import { connect } from "redux-zero/react";
 const web3utils = require("web3-utils");
 const { toBech32, fromBech32 } = require("@harmony-js/crypto");
 import { Link } from "react-router-dom";
-
 import { SmartVaultContext } from "../../context/SmartvaultContext";
 
 import actions from "../../redux/actions";

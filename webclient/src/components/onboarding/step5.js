@@ -1,12 +1,11 @@
 import React, { useContext, useState, useEffect } from "react";
 import { connect } from "redux-zero/react";
 import { Link } from "react-router-dom";
-import { Modal } from "bootstrap";
 const web3utils = require("web3-utils");
 const { toBech32, fromBech32 } = require("@harmony-js/crypto");
 
 import { SmartVaultContext } from "../../context/SmartvaultContext";
-import { getApiUrl, getStorageKey, setLocalWallet } from "../../config";
+import { getStorageKey, setLocalWallet } from "../../config";
 
 import actions from "../../redux/actions";
 

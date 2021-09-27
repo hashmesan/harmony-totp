@@ -2,8 +2,6 @@ const path = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 require("@babel/polyfill");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const BundleAnalyzerPlugin =
-  require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
 module.exports = {
   devServer: {
@@ -93,7 +91,6 @@ module.exports = {
       template: "./src/index.html",
       minify: false,
     }),
-    new BundleAnalyzerPlugin(),
     new CopyWebpackPlugin([{ from: "./public", to: "./public" }]),
   ],
 };

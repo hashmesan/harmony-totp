@@ -3,8 +3,11 @@ import { connect } from "redux-zero/react";
 import { Link } from "react-router-dom";
 
 import actions from "../../redux/actions";
-import { getAuth } from "firebase/auth";
+import { getAuth, sendEmailVerification } from "firebase/auth";
 import { getAnalytics, logEvent } from "firebase/analytics";
+
+import EmailWait from "../../../public/email_wait.svg";
+import EmailSuccess from "../../../public/email_success.svg";
 
 const Step2 = ({ user, setOnboardingStep }) => {
   const [emailValidated, setEmailValidated] = useState(false);
@@ -35,6 +38,10 @@ const Step2 = ({ user, setOnboardingStep }) => {
   });
 
   const handleEmail = () => {
+    sendEmailVerification(auth.currentUser, {
+      url: window.location.href,
+      handleCodeInApp: true,
+    });
     console.log("handling email");
   };
 
@@ -58,29 +65,52 @@ const Step2 = ({ user, setOnboardingStep }) => {
 
           <div className="fs-1 text-no-bank-primary">Verify email address</div>
           <div className="pt-5">
-            {emailValidated && <div>Thank you for validating your email</div>}
+            {emailValidated && (
+              <div>
+                <span>
+                  Your email has been successfully validated. You are now ready
+                  to continue.
+                </span>
+                <div className="d-flex justify-content-center">
+                  <img
+                    src={EmailSuccess}
+                    height="96"
+                    width="120"
+                    className="m-5"
+                    alt=""
+                  />
+                  <span className="text-no-bank-grayscale-iron">
+                    Email successfully verified.
+                  </span>
+                </div>
+              </div>
+            )}
             {!emailValidated && (
               <div>
-                <div className=" mb-4">
-                  Please verify your email using the link we just sent you at{" "}
-                  <span className="fw-bold">{userEmail}</span>
+                <div className=" ">
+                  Please verify your email using the link we just sent you.
                 </div>
 
-                <div className="spinner-grow" role="status">
-                  <span className="visually-hidden">Loading...</span>
-                </div>
-
-                <p className="mt-5">
+                <p className="">
                   <span className="text-no-bank-grayscale-iron">
                     Didn’t receive an email?{" "}
-                    <span
-                      className="fw-bold text-no-bank-primary"
+                    <button
+                      className="btn fw-bold text-no-bank-primary text-decoration-none"
                       onClick={handleEmail}
                     >
                       Resend
-                    </span>
+                    </button>
                   </span>
                 </p>
+                <div className="d-flex justify-content-center">
+                  <img
+                    src={EmailWait}
+                    height="96"
+                    width="120"
+                    className="m-5"
+                    alt=""
+                  />
+                </div>
               </div>
             )}
             <div className="d-flex justify-content-end pe-5 pb-3 fixed-bottom">
