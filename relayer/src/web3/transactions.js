@@ -57,16 +57,23 @@ class Transactions {
   }
 
   async createWallet(config) {
+    console.log("createWallet config: ", config);
     var count = await new Web3(this.provider).eth.getTransactionCount(
       this.defaultAddress
     );
+    console.log("createWallet defaultAddress: ", this.defaultAddress);
+    console.log("createWallet count: ", count);
+
     const factory = await this.getWalletFactory();
-    console.log("sent=", config);
+    console.log("createWallet factory: ", factory);
+
     var tx = await factory.createWallet(config, {
       from: this.defaultAddress,
       gas: 712388,
       nonce: count,
     });
+    console.log("createWallet tx: ", tx);
+
     return { tx: tx.tx };
   }
 
