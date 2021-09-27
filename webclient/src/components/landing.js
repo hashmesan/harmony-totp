@@ -11,7 +11,7 @@ import CompassSteffi from "../../public/compass_steffi.svg";
 import SafeSteffi from "../../public/safe_steffi.svg";
 import LogoWhite from "../../public/logo_no_white.svg";
 
-const Landing = () => {
+const Landing = ({ setLocation }) => {
   const analytics = getAnalytics();
 
   useEffect(() => {
