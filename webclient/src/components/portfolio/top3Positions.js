@@ -3,8 +3,7 @@ import { connect } from "redux-zero/react";
 import actions from "../../redux/actions";
 import { useHistory, useRouteMatch } from "react-router-dom";
 
-import TokenCategory from "./tokenCategory";
-import TokenRecordSmall from "./TokenRecordSmall";
+import TokenRecordSmall from "./tokenRecordSmall";
 
 import AccountProvider, { SmartVaultContext } from "../../context/SmartvaultContext";
 
@@ -96,7 +95,7 @@ const Top3Positions = (props) => {
 
             {holdingTokensInfo &&
               holdingTokensInfo.map((tokenAddress) => (
-                <tr className="pointer" onClick={() => handleRowClick(tokenAddress)}>
+                <tr key={tokenAddress} className="pointer" onClick={() => handleRowClick(tokenAddress)}>
                   <TokenRecordSmall address={tokenAddress} />
                 </tr>
               ))}
