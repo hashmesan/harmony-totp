@@ -9,6 +9,8 @@ import {
   sendEmailVerification,
 } from "firebase/auth";
 
+import { Link } from "react-router-dom";
+
 import actions from "../../redux/actions";
 import { SmartVaultContext } from "../../context/SmartvaultContext";
 
@@ -30,11 +32,14 @@ class Step1 extends Component {
         error: "",
       },
       loading: null,
+      history: null,
+      url: null,
     };
   }
 
   componentDidMount() {
     this.checkValidity();
+    //this.setState({ history: useHistory() });
   }
 
   selectCountry = (value) => {
@@ -496,18 +501,20 @@ class Step1 extends Component {
 
         <div className="d-flex justify-content-end pe-5 pb-3 fixed-bottom">
           <div className="pe-3 pb-3">
-            <button
-              type="button"
-              onClick={this.handleClick}
-              className={`btn rounded-pill ${
-                validity.form
-                  ? "btn-no-bank-highlight text-rb-bank-primary"
-                  : "btn-no-bank-grayscale-silver text-white"
-              }`}
-              disabled={!validity.form && "disabled"}
-            >
-              Continue
-            </button>
+            <Link to="/onboard/2">
+              <button
+                type="button"
+                onClick={this.handleClick}
+                className={`btn rounded-pill ${
+                  validity.form
+                    ? "btn-no-bank-highlight text-rb-bank-primary"
+                    : "btn-no-bank-grayscale-silver text-white"
+                }`}
+                disabled={!validity.form && "disabled"}
+              >
+                Continue
+              </button>
+            </Link>
           </div>
         </div>
       </div>
