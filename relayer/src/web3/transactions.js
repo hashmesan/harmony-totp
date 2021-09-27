@@ -68,7 +68,7 @@ class Transactions {
     console.log("creating Wallet with Factory");
     var tx = await factory.createWallet(config, {
       from: this.defaultAddress,
-      gas: 712388,
+      gas: process.env.TRX_GAS,
       nonce: count,
     });
     console.log("createWallet tx: ", tx);
