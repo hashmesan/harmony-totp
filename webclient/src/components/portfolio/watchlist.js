@@ -1,14 +1,19 @@
 import React, { useState, useEffect, useContext } from "react";
-import {
-  SmartVaultContext,
-  SmartVaultConsumer,
-} from "../../context/SmartvaultContext";
+import { SmartVaultContext, SmartVaultConsumer } from "../../context/SmartvaultContext";
 import { connect } from "redux-zero/react";
 import actions from "../../redux/actions";
+import { useHistory, useRouteMatch } from "react-router-dom";
 
 import TokenCategory from "./tokenCategory";
 
 const Watchlist = (props) => {
+  const history = useHistory();
+  const { url } = useRouteMatch();
+
+  const handleRowClick = (address) => {
+    history.push(`/token/${address}`);
+  };
+
   return (
     <>
       <div className="d-flex align-items-center justify-content-between">
@@ -34,44 +39,44 @@ const Watchlist = (props) => {
             </tr>
           </thead>
           <tbody>
-            <tr>
+            <tr className="pointer" onClick={() => handleRowClick("0x268d6ff391b41b36a13b1693bd25f87fb4e4b392")}>
               <td>
                 <div className="d-flex  align-items-center">
-                  <span className="me-3">ADA</span>
+                  <span className="me-3">1ETH</span>
                   <TokenCategory category={"token"} />
                   <i className="bi bi-star-fill ms-3"></i>
                 </div>
               </td>
               <td>
-                <span className="text-no-bank-primary">2.19</span>
+                <span className="text-no-bank-primary">0.22</span>
                 <span className="ms-1 text-no-bank-grayscale-iron">CHF</span>
               </td>
               <td>
-                <span className="text-success">+2.3%</span>
+                <span className="text-danger">-3.24%</span>
               </td>
               <td>
-                <span className="text-no-bank-primary">4.3</span>
+                <span className="text-no-bank-primary">1.2</span>
                 <span className="ms-1 text-no-bank-grayscale-iron">bn</span>
                 <span className="ms-1 text-no-bank-grayscale-iron">CHF</span>
               </td>
             </tr>
-            <tr>
+            <tr className="pointer" onClick={() => handleRowClick("0x6c4387c4f570aa8cadcaffc5e73ecb3d0f8fc593")}>
               <td>
                 <div className="d-flex  align-items-center">
-                  <span className="me-3">USDC</span>
-                  <TokenCategory category={"stablecoin"} />
+                  <span className="me-3">1WBTC</span>
+                  <TokenCategory category={"coin"} />
                   <i className="bi bi-star-fill ms-3"></i>
                 </div>
               </td>
               <td>
-                <span className="text-no-bank-primary">0.92</span>
+                <span className="text-no-bank-primary">41353</span>
                 <span className="ms-1 text-no-bank-grayscale-iron">CHF</span>
               </td>
               <td>
-                <span className="text-danger">-0.003%</span>
+                <span className="text-danger">-1.24%</span>
               </td>
               <td>
-                <span className="text-no-bank-primary">2.9</span>
+                <span className="text-no-bank-primary">1.2</span>
                 <span className="ms-1 text-no-bank-grayscale-iron">bn</span>
                 <span className="ms-1 text-no-bank-grayscale-iron">CHF</span>
               </td>
@@ -133,7 +138,7 @@ const Watchlist = (props) => {
                 <span className="ms-1 text-no-bank-grayscale-iron">CHF</span>
               </td>
               <td>
-                <span className="text-success">-5.32%</span>
+                <span className="text-success">5.32%</span>
               </td>
               <td>
                 {" "}
