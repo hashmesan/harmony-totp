@@ -1,9 +1,8 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { connect } from "redux-zero/react";
 const web3utils = require("web3-utils");
 const { toBech32, fromBech32 } = require("@harmony-js/crypto");
 import { Link } from "react-router-dom";
-
 import { SmartVaultContext } from "../../context/SmartvaultContext";
 
 import actions from "../../redux/actions";
@@ -224,6 +223,10 @@ const Step4 = ({
   const { smartvault } = useContext(SmartVaultContext);
   const zero = "0x0000000000000000000000000000000000000000";
 
+  useEffect(() => {
+    setOnboardingStep(4);
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -287,6 +290,7 @@ const Step4 = ({
     });
   };
 
+  console.log("add guardian", AddFriend);
   return (
     <div className="bg-white align-content-center border-top border-no-bank-grayscale-titanium justify-content-start pt-5 pe-5 ps-4 h-100">
       <div className="d-flex mb-5 ps-2 pt-3 pe-3">

@@ -3,7 +3,9 @@ import { connect } from "redux-zero/react";
 
 const web3utils = require("web3-utils");
 
-import AccountProvider, { SmartVaultContext } from "../../context/SmartvaultContext";
+import AccountProvider, {
+  SmartVaultContext,
+} from "../../context/SmartvaultContext";
 
 import actions from "../../redux/actions";
 
@@ -64,11 +66,17 @@ const Token = (props) => {
       setSymbol(tokenInfo.symbol);
       setBalance(tokenInfo.balance);
 
-      const chainP = await smartvault.harmonyClient.getTokenPriceByChainlink(address, props.environment);
+      const chainP = await smartvault.harmonyClient.getTokenPriceByChainlink(
+        address,
+        props.environment
+      );
       const chainPForUser = getPriceForUser(chainP);
       setChainlinkPrice(chainPForUser);
 
-      const ONEPrice = await smartvault.harmonyClient.getTokenPriceByChainlink(ONEAddress, props.environment);
+      const ONEPrice = await smartvault.harmonyClient.getTokenPriceByChainlink(
+        ONEAddress,
+        props.environment
+      );
       setONEPrice(ONEPrice);
 
       if (tokenAddressMap.has(address) && props.environment != "mainnet") {
@@ -98,7 +106,8 @@ const Token = (props) => {
     const latestPriceForUser = getPriceForUser(latestPrice);
 
     const yesterdayPrice = data.token.dayData[1].priceUSD;
-    const priceChange24 = ((latestPrice - yesterdayPrice) / yesterdayPrice) * 100;
+    const priceChange24 =
+      ((latestPrice - yesterdayPrice) / yesterdayPrice) * 100;
 
     price = latestPriceForUser;
 
@@ -164,9 +173,21 @@ const Token = (props) => {
           </div>
 
           <div className="col-lg-8 border border-no-bank-grayscale-silver justify-content-center">
-            <div className="row p-4 pb-0">{price && <ChartHeaderToken tokenName={name} currentPrice={price} priceChange={priceChangePercent} />}</div>
+            <div className="row p-4 pb-0">
+              {price && (
+                <ChartHeaderToken
+                  tokenName={name}
+                  currentPrice={price}
+                  priceChange={priceChangePercent}
+                />
+              )}
+            </div>
 
-            <div className="row p-3">{dayPriceData.length == 30 && <SimpleChart priceData={dayPriceData} />}</div>
+            <div className="row p-3">
+              {dayPriceData.length == 30 && (
+                <SimpleChart priceData={dayPriceData} />
+              )}
+            </div>
 
             <ChartBottom />
           </div>
@@ -177,11 +198,20 @@ const Token = (props) => {
       <section>
         <div className="d-flex align-items-center justify-content-between my-3 mx-2">
           <div className="d-flex align-items-center">
-            <div className="fs-4 me-2 text-no-bank-grayscale-iron fw-bold">{name}</div>
+            <div className="fs-4 me-2 text-no-bank-grayscale-iron fw-bold">
+              {name}
+            </div>
             {/* temporary */}
-            {address == "0x04d6e90e42d0543b45b3d5a0aded6be3022286bd" ? <TokenCategory category={"stablecoin"} /> : <TokenCategory category={"token"} />}
+            {address == "0x04d6e90e42d0543b45b3d5a0aded6be3022286bd" ? (
+              <TokenCategory category={"stablecoin"} />
+            ) : (
+              <TokenCategory category={"token"} />
+            )}
           </div>
-          <button type="button" className="btn rounded-pill btn-no-bank-highlight text-rb-bank-primary px-5 py-2">
+          <button
+            type="button"
+            className="btn rounded-pill btn-no-bank-highlight text-rb-bank-primary px-5 py-2"
+          >
             Trade
           </button>
         </div>
@@ -192,40 +222,78 @@ const Token = (props) => {
         <div className="row bg-no-bank-grayscale-platin mx-2">
           <div className="col-md-4 border border-no-bank-grayscale-silver p-4">
             <div>
-              <div className="fs-4 text-no-bank-grayscale-iron">Current Price</div>
+              <div className="fs-4 text-no-bank-grayscale-iron">
+                Current Price
+              </div>
               <div className="d-flex flex-wrap align-items-baseline my-2 text-no-bank-primary">
                 <span className="fs-1">{price && price.toLocaleString()}</span>
                 <span className="fs-5 ms-1">CHF</span>
-                <span className="font-sm text-no-bank-grayscale-iron ms-2">(SushSwap)</span>
+                <span className="font-sm text-no-bank-grayscale-iron ms-2">
+                  (SushSwap)
+                </span>
               </div>
               <div className="text-no-bank-grayscale-iron mb-2">
-                <span className="">{chainlinkPrice && chainlinkPrice.toLocaleString()}</span>
+                <span className="">
+                  {chainlinkPrice && chainlinkPrice.toLocaleString()}
+                </span>
                 <span className="ms-1">CHF</span>
-                <span className="font-sm text-no-bank-grayscale-iron ms-2">(Chainlink)</span>
+                <span className="font-sm text-no-bank-grayscale-iron ms-2">
+                  (Chainlink)
+                </span>
               </div>
-              <div className={priceChangePercent > 0 ? "text-success" : "text-danger"}>
-                <span className="fs-5">{priceChange && priceChange.toLocaleString()} CHF</span>
-                <i className={"p-1 bi " + (priceChangePercent > 0 ? "bi-caret-up-fill" : "bi-caret-down-fill")} />
+              <div
+                className={
+                  priceChangePercent > 0 ? "text-success" : "text-danger"
+                }
+              >
+                <span className="fs-5">
+                  {priceChange && priceChange.toLocaleString()} CHF
+                </span>
+                <i
+                  className={
+                    "p-1 bi " +
+                    (priceChangePercent > 0
+                      ? "bi-caret-up-fill"
+                      : "bi-caret-down-fill")
+                  }
+                />
                 <span className="text-no-bank-grayscale-iron ms-2">daily</span>
               </div>
-              <div className={priceChangePercent > 0 ? "text-success" : "text-danger"}>
+              <div
+                className={
+                  priceChangePercent > 0 ? "text-success" : "text-danger"
+                }
+              >
                 <span className="fs-5">{priceChangePercent} %</span>
-                <i className={"p-1 bi " + (priceChangePercent > 0 ? "bi-caret-up-fill" : "bi-caret-down-fill")} />
+                <i
+                  className={
+                    "p-1 bi " +
+                    (priceChangePercent > 0
+                      ? "bi-caret-up-fill"
+                      : "bi-caret-down-fill")
+                  }
+                />
                 <span className="text-no-bank-grayscale-iron ms-2">daily</span>
               </div>
             </div>
           </div>
           <div className="col-md-4 border border-no-bank-grayscale-silver p-4">
             <div>
-              <div className="fs-5 text-no-bank-grayscale-iron">My Position</div>
+              <div className="fs-5 text-no-bank-grayscale-iron">
+                My Position
+              </div>
               <div className="my-2 text-no-bank-primary">
-                <span className="fs-1">{totalValue && totalValue.toLocaleString()}</span>
+                <span className="fs-1">
+                  {totalValue && totalValue.toLocaleString()}
+                </span>
                 <span className="fs-5 ms-1">CHF</span>
               </div>
               <div>
                 <span className="fs-5 text-no-bank-grayscale-iron">Amount</span>
 
-                <span className="ms-2 text-no-bank-primary">{balance.toLocaleString()}</span>
+                <span className="ms-2 text-no-bank-primary">
+                  {balance.toLocaleString()}
+                </span>
               </div>
             </div>
           </div>
@@ -238,7 +306,9 @@ const Token = (props) => {
                 <span className="text-no-bank-grayscale-iron ms-2">daily</span>
               </div>
               <div>
-                <span className="fs-5 text-no-bank-grayscale-iron">Unrealised</span>
+                <span className="fs-5 text-no-bank-grayscale-iron">
+                  Unrealised
+                </span>
                 <span className="fs-5 text-success ms-2">7'260 CHF</span>
                 <span className="text-no-bank-grayscale-iron ms-3">total</span>
               </div>
@@ -256,42 +326,64 @@ const Token = (props) => {
       <section>
         <div className="row mx-2">
           <div className="col-md-6 border border-no-bank-grayscale-silver p-4">
-            <div className="fs-4 text-no-bank-grayscale-iron mb-3">Description</div>
+            <div className="fs-4 text-no-bank-grayscale-iron mb-3">
+              Description
+            </div>
             <p className="text-no-bank-primary">
-              World-renowned precious metals storage and custody service provider Swiss Vault have launched noGold (ticker: NGLD), a gold-backed stablecoin fully backed by physical gold held securely
-              in SwissVault's save mountain storage. It combines the safe-haven benefits of owning physical gold with the flexibility, transparency, affordability, and security of a digital asset.
+              World-renowned precious metals storage and custody service
+              provider Swiss Vault have launched noGold (ticker: NGLD), a
+              gold-backed stablecoin fully backed by physical gold held securely
+              in SwissVault's save mountain storage. It combines the safe-haven
+              benefits of owning physical gold with the flexibility,
+              transparency, affordability, and security of a digital asset.
             </p>
           </div>
           <div className="col-md-6 border border-no-bank-grayscale-silver p-4">
-            <div className="fs-4 text-no-bank-grayscale-iron">Position Detail</div>
+            <div className="fs-4 text-no-bank-grayscale-iron">
+              Position Detail
+            </div>
             <div className="my-3">
               <div>
                 <span className="text-no-bank-grayscale-iron">Market Cap</span>
                 <span className="text-no-bank-primary ms-2">3.2 bn CHF</span>
               </div>
               <div className="mt-1">
-                <span className="text-no-bank-grayscale-iron">Trading Volume (24h)</span>
+                <span className="text-no-bank-grayscale-iron">
+                  Trading Volume (24h)
+                </span>
                 <span className="text-no-bank-primary ms-2">68 mn CHF</span>
               </div>
               <div className="mt-1">
-                <span className="text-no-bank-grayscale-iron">Circuling Supply</span>
+                <span className="text-no-bank-grayscale-iron">
+                  Circuling Supply
+                </span>
                 <span className="text-no-bank-primary ms-2">1.8 mn</span>
               </div>
               <div className="mt-1">
-                <span className="text-no-bank-grayscale-iron">Available since</span>
+                <span className="text-no-bank-grayscale-iron">
+                  Available since
+                </span>
                 <span className="text-no-bank-primary ms-2">July 2020</span>
               </div>
               <div className="mt-1">
                 <span className="text-no-bank-grayscale-iron">Issuer</span>
-                <span className="text-no-bank-primary ms-2">Swiss Vault Inc.</span>
+                <span className="text-no-bank-primary ms-2">
+                  Swiss Vault Inc.
+                </span>
               </div>
             </div>
             <div className="d-flex mt-4">
-              <button type="button" className="btn border border-no-bank-primary rounded-pill text-rb-bank-primary p-2 px-3">
+              <button
+                type="button"
+                className="btn border border-no-bank-primary rounded-pill text-rb-bank-primary p-2 px-3"
+              >
                 <i className="bi bi-arrow-up-right"></i>
                 <span className="ms-1">Website</span>
               </button>
-              <button type="button" className="btn border border-no-bank-primary rounded-pill text-rb-bank-primary p-2 px-3 ms-3">
+              <button
+                type="button"
+                className="btn border border-no-bank-primary rounded-pill text-rb-bank-primary p-2 px-3 ms-3"
+              >
                 <i className="bi bi-arrow-up-right"></i>
                 <span className="ms-1">Whitepaper</span>
               </button>
@@ -313,24 +405,37 @@ const Token = (props) => {
                 <img src={NewsSample1} className="img-fluid h-100" alt="" />
               </div>
               <div className="mt-2 text-no-bank-primary">August 16, 2021</div>
-              <div className="mt-1 fs-3 text-no-bank-primary lh-sm">noGold just launched by nobank</div>
-              <div className="mt-1 text-no-bank-grayscale-iron">r-bank.news</div>
+              <div className="mt-1 fs-3 text-no-bank-primary lh-sm">
+                noGold just launched by <u>no</u>bank
+              </div>
+              <div className="mt-1 text-no-bank-grayscale-iron">
+                r-bank.news
+              </div>
             </div>
             <div className="col-md-4">
               <div>
                 <img src={NewsSample2} className="img-fluid h-100" alt="" />
               </div>
               <div className="mt-2 text-no-bank-primary">August 16, 2021</div>
-              <div className="mt-1 fs-3 text-no-bank-primary lh-sm">noGold – Is it the Next Big Thing?</div>
-              <div className="mt-1 text-no-bank-grayscale-iron">barrons.com</div>
+              <div className="mt-1 fs-3 text-no-bank-primary lh-sm">
+                noGold – Is it the Next Big Thing?
+              </div>
+              <div className="mt-1 text-no-bank-grayscale-iron">
+                barrons.com
+              </div>
             </div>
             <div className="col-md-4">
               <div>
                 <img src={NewsSample3} className="img-fluid h-100" alt="" />
               </div>
               <div className="mt-2 text-no-bank-primary">August 16, 2021</div>
-              <div className="mt-1 fs-3 text-no-bank-primary lh-sm">How Investing in stablecoins like noGold helps you optimize your portfolio.</div>
-              <div className="mt-1 text-no-bank-grayscale-iron">washingtonpost.com</div>
+              <div className="mt-1 fs-3 text-no-bank-primary lh-sm">
+                How Investing in stablecoins like noGold helps you optimize your
+                portfolio.
+              </div>
+              <div className="mt-1 text-no-bank-grayscale-iron">
+                washingtonpost.com
+              </div>
             </div>
           </div>
         </div>

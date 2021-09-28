@@ -1,7 +1,6 @@
 import React from "react";
 import { connect } from "redux-zero/react";
 import styled from "@emotion/styled";
-import { useRouteMatch, useHistory } from "react-router-dom";
 import actions from "../../redux/actions";
 
 const Number = styled.div((props) => ({
@@ -21,24 +20,12 @@ const Number = styled.div((props) => ({
   marginRight: "2em",
 }));
 
-const NavElement = ({ onboardingStep, setOnboardingStep, nr, text, title }) => {
-  const history = useHistory();
-  const { url } = useRouteMatch();
-
+const NavElement = ({ onboardingStep, nr, text, title }) => {
   const isActive = onboardingStep == nr;
-
-  const handleClick = () => {
-    setOnboardingStep(nr);
-    history.push(`${url}/${nr}`);
-  };
 
   return (
     <div>
-      <div
-        className="d-flex align-items-start"
-        //style={{ cursor: "pointer" }}
-        //onClick={handleClick}
-      >
+      <div className="d-flex align-items-start">
         <Number filled={isActive && "filled"} className="fs-6 flex-shrink-0">
           {nr}
         </Number>

@@ -13,6 +13,7 @@ import { Link } from "react-router-dom";
 
 import actions from "../../redux/actions";
 import { SmartVaultContext } from "../../context/SmartvaultContext";
+import { getStorageKey, setLocalWallet } from "../../config";
 
 class Step1 extends Component {
   constructor(props) {
@@ -39,7 +40,7 @@ class Step1 extends Component {
 
   componentDidMount() {
     this.checkValidity();
-    //this.setState({ history: useHistory() });
+    this.props.setOnboardingStep(1);
   }
 
   selectCountry = (value) => {
@@ -223,13 +224,21 @@ class Step1 extends Component {
     }
   };
 
+  saveWalletToLocalStorage = () => {
+    const { smartvault } = this.context;
+    const { environment } = this.props;
+    localStorage.removeItem(getStorageKey(environment, true));
+    var storeData = smartvault.walletData;
+    setLocalWallet(environment, JSON.stringify(storeData), false);
+  };
+
   handleClick = () => {
     const { userName, userPassword, userEmail, userCountryOfResidence } =
       this.state.validity;
     if (userName && userPassword && userEmail && userCountryOfResidence) {
       this.createUser();
       this.checkRentPriceAsync();
-      this.props.setOnboardingStep(2);
+      this.saveWalletToLocalStorage();
     }
   };
 
@@ -524,5 +533,9 @@ class Step1 extends Component {
 
 Step1.contextType = SmartVaultContext;
 
-const mapToProps = ({ onboardingStep, user }) => ({ onboardingStep, user });
+const mapToProps = ({ onboardingStep, user, environment }) => ({
+  onboardingStep,
+  user,
+  environment,
+});
 export default connect(mapToProps, actions)(Step1);
