@@ -17,16 +17,20 @@ import Token from "./components/portfolio/token";
 
 import Login from "./components/login";
 
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useAuthState } from "./context/FirebaseAuthContext";
 
 const AuthenticatedRoute = ({ children, ...props }) => {
   const { isAuthenticated } = useAuthState();
-  console.log("authenticated state [auth route]: ", isAuthenticated);
+  const auth = getAuth();
+  const user = auth.currentUser;
+
+  console.log("authenticated state [auth route]: ", user);
   return (
     <Route
       {...props}
       render={() => {
-        return isAuthenticated === true ? children : <Redirect to="/login" />;
+        return user ? children : <Redirect to="/login" />;
       }}
     />
   );

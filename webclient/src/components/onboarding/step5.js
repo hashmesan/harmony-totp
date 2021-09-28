@@ -17,7 +17,6 @@ import MetamaskLogo from "../../../public/metamask.svg";
 import CoinbaseLogo from "../../../public/coinbase.svg";
 import ArgentLogo from "../../../public/argent.svg";
 import BinanceLogo from "../../../public/binance.svg";
-
 import FundingProgress from "../../../public/fundingProgress.svg";
 import FundingSuccess from "../../../public/funding_success.svg";
 
@@ -28,7 +27,7 @@ const cryptoFundingSources = [
   { name: "Binance", logo: BinanceLogo },
 ];
 
-const Step5 = ({ environment, setOnboardingStep }) => {
+const Step5 = ({ environment, guardians, friends, setOnboardingStep }) => {
   const [walletAddress, setWalletAddress] = useState(null);
   const [balance, setBalance] = useState(0);
   const [totalFee, setTotalFee] = useState(0);
@@ -66,6 +65,9 @@ const Step5 = ({ environment, setOnboardingStep }) => {
 
   useEffect(() => {
     setOnboardingStep(5);
+    //TODO: Remove, ugly, does belong to STEP 4 or actions
+    smartvault.addGuardians(guardians);
+    smartvault.addFriends(friends);
   }, []);
 
   useEffect(() => {
@@ -348,5 +350,9 @@ const Step5 = ({ environment, setOnboardingStep }) => {
   );
 };
 
-const mapToProps = ({ environment }) => ({ environment });
+const mapToProps = ({ environment, guardians, friends }) => ({
+  environment,
+  guardians,
+  friends,
+});
 export default connect(mapToProps, actions)(Step5);
