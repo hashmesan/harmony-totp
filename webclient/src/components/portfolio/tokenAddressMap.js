@@ -6,4 +6,5 @@ export const tokenAddressMap = new Map([
   ["0x6c4387c4f570aa8cadcaffc5e73ecb3d0f8fc593", "0x3095c7557bcb296ccc6e363de01b760ba031f2d9"],
   ["0x04d6e90e42d0543b45b3d5a0aded6be3022286bd", "0x3095c7557bcb296ccc6e363de01b760ba031f2d9"],
   ["0xe6f0243111b2e8d3028cfc88ae0bb1968860aa92", "0xbec775cb42abfa4288de81f387a9b1a3c4bc552a"],
+  ["0xcf664087a5bb0237a0bad6742852ec6c8d69a27a", "0xcf664087a5bb0237a0bad6742852ec6c8d69a27a"],
 ]);
