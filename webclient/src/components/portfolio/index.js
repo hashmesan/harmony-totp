@@ -13,6 +13,7 @@ import ChartHeader from "./chartHeader";
 import Watchlist from "./watchlist";
 import Top3Positions from "./top3Positions";
 import ChartBottom from "./chartBottom";
+import FundingSourcesAndContacts from "./fundingSourcesAndContacts";
 
 import { pnlData } from "./dataMock/pnlData";
 
@@ -32,14 +33,20 @@ const Portfolio = ({ setLocation }) => {
   return (
     <div className="container-fluid">
       <div className="row min-h-25">
-        <div className="col-4">
-          <img src="public/funding_sources_mock.png" className="img-fluid h-100" alt="" />
+        <div className="col-md-4 border-bottom-0 border-end-0 border border-no-bank-grayscale-silver justify-content-center p-0">
+          <FundingSourcesAndContacts />
         </div>
         <div className="col-md-8 border-bottom-0 border border-no-bank-grayscale-silver justify-content-center">
           <div className="row p-4 pb-0">
-            <ChartHeader portfolioValue={portfolioValue} dailyPnL={dailyPnL} unrealizedPnL={unrealizedPnL} />
+            <ChartHeader
+              portfolioValue={portfolioValue}
+              dailyPnL={dailyPnL}
+              unrealizedPnL={unrealizedPnL}
+            />
           </div>
-          <div className="row p-3">{pnlData && <SimpleChart priceData={pnlData} />}</div>
+          <div className="row p-3">
+            {pnlData && <SimpleChart priceData={pnlData} />}
+          </div>
 
           <ChartBottom />
         </div>
@@ -52,18 +59,17 @@ const Portfolio = ({ setLocation }) => {
           <Watchlist />
         </div>
       </div>
-      <div className="row">
-        <div className="col-6">
-          {" "}
+      <div className="row border border-top-0 border-no-bank-grayscale-silver">
+        <div className="col-6 px-0">
           <img src="public/news_mock.png" className="img-fluid h-100" alt="" />
         </div>
-        <div className="col-3">
-          {" "}
-          <img src="public/guardians_mock.png" className="img-fluid h-100 " alt="" />
-        </div>
-        <div className="col-3">
-          {" "}
-          <img src="public/friends_mock.png" className="img-fluid h-100 " alt="" />
+
+        <div className="col-6 px-0 bg-no-bank-hovergrey">
+          <img
+            src="public/product_MajorTom.png"
+            className="img-fluid border-0"
+            alt=""
+          />
         </div>
       </div>
     </div>

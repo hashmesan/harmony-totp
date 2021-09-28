@@ -3,6 +3,7 @@ import { connect } from "redux-zero/react";
 import actions from "../../redux/actions";
 import { useHistory, useRouteMatch } from "react-router-dom";
 
+import TokenCategory from "./tokenCategory";
 import TokenRecordSmall from "./tokenRecordSmall";
 import TokenCategory from "./tokenCategory";
 
