@@ -4,9 +4,11 @@ import actions from "../../redux/actions";
 import { useHistory, useRouteMatch } from "react-router-dom";
 
 import TokenCategory from "./tokenCategory";
-import TokenRecordSmall from "./TokenRecordSmall";
+import TokenRecordSmall from "./tokenRecordSmall";
 
-import AccountProvider, { SmartVaultContext } from "../../context/SmartvaultContext";
+import AccountProvider, {
+  SmartVaultContext,
+} from "../../context/SmartvaultContext";
 
 const Top3Positions = (props) => {
   const { smartvault } = useContext(SmartVaultContext);
@@ -31,7 +33,9 @@ const Top3Positions = (props) => {
       //const balanceForUser = Number(web3utils.fromWei(ONEbalance)).toFixed(4);
       //setbalance(balanceForUser);
 
-      const ONEPrice = await smartvault.harmonyClient.getTokenPriceByChainlink(ONEAddress);
+      const ONEPrice = await smartvault.harmonyClient.getTokenPriceByChainlink(
+        ONEAddress
+      );
       setONEPrice(ONEPrice);
 
       let holdingTokens = await smartvault.getHoldingTokens();
@@ -50,7 +54,9 @@ const Top3Positions = (props) => {
   return (
     <>
       <div className="d-flex align-items-center justify-content-between">
-        <div className="fs-4 text-no-bank-grayscale-iron">Top 3 portofolio Positions</div>
+        <div className="fs-4 text-no-bank-grayscale-iron">
+          Top 3 portofolio Positions
+        </div>
 
         <i className="bi bi-arrow-up-right fs-5"></i>
       </div>
@@ -96,7 +102,10 @@ const Top3Positions = (props) => {
 
             {holdingTokensInfo &&
               holdingTokensInfo.map((tokenAddress) => (
-                <tr className="pointer" onClick={() => handleRowClick(tokenAddress)}>
+                <tr
+                  className="pointer"
+                  onClick={() => handleRowClick(tokenAddress)}
+                >
                   <TokenRecordSmall address={tokenAddress} />
                 </tr>
               ))}
