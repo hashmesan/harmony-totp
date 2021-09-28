@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
+import { SmartVaultContext } from "../../context/SmartvaultContext";
 
 const FundingSourcesModalElement = ({ fundingSources }) => {
-  // TODO: Get Wallet address from context (smartvault conetxt)
+  const { smartvault } = useContext(SmartVaultContext);
+  const depositInfo = smartvault.getDepositInfo();
+  const { walletAddress } = depositInfo;
 
   return (
     <div className="accordion-item">

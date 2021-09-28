@@ -8,10 +8,13 @@ const { toBech32, fromBech32 } = require("@harmony-js/crypto");
 
 const listGuardianFriends = ({ guardians, friends }) => {
   return (
-    <u1 className="list-group">
+    <ul className="list-group">
       {guardians.map((guardian) => {
         return (
-          <li className="list-group-item border-start-0 border-end-0 px-0">
+          <li
+            className="list-group-item border-start-0 border-end-0 px-0"
+            id={`Guard_${guardian.hns.split(".", 1)}`}
+          >
             <div className="d-flex align-items-center">
               <span className="text-no-bank-primary fw-bolder">
                 {guardian.hns.split(".", 1)}
@@ -27,7 +30,10 @@ const listGuardianFriends = ({ guardians, friends }) => {
 
       {friends.map((friend) => {
         return (
-          <li className="list-group-item d-flex align-items-center border-start-0 border-end-0 px-0">
+          <li
+            className="list-group-item d-flex align-items-center border-start-0 border-end-0 px-0"
+            id={`Friend_${friend.hns.split(".", 1)}`}
+          >
             <span className="text-no-bank-primary fw-bolder">
               {friend.hns.split(".", 1)}{" "}
             </span>
@@ -35,7 +41,7 @@ const listGuardianFriends = ({ guardians, friends }) => {
           </li>
         );
       })}
-    </u1>
+    </ul>
   );
 };
 

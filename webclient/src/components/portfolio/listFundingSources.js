@@ -4,10 +4,13 @@ import actions from "../../redux/actions";
 
 const listFundingSources = ({ fundingSources }) => {
   return (
-    <u1 className="list-group">
+    <ul className="list-group">
       {fundingSources.map((fundingSource) => {
         return (
-          <li className="list-group-item border-start-0 border-end-0 px-0">
+          <li
+            className="list-group-item border-start-0 border-end-0 px-0"
+            id={`Fund_${fundingSource.name}`}
+          >
             <div className="d-flex align-items-center">
               <span className="text-no-bank-primary fw-bolder">
                 {fundingSource.name}
@@ -41,7 +44,7 @@ const listFundingSources = ({ fundingSources }) => {
           </li>
         );
       })}
-    </u1>
+    </ul>
   );
 };
 

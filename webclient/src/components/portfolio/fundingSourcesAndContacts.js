@@ -4,6 +4,7 @@ import actions from "../../redux/actions";
 import AddGuardianFriendModal from "./addGuardianFriendModal";
 import ListGuardianFriends from "./listGuardianFriends";
 import ListFundingSources from "./listFundingSources";
+import AddFundingSourceModal from "./addFundingSourceModal";
 //import { SmartVaultContext } from "../../context/SmartvaultContext";
 
 //const { toBech32, fromBech32 } = require("@harmony-js/crypto");
@@ -44,11 +45,12 @@ const fundingSourcesAndContacts = () => {
                 type="button"
                 className="btn btn-outline-dark rounded-pill mx-0"
                 data-bs-toggle="modal"
-                data-bs-target="#addGuardianFriendModal"
+                data-bs-target="#addFundingSourceModal"
               >
                 + Add
               </button>
             </div>
+            <AddFundingSourceModal />
           </div>
           <div>
             <ListFundingSources />
