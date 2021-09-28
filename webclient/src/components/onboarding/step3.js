@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { connect } from "redux-zero/react";
 import styled from "@emotion/styled";
 import OtpInput from "react-otp-input";
@@ -24,6 +24,10 @@ const Step3 = ({ setOnboardingStep }) => {
   const [error, setError] = useState("");
   const [otp, setOtp] = useState("");
   const { smartvault } = useContext(SmartVaultContext);
+
+  useEffect(() => {
+    setOnboardingStep(3);
+  }, []);
 
   const handleChange = (otp) => {
     setOtp(otp);

@@ -9,10 +9,16 @@ import { getStorageKey, setLocalWallet } from "../../config";
 
 import actions from "../../redux/actions";
 
+import ModalElement from "./modalElements";
+
 import PaypalLogo from "../../../public/paypal.svg";
 import AppleGoogleLogo from "../../../public/apple_google.svg";
+import MetamaskLogo from "../../../public/metamask.svg";
+import CoinbaseLogo from "../../../public/coinbase.svg";
+import ArgentLogo from "../../../public/argent.svg";
+import BinanceLogo from "../../../public/binance.svg";
 
-const Step5 = ({ environment }) => {
+const Step5 = ({ environment, setOnboardingStep }) => {
   const [walletAddress, setWalletAddress] = useState(null);
   const [balance, setBalance] = useState(0);
 
@@ -22,8 +28,17 @@ const Step5 = ({ environment }) => {
 
   const [status, setStatus] = useState("checking balance");
 
+  const [validated, setValidated] = useState(false);
+
   const { smartvault } = useContext(SmartVaultContext);
   const depositInfo = smartvault.getDepositInfo();
+
+  const cryptoFundingSources = [
+    { name: "Metamask", logo: { MetamaskLogo } },
+    { name: "Coinbase", logo: { CoinbaseLogo } },
+    { name: "Argent", logo: { ArgentLogo } },
+    { name: "Binance", logo: { BinanceLogo } },
+  ];
 
   useEffect(() => {
     const checkFees = async () => {
@@ -46,9 +61,13 @@ const Step5 = ({ environment }) => {
 
     const interval = setInterval(() => {
       checkBalance();
-    }, 5000);
+    }, 1000);
 
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    setOnboardingStep(5);
   }, []);
 
   const submitWalletCreation = async () => {
@@ -58,8 +77,10 @@ const Step5 = ({ environment }) => {
         console.log("status: ", status);
       });
       saveWalletToLocalStorage();
+      setValidated(true);
     } else {
       console.log("not enough money");
+      setValidated(false);
     }
   };
 
@@ -68,10 +89,6 @@ const Step5 = ({ environment }) => {
     var storeData = smartvault.walletData;
     delete storeData["leaves_arr"];
     setLocalWallet(environment, JSON.stringify(storeData), false);
-  };
-
-  const handleClick = () => {
-    console.log("handling click");
   };
 
   return (
@@ -177,25 +194,28 @@ const Step5 = ({ environment }) => {
               <div className="modal-content">
                 <div className="modal-header">
                   <div
-                    className="h5 modal-title fw-bold"
+                    className="h2 modal-title fw-bold text-no-bank-grayscale-iron"
                     id="accountModalLabel"
                   >
                     Add other wallet
                   </div>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                  ></button>
                 </div>
                 <div className="modal-body">
-                  <p>createFee: {createFee}</p>
-                  <p>rentPrice: {rentPrice}</p>
-                  <p>totalFee: {totalFee}</p>
-                  <p>totalBalance: {balance}</p>
-                  <p>walletAddress: {walletAddress}</p>
-                  {
+                  <p>Which wallet would you like to connect?</p>
+                  <div className="accordion">
+                    {cryptoFundingSources.map((modalElement) => (
+                      <ModalElement
+                        modalElement={modalElement}
+                        key={modalElement.name}
+                      />
+                    ))}
+
+                    <p>createFee: {createFee}</p>
+                    <p>rentPrice: {rentPrice}</p>
+                    <p>totalFee: {totalFee}</p>
+                    <p>totalBalance: {balance}</p>
+                    <p>walletAddress: {walletAddress}</p>
+
                     <img
                       src={
                         "https://chart.googleapis.com/chart?chs=200x200&chld=L|0&cht=qr&chl=" +
@@ -204,40 +224,55 @@ const Step5 = ({ environment }) => {
                       width="200"
                       height="200"
                     />
-                  }
-                  <p>Status: {status}</p>
-                </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    data-bs-dismiss="modal"
-                  >
-                    Close
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={submitWalletCreation}
-                  >
-                    Create Wallet
-                  </button>
+
+                    <p>Status: {status}</p>
+                  </div>
+                  <div className="modal-footer">
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      data-bs-dismiss="modal"
+                    >
+                      Close
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={submitWalletCreation}
+                    >
+                      Create Wallet
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div className="d-flex justify-content-end pe-5 pb-3 fixed-bottom">
-        <div className="pe-3 pb-3">
-          <Link to="/portfolio">
-            <button
-              type="button"
-              className="btn rounded-pill btn-no-bank-highlight text-rb-bank-primary"
-            >
-              Continue
-            </button>
-          </Link>
+        <div className="d-flex justify-content-end pe-5 pb-3 fixed-bottom">
+          <div className="pe-3 pb-3">
+            <Link to="/onboard/4">
+              <button
+                id="backButton"
+                type="button"
+                className="btn rounded-pill btn-no-bank-white text-rb-bank-primary pe-4 me-1"
+              >
+                Back
+              </button>
+            </Link>
+            <Link to="/portfolio">
+              <button
+                type="button"
+                className={`btn rounded-pill ${
+                  validated
+                    ? "btn-no-bank-highlight text-rb-bank-primary"
+                    : "btn-no-bank-grayscale-silver text-white"
+                }`}
+                //disabled={!validated && "disabled"}
+              >
+                Start
+              </button>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

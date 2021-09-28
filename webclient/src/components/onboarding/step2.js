@@ -9,9 +9,8 @@ import { getAnalytics, logEvent } from "firebase/analytics";
 import EmailWait from "../../../public/email_wait.svg";
 import EmailSuccess from "../../../public/email_success.svg";
 
-const Step2 = ({ user, setOnboardingStep }) => {
+const Step2 = ({ setOnboardingStep }) => {
   const [emailValidated, setEmailValidated] = useState(false);
-  const { userEmail } = user;
   const auth = getAuth();
   const analytics = getAnalytics();
 
@@ -28,14 +27,15 @@ const Step2 = ({ user, setOnboardingStep }) => {
 
     const interval = setInterval(() => {
       checkEmailValidity();
-    }, 5000);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
     logEvent(analytics, "onboarding", { step: 2 });
-  });
+    setOnboardingStep(2);
+  }, []);
 
   const handleEmail = () => {
     sendEmailVerification(auth.currentUser, {
@@ -43,16 +43,6 @@ const Step2 = ({ user, setOnboardingStep }) => {
       handleCodeInApp: true,
     });
     console.log("handling email");
-  };
-
-  const handleClick = (evt) => {
-    const { id } = evt.target;
-    if (id == "backButton") {
-      setOnboardingStep(1);
-    } else if (id == "continueButton") {
-      setOnboardingStep(3);
-    } else {
-    }
   };
 
   return (
@@ -119,8 +109,6 @@ const Step2 = ({ user, setOnboardingStep }) => {
                   <button
                     id="backButton"
                     type="button"
-                    onClick={handleClick}
-                    //className="btn btn-no-bank-grayscale-silver text-white rounded-pill"
                     className="btn rounded-pill btn-no-bank-white text-rb-bank-primary pe-4 me-1"
                   >
                     Back
@@ -130,8 +118,6 @@ const Step2 = ({ user, setOnboardingStep }) => {
                   <button
                     id="continueButton"
                     type="button"
-                    onClick={handleClick}
-                    //className="btn btn-no-bank-grayscale-silver text-white rounded-pill"
                     className={`btn rounded-pill ${
                       emailValidated
                         ? "btn-no-bank-highlight text-rb-bank-primary"
@@ -151,5 +137,5 @@ const Step2 = ({ user, setOnboardingStep }) => {
   );
 };
 
-const mapToProps = ({ user }) => ({ user });
+const mapToProps = ({}) => ({});
 export default connect(mapToProps, actions)(Step2);

@@ -40,7 +40,7 @@ class Step1 extends Component {
 
   componentDidMount() {
     this.checkValidity();
-    //this.setState({ history: useHistory() });
+    this.props.setOnboardingStep(1);
   }
 
   selectCountry = (value) => {
@@ -239,7 +239,6 @@ class Step1 extends Component {
       this.createUser();
       this.checkRentPriceAsync();
       this.saveWalletToLocalStorage();
-      this.props.setOnboardingStep(2);
     }
   };
 

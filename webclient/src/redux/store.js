@@ -1,6 +1,7 @@
 import createStore from "redux-zero";
 import CONFIG from "../config";
 
+// TODO: Make sure state is stored for next session - continuing for example onboarding
 const initialState = {
   environment: localStorage.getItem("environment") || "mainnet0",
   config: CONFIG[localStorage.getItem("environment") || "mainnet0"],
