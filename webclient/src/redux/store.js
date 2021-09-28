@@ -1,6 +1,11 @@
 import createStore from "redux-zero";
-import CONFIG from "../config";
+import CONFIG, { getLocalWallet } from "../config";
+import SmartVault from "../../../lib/smartvault_lib";
 
+const wallet =
+  JSON.parse(
+    getLocalWallet(localStorage.getItem("environment") || "mainnet0", true)
+  ) || {};
 // TODO: Make sure state is stored for next session - continuing for example onboarding
 const initialState = {
   environment: localStorage.getItem("environment") || "mainnet0",
@@ -23,8 +28,8 @@ const initialState = {
     step1: null,
     step2: null,
   },
-  guardians: [],
-  friends: [],
+  guardians: wallet.guardians,
+  friends: wallet.friends,
   fundingSources: [
     {
       type: "bank",
