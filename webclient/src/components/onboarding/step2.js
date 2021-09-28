@@ -57,10 +57,10 @@ const Step2 = ({ setOnboardingStep }) => {
           <div className="pt-5">
             {emailValidated && (
               <div>
-                <span>
+                <div>
                   Your email has been successfully validated. You are now ready
                   to continue.
-                </span>
+                </div>
                 <div className="d-flex justify-content-center">
                   <img
                     src={EmailSuccess}
@@ -69,9 +69,9 @@ const Step2 = ({ setOnboardingStep }) => {
                     className="m-5"
                     alt=""
                   />
-                  <span className="text-no-bank-grayscale-iron">
-                    Email successfully verified.
-                  </span>
+                </div>
+                <div className="text-no-bank-grayscale-iron text-center">
+                  Email successfully verified.
                 </div>
               </div>
             )}
@@ -82,7 +82,7 @@ const Step2 = ({ setOnboardingStep }) => {
                 </div>
 
                 <p className="">
-                  <span className="text-no-bank-grayscale-iron">
+                  <div className="text-no-bank-grayscale-iron">
                     Didn’t receive an email?{" "}
                     <button
                       className="btn fw-bold text-no-bank-primary text-decoration-none"
@@ -90,7 +90,7 @@ const Step2 = ({ setOnboardingStep }) => {
                     >
                       Resend
                     </button>
-                  </span>
+                  </div>
                 </p>
                 <div className="d-flex justify-content-center">
                   <img

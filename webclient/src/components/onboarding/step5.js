@@ -9,7 +9,7 @@ import { getStorageKey, setLocalWallet } from "../../config";
 
 import actions from "../../redux/actions";
 
-import ModalElement from "./modalElements";
+import FundingSourcesModalElement from "./fundingSourcesModalElement";
 
 import PaypalLogo from "../../../public/paypal.svg";
 import AppleGoogleLogo from "../../../public/apple_google.svg";
@@ -18,34 +18,32 @@ import CoinbaseLogo from "../../../public/coinbase.svg";
 import ArgentLogo from "../../../public/argent.svg";
 import BinanceLogo from "../../../public/binance.svg";
 
+import FundingProgress from "../../../public/fundingProgress.svg";
+import FundingSuccess from "../../../public/funding_success.svg";
+
+const cryptoFundingSources = [
+  { name: "Metamask", logo: MetamaskLogo },
+  { name: "Coinbase", logo: CoinbaseLogo },
+  { name: "Argent", logo: ArgentLogo },
+  { name: "Binance", logo: BinanceLogo },
+];
+
 const Step5 = ({ environment, setOnboardingStep }) => {
   const [walletAddress, setWalletAddress] = useState(null);
   const [balance, setBalance] = useState(0);
-
-  const [createFee, setCreateFee] = useState(0);
-  const [rentPrice, setRentPrice] = useState(0);
   const [totalFee, setTotalFee] = useState(0);
-
   const [status, setStatus] = useState("checking balance");
-
+  const [visualStatus, setVisualStatus] = useState("");
+  const [initiated, setInitiated] = useState(false);
   const [validated, setValidated] = useState(false);
+  const [statusPercentage, setStatusPercentage] = useState("0%");
 
   const { smartvault } = useContext(SmartVaultContext);
   const depositInfo = smartvault.getDepositInfo();
 
-  const cryptoFundingSources = [
-    { name: "Metamask", logo: { MetamaskLogo } },
-    { name: "Coinbase", logo: { CoinbaseLogo } },
-    { name: "Argent", logo: { ArgentLogo } },
-    { name: "Binance", logo: { BinanceLogo } },
-  ];
-
   useEffect(() => {
     const checkFees = async () => {
-      setCreateFee(web3utils.fromWei(depositInfo.createFee));
-      setRentPrice(web3utils.fromWei(depositInfo.rentPrice));
       setTotalFee(web3utils.fromWei(depositInfo.totalFee));
-
       setWalletAddress(depositInfo.walletAddress);
     };
 
@@ -69,6 +67,29 @@ const Step5 = ({ environment, setOnboardingStep }) => {
   useEffect(() => {
     setOnboardingStep(5);
   }, []);
+
+  useEffect(() => {
+    if (balance > totalFee && !initiated) {
+      setInitiated(true);
+      submitWalletCreation();
+    }
+  }, [balance]);
+
+  useEffect(() => {
+    switch (status) {
+      case "Deploying wallet, waiting for tx":
+        setVisualStatus("Fund’s received! – You’re wallet is being built");
+        setStatusPercentage("33%");
+
+      case "setup complete, waiting for IPFS":
+        setVisualStatus("Configuring access");
+        setStatusPercentage("66%");
+
+      case "Successful stored hash on contract.":
+        setVisualStatus("All set, your wallet is ready!");
+        setStatusPercentage("100%");
+    }
+  }, [status]);
 
   const submitWalletCreation = async () => {
     if (balance > totalFee) {
@@ -182,7 +203,9 @@ const Step5 = ({ environment, setOnboardingStep }) => {
             </button>
           </div>
           <hr />
+
           {/* Modal */}
+
           <div
             className="modal fade"
             id="accountModal"
@@ -192,58 +215,97 @@ const Step5 = ({ environment, setOnboardingStep }) => {
           >
             <div className="modal-dialog">
               <div className="modal-content">
-                <div className="modal-header">
-                  <div
-                    className="h2 modal-title fw-bold text-no-bank-grayscale-iron"
-                    id="accountModalLabel"
-                  >
-                    Add other wallet
+                {!initiated && (
+                  <div>
+                    <div className="modal-header">
+                      <div
+                        className="h2 modal-title fw-bold text-no-bank-grayscale-iron"
+                        id="accountModalLabel"
+                      >
+                        Add other wallet
+                      </div>
+                    </div>
+                    <div className="modal-body">
+                      <p>Which wallet would you like to connect?</p>
+                      <div
+                        className="accordion"
+                        id="accordionCryptoFundingSources"
+                      >
+                        {cryptoFundingSources.map((fundingSource) => (
+                          <FundingSourcesModalElement
+                            fundingSources={fundingSource}
+                            walletAddress={
+                              walletAddress || "wallet address undefined"
+                            }
+                            totalFee={totalFee || 0}
+                            key={fundingSource.name}
+                          />
+                        ))}
+                      </div>
+                      <div className="modal-footer">
+                        <button
+                          type="button"
+                          className="btn btn-secondary"
+                          data-bs-dismiss="modal"
+                        >
+                          Close
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="modal-body">
-                  <p>Which wallet would you like to connect?</p>
-                  <div className="accordion">
-                    {cryptoFundingSources.map((modalElement) => (
-                      <ModalElement
-                        modalElement={modalElement}
-                        key={modalElement.name}
-                      />
-                    ))}
-
-                    <p>createFee: {createFee}</p>
-                    <p>rentPrice: {rentPrice}</p>
-                    <p>totalFee: {totalFee}</p>
-                    <p>totalBalance: {balance}</p>
-                    <p>walletAddress: {walletAddress}</p>
-
-                    <img
-                      src={
-                        "https://chart.googleapis.com/chart?chs=200x200&chld=L|0&cht=qr&chl=" +
-                        walletAddress
-                      }
-                      width="200"
-                      height="200"
-                    />
-
-                    <p>Status: {status}</p>
+                )}
+                {initiated && (
+                  <div>
+                    <div className="modal-body">
+                      {" "}
+                      <div
+                        className="h2 modal-title fw-bold text-no-bank-grayscale-iron"
+                        id="accountModalLabel"
+                      >
+                        Funding your account...
+                      </div>
+                      <div className="d-flex justify-content-center p-3">
+                        {!validated && (
+                          <img src={FundingProgress} width="100" height="100" />
+                        )}
+                        {validated && (
+                          <img src={FundingSuccess} width="100" height="100" />
+                        )}
+                      </div>
+                      <div className="text-no-bank-grayscale-iron">
+                        {visualStatus}
+                      </div>
+                      {!validated && (
+                        <div className="d-flex justify-content-center p-3">
+                          <div className="progress">
+                            {" "}
+                            <div
+                              className="progress-bar progress-bar-striped "
+                              role="progressbar"
+                              aria-valuemin="0"
+                              aria-valuemax="100"
+                              style={{ width: statusPercentage }}
+                            ></div>
+                          </div>
+                        </div>
+                      )}
+                      {validated && (
+                        <div className="d-flex justify-content-center p-3">
+                          <button
+                            type="button"
+                            className={`btn rounded-pill ${
+                              validated
+                                ? "btn-no-bank-highlight text-rb-bank-primary"
+                                : "btn-no-bank-grayscale-silver text-white"
+                            }`}
+                          >
+                            Close
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div className="modal-footer">
-                    <button
-                      type="button"
-                      className="btn btn-secondary"
-                      data-bs-dismiss="modal"
-                    >
-                      Close
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-primary"
-                      onClick={submitWalletCreation}
-                    >
-                      Create Wallet
-                    </button>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
@@ -269,7 +331,7 @@ const Step5 = ({ environment, setOnboardingStep }) => {
                 }`}
                 //disabled={!validated && "disabled"}
               >
-                Start
+                Skip
               </button>
             </Link>
           </div>
