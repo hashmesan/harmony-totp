@@ -289,8 +289,6 @@ const Step4 = ({
       [e.target.name]: e.target.value.trim(),
     });
   };
-
-  console.log("add guardian", AddFriend);
   return (
     <div className="bg-white align-content-center border-top border-no-bank-grayscale-titanium justify-content-start pt-5 pe-5 ps-4 h-100">
       <div className="d-flex mb-5 ps-2 pt-3 pe-3">

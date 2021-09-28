@@ -9,7 +9,7 @@ const listFundingSources = ({ fundingSources }) => {
         return (
           <li
             className="list-group-item border-start-0 border-end-0 px-0"
-            id={`Fund_${fundingSource.name}`}
+            key={`Fund_${fundingSource.name}`}
           >
             <div className="d-flex align-items-center">
               <span className="text-no-bank-primary fw-bolder">

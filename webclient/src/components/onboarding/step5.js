@@ -78,28 +78,23 @@ const Step5 = ({ environment, guardians, friends, setOnboardingStep }) => {
   }, [balance]);
 
   useEffect(() => {
-    console.log("status in UseEffect: ", status);
     switch (status) {
       case "Deploying wallet, waiting for tx":
-        console.log("case deploying");
         setVisualStatus("Fund’s received! – You’re wallet is being built");
         setStatusPercentage("33%");
         break;
 
       case "setup complete, waiting for IPFS":
-        console.log("case setup complete");
         setVisualStatus("Configuring access");
         setStatusPercentage("66%");
         break;
 
       case "Successful stored hash on contract.":
-        console.log("successful");
         setVisualStatus("All set, your wallet is ready!");
         setStatusPercentage("100%");
         break;
 
       default:
-        console.log("default case");
     }
   }, [status]);
 
@@ -107,7 +102,6 @@ const Step5 = ({ environment, guardians, friends, setOnboardingStep }) => {
     if (balance > totalFee) {
       const submit = await smartvault.submitWallet((status) => {
         setStatus(status);
-        console.log("status in SubmitWallet: ", status);
       });
       saveWalletToLocalStorage();
       setValidated(true);

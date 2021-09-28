@@ -19,7 +19,6 @@ const Step2 = ({ setOnboardingStep }) => {
       if (auth.currentUser != null) {
         auth.currentUser.reload();
         auth.currentUser.emailVerified && setEmailValidated(true);
-        console.log("checking email");
       }
     };
 
@@ -42,7 +41,6 @@ const Step2 = ({ setOnboardingStep }) => {
       url: window.location.href,
       handleCodeInApp: true,
     });
-    console.log("handling email");
   };
 
   return (
