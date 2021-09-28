@@ -18,6 +18,7 @@ import {
 
 import "./custom.scss";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import bootstrap from "bootstrap";
 
 Number.prototype.toFixedNoRounding = function (n) {
   const reg = new RegExp("^-?\\d+(?:\\.\\d{0," + n + "})?", "g");

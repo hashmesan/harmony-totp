@@ -3,12 +3,14 @@ import { connect } from "redux-zero/react";
 import { Link } from "react-router-dom";
 
 import actions from "../../redux/actions";
-import { getAuth } from "firebase/auth";
+import { getAuth, sendEmailVerification } from "firebase/auth";
 import { getAnalytics, logEvent } from "firebase/analytics";
 
-const Step2 = ({ user, setOnboardingStep }) => {
+import EmailWait from "../../../public/email_wait.svg";
+import EmailSuccess from "../../../public/email_success.svg";
+
+const Step2 = ({ setOnboardingStep }) => {
   const [emailValidated, setEmailValidated] = useState(false);
-  const { userEmail } = user;
   const auth = getAuth();
   const analytics = getAnalytics();
 
@@ -25,27 +27,22 @@ const Step2 = ({ user, setOnboardingStep }) => {
 
     const interval = setInterval(() => {
       checkEmailValidity();
-    }, 5000);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
     logEvent(analytics, "onboarding", { step: 2 });
-  });
+    setOnboardingStep(2);
+  }, []);
 
   const handleEmail = () => {
+    sendEmailVerification(auth.currentUser, {
+      url: window.location.href,
+      handleCodeInApp: true,
+    });
     console.log("handling email");
-  };
-
-  const handleClick = (evt) => {
-    const { id } = evt.target;
-    if (id == "backButton") {
-      setOnboardingStep(1);
-    } else if (id == "continueButton") {
-      setOnboardingStep(3);
-    } else {
-    }
   };
 
   return (
@@ -58,29 +55,52 @@ const Step2 = ({ user, setOnboardingStep }) => {
 
           <div className="fs-1 text-no-bank-primary">Verify email address</div>
           <div className="pt-5">
-            {emailValidated && <div>Thank you for validating your email</div>}
+            {emailValidated && (
+              <div>
+                <div>
+                  Your email has been successfully validated. You are now ready
+                  to continue.
+                </div>
+                <div className="d-flex justify-content-center">
+                  <img
+                    src={EmailSuccess}
+                    height="96"
+                    width="120"
+                    className="m-5"
+                    alt=""
+                  />
+                </div>
+                <div className="text-no-bank-grayscale-iron text-center">
+                  Email successfully verified.
+                </div>
+              </div>
+            )}
             {!emailValidated && (
               <div>
-                <div className=" mb-4">
-                  Please verify your email using the link we just sent you at{" "}
-                  <span className="fw-bold">{userEmail}</span>
+                <div className=" ">
+                  Please verify your email using the link we just sent you.
                 </div>
 
-                <div className="spinner-grow" role="status">
-                  <span className="visually-hidden">Loading...</span>
-                </div>
-
-                <p className="mt-5">
-                  <span className="text-no-bank-grayscale-iron">
+                <p className="">
+                  <div className="text-no-bank-grayscale-iron">
                     Didn’t receive an email?{" "}
-                    <span
-                      className="fw-bold text-no-bank-primary"
+                    <button
+                      className="btn fw-bold text-no-bank-primary text-decoration-none"
                       onClick={handleEmail}
                     >
                       Resend
-                    </span>
-                  </span>
+                    </button>
+                  </div>
                 </p>
+                <div className="d-flex justify-content-center">
+                  <img
+                    src={EmailWait}
+                    height="96"
+                    width="120"
+                    className="m-5"
+                    alt=""
+                  />
+                </div>
               </div>
             )}
             <div className="d-flex justify-content-end pe-5 pb-3 fixed-bottom">
@@ -89,8 +109,6 @@ const Step2 = ({ user, setOnboardingStep }) => {
                   <button
                     id="backButton"
                     type="button"
-                    onClick={handleClick}
-                    //className="btn btn-no-bank-grayscale-silver text-white rounded-pill"
                     className="btn rounded-pill btn-no-bank-white text-rb-bank-primary pe-4 me-1"
                   >
                     Back
@@ -100,8 +118,6 @@ const Step2 = ({ user, setOnboardingStep }) => {
                   <button
                     id="continueButton"
                     type="button"
-                    onClick={handleClick}
-                    //className="btn btn-no-bank-grayscale-silver text-white rounded-pill"
                     className={`btn rounded-pill ${
                       emailValidated
                         ? "btn-no-bank-highlight text-rb-bank-primary"
@@ -121,5 +137,5 @@ const Step2 = ({ user, setOnboardingStep }) => {
   );
 };
 
-const mapToProps = ({ user }) => ({ user });
+const mapToProps = ({}) => ({});
 export default connect(mapToProps, actions)(Step2);

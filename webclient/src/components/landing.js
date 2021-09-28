@@ -10,6 +10,7 @@ import WalletSteffi from "../../public/wallet_steffi.svg";
 import CompassSteffi from "../../public/compass_steffi.svg";
 import SafeSteffi from "../../public/safe_steffi.svg";
 import LogoWhite from "../../public/logo_no_white.svg";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 const Landing = ({ setLocation }) => {
   const analytics = getAnalytics();
@@ -25,13 +26,13 @@ const Landing = ({ setLocation }) => {
         <div className="row my-5">
           <div className="col-md-6">
             <p className="display-4">
-              nobank is your trusted partner and gateway to Decentralized
+              <u>no</u>bank is your trusted partner and gateway to Decentralized
               Finance!
             </p>
             <p className="fs-4 text-no-bank-grayscale-iron">
-              Secure, understandable and easy to use – nobank enables you to
-              make educated financial investments in a world growing ever more
-              complex.
+              Secure, understandable and easy to use – <u>no</u>bank enables you
+              to make educated financial investments in a world growing ever
+              more complex.
             </p>
             <p className="text-black">Interested? Sign up now!</p>
             <Link to="/onboard">
@@ -50,7 +51,7 @@ const Landing = ({ setLocation }) => {
         <div className="row p-3 bg-no-bank-grayscale-platin ">
           <div className="row justify-content-center">
             <div className="col h1 text-no-bank-primary text-center">
-              Why nobank?
+              Why <u>no</u>bank?
             </div>
           </div>
           <div className="row py-3">
@@ -65,10 +66,14 @@ const Landing = ({ setLocation }) => {
                 <div className="card-body mt-3">
                   <p className="card-text text-center fs-6">
                     <span className="fw-bold">
-                      nobank offers you a bullet proof smart wallet,
+                      <u>no</u>bank takes you by the hand and guides you through
+                      the complex world of crypto investments.
                     </span>
-                    with advanced safety features natively available e.g. wallet
-                    recovery or locking in case of an emergency.
+                    <span>
+                      You will receive comprehensive product descriptions and
+                      clarity on chances and risks. If you are interested to
+                      deepen your understanding, we’re at your service.
+                    </span>
                   </p>
                 </div>
               </div>
@@ -84,12 +89,12 @@ const Landing = ({ setLocation }) => {
                 <div className="card-body mt-3">
                   <p className="card-text text-center fs-6">
                     <span className="fw-bold">
-                      nobank takes you by the hand and guides you through the
-                      complex world of crypto investments.{" "}
+                      <u>no</u>bank offers you a bullet proof smart wallet,
                     </span>
-                    We offer comprehensive product descriptions and highlight
-                    chances and risks. If you are interested to deepen your
-                    understanding, we’re at your service.{" "}
+                    <span>
+                      with advanced safety features natively available e.g.
+                      wallet recovery or locking in case of an emergency.
+                    </span>
                   </p>
                 </div>
               </div>
@@ -105,10 +110,14 @@ const Landing = ({ setLocation }) => {
                 <div className="card-body mt-3">
                   <p className="card-text text-center fs-6">
                     <span className="fw-bold">
-                      nobank offers you a bullet proof smart wallet,
+                      <u>no</u>bank believes that you should have full control
+                      over your own assets.
                     </span>
-                    with advanced safety features natively available e.g. wallet
-                    recovery or locking in case of an emergency.
+                    <span>
+                      {" "}
+                      No one else but you can access your account – not even{" "}
+                      <u>no</u>bank.
+                    </span>
                   </p>
                 </div>
               </div>
@@ -124,28 +133,30 @@ const Landing = ({ setLocation }) => {
             </Link>
           </div>
           <div className="d-flex align-items-center justify-content-between">
-            <Link to="/" className="text-white fs-6 px-3">
+            <Link to="/" className="text-white text-decoration-none fs-6 px-3 ">
               Home
             </Link>
-            <Link to="/" className="text-white fs-6 px-3">
+            <Link to="/" className="text-white text-decoration-none fs-6 px-3">
               Features
             </Link>
 
-            <Link to="/" className="text-white fs-6 px-3">
+            <Link to="/" className="text-white text-decoration-none fs-6 px-3">
               Pricing
             </Link>
 
-            <Link to="/" className="text-white fs-6 px-3">
+            <Link to="/" className="text-white text-decoration-none fs-6 px-3">
               About
             </Link>
           </div>
           <div>
             <Link
               to="/impressum"
-              className="m-0 text-no-bank-grayscale-silver f-6"
+              className="m-0 text-no-bank-grayscale-silver text-decoration-none f-6"
             >
               impressum
             </Link>
+            <i className="bi bi-twitter text-white mx-2"></i>
+            <i className="bi bi-linkedin text-white mx-2"></i>
           </div>
         </div>
       </div>

@@ -5,7 +5,7 @@ const navElementContent = [
   {
     nr: "1",
     title: "Account setup",
-    text: "We need your email adress to verify your account as well as for recovery. Depending on your location you are eligible for different services – it's the law :/",
+    text: "Choose a username and secure your account with a password - Remember to make it unique and use special characters. We will need to verify your email address to set up your account and for recovery features.",
   },
   {
     nr: "2",
@@ -15,7 +15,7 @@ const navElementContent = [
   {
     nr: "3",
     title: "Link Google Authenticator",
-    text: " R Bank uses Google Authenticator for our 2 Factor Authentication. Click here to download the app from the appstore to your phone.",
+    text: "nobank uses Google Authenticator for our 2 Factor Authentication. Click here to download the app from the appstore to your phone. What is Google Authenticator?",
   },
   {
     nr: "4",
@@ -25,7 +25,7 @@ const navElementContent = [
   {
     nr: "5",
     title: "Add funds",
-    text: "Adding funds will activate your wallet and you’re all set up to start investing in the space of decentralized finance! nobank only charges the fees of third party providers and does not earn anything on top-ups.",
+    text: "Adding funds will activate your wallet and you’re all set up to start investing in the space of decentralized finance! <u>no</u>bank only charges the fees of third party providers and does not earn anything on top-ups.",
   },
 ];
 
