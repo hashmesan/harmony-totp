@@ -103,6 +103,7 @@ const Top3Positions = (props) => {
             {holdingTokensInfo &&
               holdingTokensInfo.map((tokenAddress) => (
                 <tr
+                  key={tokenAddress}
                   className="pointer"
                   onClick={() => handleRowClick(tokenAddress)}
                 >

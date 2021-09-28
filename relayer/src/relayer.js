@@ -6,6 +6,7 @@ const CREATE_FEE = web3utils.toWei("0.09", "ether");
 
 // accepts createwallet, then forwards to our own relayer
 const createWallet = (input, callback) => {
+  console.log("create Wallet function: ", input);
   new Transactions(input.env || "testnet")
     .createWallet(input.config)
     .then((fd) => {
