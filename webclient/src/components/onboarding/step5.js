@@ -36,7 +36,7 @@ const Step5 = ({ environment, setOnboardingStep }) => {
   const [visualStatus, setVisualStatus] = useState("");
   const [initiated, setInitiated] = useState(false);
   const [validated, setValidated] = useState(false);
-  const [statusPercentage, setStatusPercentage] = useState("0%");
+  const [statusPercentage, setStatusPercentage] = useState("1%");
 
   const { smartvault } = useContext(SmartVaultContext);
   const depositInfo = smartvault.getDepositInfo();
@@ -76,18 +76,28 @@ const Step5 = ({ environment, setOnboardingStep }) => {
   }, [balance]);
 
   useEffect(() => {
+    console.log("status in UseEffect: ", status);
     switch (status) {
       case "Deploying wallet, waiting for tx":
+        console.log("case deploying");
         setVisualStatus("Fund’s received! – You’re wallet is being built");
         setStatusPercentage("33%");
+        break;
 
       case "setup complete, waiting for IPFS":
+        console.log("case setup complete");
         setVisualStatus("Configuring access");
         setStatusPercentage("66%");
+        break;
 
       case "Successful stored hash on contract.":
+        console.log("successful");
         setVisualStatus("All set, your wallet is ready!");
         setStatusPercentage("100%");
+        break;
+
+      default:
+        console.log("default case");
     }
   }, [status]);
 
@@ -95,7 +105,7 @@ const Step5 = ({ environment, setOnboardingStep }) => {
     if (balance > totalFee) {
       const submit = await smartvault.submitWallet((status) => {
         setStatus(status);
-        console.log("status: ", status);
+        console.log("status in SubmitWallet: ", status);
       });
       saveWalletToLocalStorage();
       setValidated(true);
@@ -265,34 +275,31 @@ const Step5 = ({ environment, setOnboardingStep }) => {
                         Funding your account...
                       </div>
                       <div className="d-flex justify-content-center p-3">
-                        {!validated && (
+                        {!validated ? (
                           <img src={FundingProgress} width="100" height="100" />
-                        )}
-                        {validated && (
+                        ) : (
                           <img src={FundingSuccess} width="100" height="100" />
                         )}
                       </div>
-                      <div className="text-no-bank-grayscale-iron">
-                        {visualStatus}
-                      </div>
-                      {!validated && (
-                        <div className="d-flex justify-content-center p-3">
-                          <div className="progress">
-                            {" "}
-                            <div
-                              className="progress-bar progress-bar-striped "
-                              role="progressbar"
-                              aria-valuemin="0"
-                              aria-valuemax="100"
-                              style={{ width: statusPercentage }}
-                            ></div>
-                          </div>
+                      <div className="d-flex justify-content-center p-3">
+                        <div className="text-no-bank-grayscale-iron">
+                          {visualStatus}
                         </div>
-                      )}
+                      </div>
+                      <div className="progress">
+                        <div
+                          className="progress-bar progress-bar-striped progress-bar-animated"
+                          role="progressbar"
+                          aria-valuemin="0"
+                          aria-valuemax="100"
+                          style={{ width: statusPercentage }}
+                        />
+                      </div>
                       {validated && (
                         <div className="d-flex justify-content-center p-3">
                           <button
                             type="button"
+                            data-bs-dismiss="modal"
                             className={`btn rounded-pill ${
                               validated
                                 ? "btn-no-bank-highlight text-rb-bank-primary"
@@ -329,9 +336,9 @@ const Step5 = ({ environment, setOnboardingStep }) => {
                     ? "btn-no-bank-highlight text-rb-bank-primary"
                     : "btn-no-bank-grayscale-silver text-white"
                 }`}
-                //disabled={!validated && "disabled"}
               >
-                Skip
+                {validated && <span>Continue</span>}
+                {!validated && <span>Skip</span>}
               </button>
             </Link>
           </div>
