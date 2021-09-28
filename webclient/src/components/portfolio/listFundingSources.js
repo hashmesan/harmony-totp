@@ -25,6 +25,19 @@ const listFundingSources = ({ fundingSources }) => {
               </span>
               <i className="bi bi-three-dots-vertical ms-auto text-no-bank-greyscale-iron"></i>
             </div>
+            <div>
+              <span className="text-no-bank-grayscale-iron">IBAN</span>
+              <span className="ms-2">{fundingSource.uid}</span>
+            </div>
+            <div>
+              <span className="text-no-bank-grayscale-iron">Limit</span>
+              <span className="ms-2">{fundingSource.limit}</span>
+              <span className="ms-2">CFH/day</span>
+            </div>
+            <div>
+              <span className="text-no-bank-grayscale-iron">Owner</span>
+              <span className="ms-2">{fundingSource.owner}</span>
+            </div>
           </li>
         );
       })}
