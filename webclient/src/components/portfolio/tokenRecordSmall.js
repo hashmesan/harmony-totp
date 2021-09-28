@@ -8,27 +8,17 @@ import { get2DaysPrice } from "../../subgraph_query";
 import { Link } from "react-router-dom";
 import TokenCategory from "./tokenCategory";
 import { tokenAddressMap } from "./tokenAddressMap";
+import { calcPriceBySushi, getPriceForUser } from "../../helper/priceCalc";
 
 const TokenRecordSmall = (props) => {
   const { smartvault } = useContext(SmartVaultContext);
 
   const [symbol, setSymbol] = useState("");
-  const [balance, setBalance] = useState("");
   const [ONEPrice, setONEPrice] = useState("");
 
   let price;
+  let priceChange;
   let priceChangePercent;
-
-  const ONEAddress = "0x7466d7d0c21fa05f32f5a0fa27e12bdc06348ce2";
-
-  const CHFUSD = 1.08;
-
-  const getPriceForUser = (orig_price) => {
-    const priceByCurrency = Number(orig_price) / CHFUSD;
-    const price = Math.round(priceByCurrency * 1000) / 1000;
-
-    return price;
-  };
 
   useEffect(() => {
     async function fetchTokenData() {
@@ -41,9 +31,8 @@ const TokenRecordSmall = (props) => {
       }
 
       setSymbol(tokenInfo.symbol);
-      setBalance(tokenInfo.balance);
 
-      const ONEPrice = await smartvault.harmonyClient.getTokenPriceByChainlink(ONEAddress, props.environment);
+      const ONEPrice = await smartvault.harmonyClient.getONEPriceByChainlink();
       setONEPrice(ONEPrice);
 
       if (tokenAddressMap.has(props.address) && props.environment != "mainnet") {
@@ -68,15 +57,7 @@ const TokenRecordSmall = (props) => {
   if (error) return `Error! ${error.message}`;
 
   if (data && data.token != null) {
-    const latestPrice = data.token.derivedETH * ONEPrice;
-    const latestPriceForUser = getPriceForUser(latestPrice);
-
-    const yesterdayPrice = data.token.dayData[1].priceUSD;
-    const priceChange24 = ((latestPrice - yesterdayPrice) / yesterdayPrice) * 100;
-
-    price = latestPriceForUser;
-
-    priceChangePercent = Math.round(priceChange24 * 1000) / 1000;
+    [price, priceChange, priceChangePercent] = calcPriceBySushi(data.token, ONEPrice);
   }
 
   return (
@@ -107,9 +88,5 @@ const TokenRecordSmall = (props) => {
   );
 };
 
-const mapToProps = ({ environment, ONElatestPrice, setHoldingTokens }) => ({
-  environment,
-  ONElatestPrice,
-  setHoldingTokens,
-});
+const mapToProps = ({ environment }) => ({ environment });
 export default connect(mapToProps, actions)(TokenRecordSmall);
