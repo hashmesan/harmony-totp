@@ -1,16 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import { connect } from "redux-zero/react";
-
 const web3utils = require("web3-utils");
-
 import AccountProvider, {
   SmartVaultContext,
 } from "../../context/SmartvaultContext";
-
 import actions from "../../redux/actions";
-
 import SimpleChart from "./simpleChart";
-
 import ChartHeaderToken from "./chartHeaderToken";
 import ChartBottom from "./chartBottom";
 import Transactions from "./transactions";
@@ -26,22 +21,13 @@ import NewsSample2 from "../../../public/news_sample2.png";
 import NewsSample3 from "../../../public/news_sample3.png";
 
 import { tokenAddressMap } from "./tokenAddressMap";
-
-const CHFUSD = 1.08;
-
-const getPriceForUser = (orig_price) => {
-  const priceByCurrency = Number(orig_price) / CHFUSD;
-  const price = Math.round(priceByCurrency * 1000) / 1000;
-
-  return price;
-};
+import { calcPriceBySushi, getPriceForUser } from "../../helper/priceCalc";
 
 const Token = (props) => {
   const { smartvault } = useContext(SmartVaultContext);
   const { address } = useParams();
 
   const [name, setName] = useState("");
-  const [symbol, setSymbol] = useState("");
   const [balance, setBalance] = useState("");
   const [chainlinkPrice, setChainlinkPrice] = useState("");
   const [ONEPrice, setONEPrice] = useState("");
@@ -51,33 +37,40 @@ const Token = (props) => {
   let priceChangePercent;
   let priceChange;
   let totalValue;
-  const ONEAddress = "0x7466d7d0c21fa05f32f5a0fa27e12bdc06348ce2";
+
+  const WONEAddress = "0xcf664087a5bb0237a0bad6742852ec6c8d69a27a";
 
   useEffect(() => {
     async function fetchTokenData() {
-      let tokenInfo = JSON.parse(localStorage.getItem(address));
       let addressForSushi;
 
-      if (!tokenInfo) {
-        tokenInfo = await smartvault.getTokenInfo(address);
-        localStorage.setItem(tokenInfo.address, JSON.stringify(tokenInfo));
-      }
-      setName(tokenInfo.name);
-      setSymbol(tokenInfo.symbol);
-      setBalance(tokenInfo.balance);
-
-      const chainP = await smartvault.harmonyClient.getTokenPriceByChainlink(
-        address,
-        props.environment
-      );
-      const chainPForUser = getPriceForUser(chainP);
-      setChainlinkPrice(chainPForUser);
-
-      const ONEPrice = await smartvault.harmonyClient.getTokenPriceByChainlink(
-        ONEAddress,
-        props.environment
-      );
+      const ONEPrice = await smartvault.harmonyClient.getONEPriceByChainlink();
       setONEPrice(ONEPrice);
+
+      if (address == WONEAddress) {
+        setName("ONE");
+
+        const ONEbalance = await smartvault.getDeposits();
+        const balanceForUser = Number(web3utils.fromWei(ONEbalance)).toFixed(4);
+        setBalance(balanceForUser);
+        setChainlinkPrice(ONEPrice);
+      } else {
+        let tokenInfo = JSON.parse(localStorage.getItem(address));
+
+        if (!tokenInfo) {
+          tokenInfo = await smartvault.getTokenInfo(address);
+          localStorage.setItem(tokenInfo.address, JSON.stringify(tokenInfo));
+        }
+        setName(tokenInfo.name);
+        setBalance(tokenInfo.balance);
+
+        const chainP = await smartvault.harmonyClient.getTokenPriceByChainlink(
+          address,
+          props.environment
+        );
+        const chainPForUser = getPriceForUser(chainP);
+        setChainlinkPrice(chainPForUser);
+      }
 
       if (tokenAddressMap.has(address) && props.environment != "mainnet") {
         addressForSushi = tokenAddressMap.get(address);
@@ -102,19 +95,12 @@ const Token = (props) => {
   if (error) return `Error! ${error.message}`;
 
   if (data && data.token != null) {
-    const latestPrice = data.token.derivedETH * ONEPrice;
-    const latestPriceForUser = getPriceForUser(latestPrice);
+    [price, priceChange, priceChangePercent] = calcPriceBySushi(
+      data.token,
+      ONEPrice
+    );
 
-    const yesterdayPrice = data.token.dayData[1].priceUSD;
-    const priceChange24 =
-      ((latestPrice - yesterdayPrice) / yesterdayPrice) * 100;
-
-    price = latestPriceForUser;
-
-    priceChange = getPriceForUser(latestPrice - yesterdayPrice);
-    priceChangePercent = Math.round(priceChange24 * 1000) / 1000;
-
-    totalValue = Math.round(latestPriceForUser * balance * 1000) / 1000;
+    totalValue = Math.round(price * balance * 1000) / 1000;
 
     data.token.dayData.forEach((day) => {
       const priceForUser = getPriceForUser(day.priceUSD);
