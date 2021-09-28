@@ -33,6 +33,23 @@ const actions = (store) => ({
       guardians: [...state.guardians, value],
     };
   },
+  updateGuardian: (state, value) => {
+    const index = state.guardians.findIndex(
+      (guardian) => guardian.hns == value.hns
+    );
+    const tempArray = [...state.guardians];
+    tempArray[index] = value;
+    return {
+      ...state,
+      guardians: tempArray,
+    };
+  },
+  deleteGuardian: (state, value) => {
+    return {
+      ...state,
+      guardians: state.guardians.filter(({ hns }) => hns !== value.hns),
+    };
+  },
 
   setONE: (state, value) => ({
     ONElatestPrice: value,
@@ -51,30 +68,36 @@ const actions = (store) => ({
       friends: [...state.friends, value],
     };
   },
-
-  updateGuardian: (state, value) => {
-    const index = state.guardians.findIndex(
-      (guardian) => guardian.hns == value.hns
-    );
-    const tempArray = [...state.guardians];
-    tempArray[index] = value;
-    return {
-      ...state,
-      guardians: tempArray,
-    };
-  },
-
-  deleteGuardian: (state, value) => {
-    return {
-      ...state,
-      guardians: state.guardians.filter(({ hns }) => hns !== value.hns),
-    };
-  },
-
   deleteFriend: (state, value) => {
     return {
       ...state,
       friends: state.friends.filter(({ hns }) => hns !== value.hns),
+    };
+  },
+
+  addFundingSource: (state, value) => {
+    return {
+      ...state,
+      fundingSources: [...state.fundingSources, value],
+    };
+  },
+  updateFundingSource: (state, value) => {
+    const index = state.fundingSources.findIndex(
+      (fundingSource) => fundingSource.uid == value.uid
+    );
+    const tempArray = [...state.fundingSources];
+    tempArray[index] = value;
+    return {
+      ...state,
+      fundingSources: tempArray,
+    };
+  },
+  deleteFundingSource: (state, value) => {
+    return {
+      ...state,
+      fundingSources: state.fundingSources.filter(
+        ({ uid }) => uid !== value.uid
+      ),
     };
   },
 });
