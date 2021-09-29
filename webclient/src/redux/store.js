@@ -27,8 +27,21 @@ const initialState = {
     step1: null,
     step2: null,
   },
-  guardians: wallet.guardians || [],
-  friends: wallet.friends || [],
+  guardians: wallet.guardians || [
+    {
+      hns: "tamas-kovacs.crazy.one",
+      address: "0xA17DCDD308190a352Bb20b67B98F3122Bf1deD18",
+      canRestoreAccount: true,
+      canApproveTransaction: false,
+      amountOfTransToApprove: 0,
+    },
+  ],
+  friends: wallet.friends || [
+    {
+      hns: "renaissancebank.crazy.one",
+      address: "0x95992308694De3574a09F2955B3751a3D6eF2eEB",
+    },
+  ],
   fundingSources: [
     {
       type: "bank",

@@ -1,31 +1,21 @@
+//import basic stuff
 import React, { useState } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { connect } from "redux-zero/react";
-import { getAuth, signOut } from "firebase/auth";
-import { useAuthState } from "../context/FirebaseAuthContext";
 
-import actions from "../redux/actions";
+//import actions
+import actions from "../../redux/actions";
 
-import LogoBlack from "../../public/logo_no_black.svg";
+//import static artefacts
+import LogoBlack from "../../../public/logo_no_black.svg";
 
-const Header = ({ location, setEnvironment }) => {
+const BasicHeader = ({ location }) => {
   const [showNav, setShowNav] = useState(false);
-  const { user } = useAuthState();
-  let history = useHistory();
-
-  //TODO: Move to env
-  setEnvironment("testnet0");
 
   const toggleNav = () => {
     setShowNav({
       showNav: !showNav,
     });
-  };
-
-  const handleClick = async () => {
-    await signOut(getAuth());
-
-    history.push("/landing");
   };
 
   return (
@@ -42,7 +32,7 @@ const Header = ({ location, setEnvironment }) => {
           >
             <span className="navbar-toggler-icon"></span>
           </button>
-          {location == "landing" && (
+          {location !== "Onboarding" && (
             <div
               className={(showNav ? "show" : "") + "collapse navbar-collapse"}
             >
@@ -86,12 +76,6 @@ const Header = ({ location, setEnvironment }) => {
           {location == "Onboarding" && (
             <div className="text-secondary fs-6 ">{location}</div>
           )}
-          {location == "portfolio" && (
-            <div>
-              <h1>Welcome {user?.email}</h1>
-              <button onClick={handleClick}>Sign out</button>
-            </div>
-          )}
         </div>
       </nav>
     </div>
@@ -99,4 +83,4 @@ const Header = ({ location, setEnvironment }) => {
 };
 
 const mapToProps = ({ location }) => ({ location });
-export default connect(mapToProps, actions)(Header);
+export default connect(mapToProps, actions)(BasicHeader);

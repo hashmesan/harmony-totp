@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
-import { SmartVaultContext, SmartVaultConsumer } from "../../context/SmartvaultContext";
+import {
+  SmartVaultContext,
+  SmartVaultConsumer,
+} from "../../context/SmartvaultContext";
 import { connect } from "redux-zero/react";
 import actions from "../../redux/actions";
 const web3utils = require("web3-utils");
@@ -23,7 +26,8 @@ const Positions = (props) => {
       setbalance(balanceForUser);
 
       if (props.ONElatestPrice == null) {
-        const ONEPrice = await smartvault.harmonyClient.getONEPriceByChainlink();
+        const ONEPrice =
+          await smartvault.harmonyClient.getONEPriceByChainlink();
         props.setONE(ONEPrice);
       }
 
@@ -51,13 +55,14 @@ const Positions = (props) => {
   if (data) {
     const yesterdayONEPrice = data.token.dayData[1].priceUSD;
 
-    const priceONEChange24 = ((props.ONElatestPrice - yesterdayONEPrice) / yesterdayONEPrice) * 100;
+    const priceONEChange24 =
+      ((props.ONElatestPrice - yesterdayONEPrice) / yesterdayONEPrice) * 100;
     priceONEChangeO24ForUser = Math.round(priceONEChange24 * 100) / 100;
   }
 
   return (
     <div className="card p-3">
-      <table class="table">
+      <table className="table">
         <thead>
           <tr>
             <th scope="col">Token</th>
@@ -79,7 +84,8 @@ const Positions = (props) => {
             <td></td>
             <td>{priceONEChangeO24ForUser} %</td>
           </tr>
-          {holdingTokensInfo && holdingTokensInfo.map((token) => <TokenRecord address={token} />)}
+          {holdingTokensInfo &&
+            holdingTokensInfo.map((token) => <TokenRecord address={token} />)}
         </tbody>
       </table>
     </div>

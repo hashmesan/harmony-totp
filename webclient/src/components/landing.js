@@ -1,16 +1,18 @@
+//import basic stuff
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "redux-zero/react";
 import { getAnalytics, logEvent } from "firebase/analytics";
 
+//import actions
 import actions from "../redux/actions";
 
-import LandingMockup from "../../public/landing_mockup.svg";
+//import static artefacts
+import LandingMockup from "../../public/landing_mockup.png";
 import WalletSteffi from "../../public/wallet_steffi.svg";
 import CompassSteffi from "../../public/compass_steffi.svg";
 import SafeSteffi from "../../public/safe_steffi.svg";
 import LogoWhite from "../../public/logo_no_white.svg";
-import { createUserWithEmailAndPassword } from "firebase/auth";
 
 const Landing = ({ setLocation }) => {
   const analytics = getAnalytics();
@@ -58,7 +60,7 @@ const Landing = ({ setLocation }) => {
             <div className="col-md-4 px-3 pt-5">
               <div className="card bg-no-bank-grayscale-platin border-0">
                 <img
-                  src={WalletSteffi}
+                  src={CompassSteffi}
                   className="card-img-top thumbnail image-fluid mx-auto"
                   style={{ maxHeight: "80px" }}
                   alt="..."
@@ -81,7 +83,7 @@ const Landing = ({ setLocation }) => {
             <div className="col-md-4 px-3 pt-5">
               <div className="card bg-no-bank-grayscale-platin border-0">
                 <img
-                  src={CompassSteffi}
+                  src={WalletSteffi}
                   className="card-img-top  mx-auto"
                   style={{ maxHeight: "80px" }}
                   alt="..."
@@ -167,7 +169,5 @@ const Landing = ({ setLocation }) => {
   );
 };
 
-const mapToProps = ({ location }) => ({
-  location,
-});
+const mapToProps = ({}) => ({});
 export default connect(mapToProps, actions)(Landing);
