@@ -27,8 +27,8 @@ const initialState = {
     step1: null,
     step2: null,
   },
-  guardians: wallet.guardians,
-  friends: wallet.friends,
+  guardians: wallet.guardians || [],
+  friends: wallet.friends || [],
   fundingSources: [
     {
       type: "bank",

@@ -14,6 +14,7 @@ import Landing from "./components/landing";
 import Onboarding from "./components/onboarding";
 import Portfolio from "./components/portfolio";
 import Token from "./components/portfolio/token";
+import About from "./components/about";
 
 import Login from "./components/login";
 
@@ -85,6 +86,9 @@ const App = () => {
           </Route>
           <Route path="/login">
             <Login />
+          </Route>
+          <Route path="/about">
+            <About />
           </Route>
         </Switch>
       </div>

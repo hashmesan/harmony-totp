@@ -63,7 +63,7 @@ const Header = ({ location, setEnvironment }) => {
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link to="/" className="nav-link active fs-6">
+                  <Link to="/about" className="nav-link active fs-6">
                     About
                   </Link>
                 </li>

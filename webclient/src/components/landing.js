@@ -144,7 +144,10 @@ const Landing = ({ setLocation }) => {
               Pricing
             </Link>
 
-            <Link to="/" className="text-white text-decoration-none fs-6 px-3">
+            <Link
+              to="/about"
+              className="text-white text-decoration-none fs-6 px-3"
+            >
               About
             </Link>
           </div>
