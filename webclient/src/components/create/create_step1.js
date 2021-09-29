@@ -20,9 +20,9 @@ class ChooseName extends Component {
       drainAddress: "",
 
       //R Bank user data
-      password: "",
-      email: "",
-      countryOfResidence: "",
+      password: "12345678",
+      email: "junt@gmail.com",
+      countryOfResidence: "Japan",
     };
   }
 

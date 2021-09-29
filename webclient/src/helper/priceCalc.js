@@ -14,10 +14,8 @@ export const calcPriceBySushi = (tokenData, ONEPrice) => {
   const yesterdayPrice = tokenData.dayData[1].priceUSD;
   const priceChange24 = ((latestPrice - yesterdayPrice) / yesterdayPrice) * 100;
 
-  const price = latestPriceForUser;
-
   const priceChange = getPriceForUser(latestPrice - yesterdayPrice);
   const priceChangePercent = Math.round(priceChange24 * 1000) / 1000;
 
-  return [price, priceChange, priceChangePercent];
+  return [latestPriceForUser, priceChange, priceChangePercent];
 };
