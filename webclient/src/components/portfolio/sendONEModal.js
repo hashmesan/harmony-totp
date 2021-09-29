@@ -7,7 +7,7 @@ const web3utils = require("web3-utils");
 
 const { toBech32, fromBech32 } = require("@harmony-js/crypto");
 
-const SendONEModal = ({ guardians, friends }) => {
+const SendONEModal = ({ selected = { hns: "" } }) => {
   const { smartvault } = useContext(SmartVaultContext);
   //const gasLimit = web3utils.toBN(smartvault.config.gasLimit);
   const gasLimit = smartvault.config.gasLimit;
@@ -24,7 +24,7 @@ const SendONEModal = ({ guardians, friends }) => {
   const [amount, setAmount] = useState(web3utils.toWei("1"));
 
   const transferONE = async () => {
-    console.log("arrived here");
+    console.log("arrived here", amount);
     try {
       const transfer = await smartvault.relayClient.transferTX(
         walletAddress,
@@ -40,18 +40,39 @@ const SendONEModal = ({ guardians, friends }) => {
     }
   };
   return (
-    <div>
-      <div
-        className="modal fade"
-        id="addFundingSourceModal"
-        tabIndex="-1"
-        aria-labelledby="addFundsModalLabel"
-        aria-hidden="false"
-      >
-        {" "}
-        <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
-          <div className="modal-content">
-            <button onClick={transferONE}>CLICKME</button>
+    <div
+      class="modal fade"
+      id="sendONEModal"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">
+              Transfer Funds to {selected.hns}
+            </h5>
+          </div>
+          <div class="modal-body">
+            <form action="">
+              <div className="input-group">
+                <input
+                  placeholder="Amount in ONE"
+                  className="form-control m-0 text-no-bank-grayscale-iron"
+                  required
+                  onChange={(e) => setAmount(web3utils.toWei(e.target.value))}
+                />
+                <button
+                  data-bs-dismiss="modal"
+                  type="button"
+                  onClick={transferONE}
+                  className="btn btn-no-bank-highlight text-rb-bank-primary rounded-pill ms-3"
+                >
+                  Execute Payment
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
@@ -60,3 +81,28 @@ const SendONEModal = ({ guardians, friends }) => {
 };
 
 export default SendONEModal;
+
+/*
+<div>
+      <div
+        className="modal fade"
+        id="sendONEModal"
+        aria-labelledby="sendONEModalLabel"
+        aria-hidden="false"
+      >
+        {" "}
+        <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+          <div className="modal-header">
+            <div
+              className="h2 modal-title fw-bold text-no-bank-grayscale-iron"
+              id="accountModalLabel"
+            >
+              Transfer Funds to {selected.hns}
+            </div>
+            <button onClick={transferONE}>KICK ME</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+*/

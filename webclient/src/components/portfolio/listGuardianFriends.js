@@ -10,28 +10,26 @@ const { toBech32, fromBech32 } = require("@harmony-js/crypto");
 const listGuardianFriends = ({ guardians, friends }) => {
   const [selected, setSelected] = useState("");
 
-  const handleClick = (e) => {
-    setSelected(e.target.value);
-  };
-
   return (
     <div>
       <ul className="list-group">
-        {guardians.map((guardian) => {
+        {guardians.map((el) => {
           return (
             <li
               className="list-group-item border-start-0 border-end-0 px-0"
-              key={`Guard_${guardian.hns.split(".", 1)}`}
+              key={`Guard_${el.hns.split(".", 1)}`}
             >
               <div className="d-flex align-items-center">
                 <span className="text-no-bank-primary fw-bolder">
-                  {guardian.hns.split(".", 1)}
+                  {el.hns.split(".", 1)}
                 </span>
                 <span className="badge bg-no-bank-grayscale-titanium rounded-pill text-no-bank-primary fw-light px-2 ms-2">
                   Guardian
                 </span>
                 <i
-                  onClick={handleClick}
+                  onClick={() => setSelected(el)}
+                  data-bs-toggle="modal"
+                  data-bs-target="#sendONEModal"
                   style={{ cursor: "pointer" }}
                   className="bi bi-three-dots-vertical ms-auto text-no-bank-greyscale-iron"
                 ></i>
@@ -39,17 +37,19 @@ const listGuardianFriends = ({ guardians, friends }) => {
             </li>
           );
         })}
-        {friends.map((friend) => {
+        {friends.map((el) => {
           return (
             <li
               className="list-group-item d-flex align-items-center border-start-0 border-end-0 px-0"
-              key={`Friend_${friend.hns.split(".", 1)}`}
+              key={`Friend_${el.hns.split(".", 1)}`}
             >
               <span className="text-no-bank-primary fw-bolder">
-                {friend.hns.split(".", 1)}{" "}
+                {el.hns.split(".", 1)}{" "}
               </span>
               <i
-                onClick={handleClick}
+                onClick={() => setSelected(el)}
+                data-bs-toggle="modal"
+                data-bs-target="#sendONEModal"
                 style={{ cursor: "pointer" }}
                 className="bi bi-three-dots-vertical ms-auto text-no-bank-greyscale-iron"
               ></i>

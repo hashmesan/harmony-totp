@@ -22,6 +22,7 @@ import About from "./components/about";
 import Create from "./components/create";
 import Wallet from "./components/wallet";
 import Recover from "./components/recover";
+import Stats from "./components/wallet/viper";
 
 //import actions
 import actions from "./redux/actions";
@@ -103,6 +104,12 @@ const App = ({ setEnvironment }) => {
               <UnAuthenticatedRoute path="/login" user={user}>
                 <Login />
               </UnAuthenticatedRoute>
+              <AuthenticatedRoute path="/viper" user={user}>
+                <Stats />
+              </AuthenticatedRoute>
+              <Route path="/about">
+                <About />
+              </Route>
             </Switch>
           </div>
         </Router>

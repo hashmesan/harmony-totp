@@ -11,6 +11,9 @@ import ChartBottom from "./chartBottom";
 import Transactions from "./transactions";
 import TokenCategory from "./tokenCategory";
 
+import { Link } from "react-router-dom";
+import Stats from "../wallet/viper";
+
 import { useLazyQuery } from "@apollo/client";
 import { get30DaysPrice } from "../../subgraph_query";
 import moment from "moment";
@@ -196,12 +199,30 @@ const Token = (props) => {
           </div>
           <button
             type="button"
+            data-bs-toggle="modal"
+            data-bs-target="#tradeModal"
             className="btn rounded-pill btn-no-bank-highlight text-rb-bank-primary px-5 py-2"
           >
             Trade
           </button>
         </div>
       </section>
+
+      {/* Trade Modal */}
+
+      <div
+        class="modal fade"
+        id="tradeModal"
+        tabindex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <Stats />
+          </div>
+        </div>
+      </div>
 
       {/* My position */}
       <section>
