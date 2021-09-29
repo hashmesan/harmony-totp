@@ -83,7 +83,7 @@ const About = ({ setLocation }) => {
               but as a service provider.
             </h1>
 
-            <div className="row align-items-center p-0 mt-4 mb-5 gap-4">
+            <div className="row align-items-center p-0 mt-4 mb-5 mx-0 gap-4">
               <div className="fs-3 col align-self-stretch p-4 bg-no-bank-grayscale-platin">
                 The customer retains full ownership of the assets, forever, in
                 any event (e.g., regulatory changes, bankruptcy, etc.) as they
