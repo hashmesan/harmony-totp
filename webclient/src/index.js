@@ -41,7 +41,7 @@ ReactDOM.render(
   <Provider store={store}>
     <ApolloProvider client={sushiGraphClient}>
       <AuthProvider>
-        <AccountProvider>
+        <AccountProvider loadAccount={true}>
           <App />
         </AccountProvider>
       </AuthProvider>
