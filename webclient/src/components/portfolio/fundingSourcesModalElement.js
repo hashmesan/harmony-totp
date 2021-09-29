@@ -7,13 +7,13 @@ const FundingSourcesModalElement = ({ fundingSources }) => {
   const { walletAddress } = depositInfo;
 
   return (
-    <div className="accordion-item">
-      <h2 className="accordion-header">
+    <div className="accordion-item mb-4 border-top">
+      <h2 className="accordion-header border-bottom-0">
         <div className="d-flex justify-content-between align-items-center px-2 py-3">
           <img src={fundingSources.logo} width="24" height="24" />
           <span className="fs-6 ms-3">{fundingSources.name}</span>
           <button
-            className="accordion-button bg-no-bank-white  ms-auto"
+            className="accordion-button bg-no-bank-white ms-auto border-bottom-0"
             type="button"
             data-bs-toggle="collapse"
             data-bs-target={`#Collapse${fundingSources.name}`}
@@ -45,7 +45,7 @@ const FundingSourcesModalElement = ({ fundingSources }) => {
         <hr />
         <div className="px-2 py-3">
           <div className="text-no-bank-grayscale-iron pb-2">
-            Your no-bank wallet adress:
+            Your no-bank wallet address:
           </div>
           <div className="border border-no-bank-grayscale-titanium p-3">
             {walletAddress}

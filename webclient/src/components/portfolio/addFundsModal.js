@@ -23,10 +23,10 @@ const AddFundsModal = () => {
       aria-labelledby="accountModalLabel"
       aria-hidden="true"
     >
-      <div className="modal-dialog">
+      <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div className="modal-content">
           <div>
-            <div className="modal-header">
+            <div className="modal-header border-bottom-0">
               <div
                 className="h2 modal-title fw-bold text-no-bank-grayscale-iron"
                 id="accountModalLabel"
@@ -35,7 +35,9 @@ const AddFundsModal = () => {
               </div>
             </div>
             <div className="modal-body">
-              <p>Which wallet would you like to connect?</p>
+              <div className="py-3">
+                Which wallet would you like to connect?
+              </div>
               <div className="accordion" id="accordionCryptoFundingSources">
                 {cryptoFundingSources.map((fundingSource) => (
                   <FundingSourcesModalElement
@@ -44,10 +46,10 @@ const AddFundsModal = () => {
                   />
                 ))}
               </div>
-              <div className="modal-footer">
+              <div className="modal-footer border-top-0">
                 <button
                   type="button"
-                  className="btn btn-secondary"
+                  className="btn btn-outline-dark rounded-pill"
                   data-bs-dismiss="modal"
                 >
                   Close
