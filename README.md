@@ -1,9 +1,6 @@
 [**NoBank.Finance**](https://no-bank.finance) |
-[**Demo Videos**](#demo-videos) |
-[**Security & Usability**](#security--usabilities) |
-[**Smart Contracts**](#smart-contracts) |
-[**Relayer**](#relayer) |
-[**Web client**](#Webclient)
+[**Overview**](#overview) |
+[**Technical Features**](#key--technical--features)
 
 [![](https://github.com/adirery/nobank/actions/workflows/heroku.yml/badge.svg?branch=develop)](https://github.com/adirery/nobank/actions/workflows/heroku.yml)
 
