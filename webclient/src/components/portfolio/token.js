@@ -62,6 +62,7 @@ const Token = (props) => {
 
         setName(tokenInfo.name);
         setBalance(tokenInfo.balance);
+        console.log("balance for ", tokenInfo.name, "is: ", tokenInfo.balace);
 
         const chainP = await smartvault.harmonyClient.getTokenPriceByChainlink(
           address,
@@ -172,14 +173,14 @@ const Token = (props) => {
       {/* Trade Modal */}
 
       <div
-        class="modal fade"
+        className="modal fade"
         id="tradeModal"
-        tabindex="-1"
+        tabIndex="-1"
         aria-labelledby="exampleModalLabel"
         aria-hidden="true"
       >
-        <div class="modal-dialog">
-          <div class="modal-content">
+        <div className="modal-dialog">
+          <div className="modal-content">
             <Stats />
           </div>
         </div>
