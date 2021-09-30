@@ -12,16 +12,16 @@
 
 NoBank is a smart contract wallet designed with worry-free recovery using your Google Authenticator (no worry about key phrases, passwords, device loss, email phishing, sms hijacking), and with many advanced wallet features.
 
-![Slide 1](docs/Slide1.png)
-![Slide 2](docs/Slide2.png)
-![Slide 3](docs/Slide3.png)
-![Slide 4](docs/Slide4.png)
-![Slide 5](docs/Slide5.png)
-![Slide 6](docs/Slide6.png)
-![Slide 7](docs/Slide7.png)
-![Slide 8](docs/Slide8.png)
-![Slide 9](docs/Slide9.png)
-![Slide 10](docs/Slide10.png)
+<img src="docs/Slide1.png" style="border: 1px solid black" />
+<img src="docs/Slide2.png" style="border: 1px solid black" />
+<img src="docs/Slide3.png" style="border: 1px solid black" />
+<img src="docs/Slide4.png" style="border: 1px solid black" />
+<img src="docs/Slide5.png" style="border: 1px solid black" />
+<img src="docs/Slide6.png" style="border: 1px solid black" />
+<img src="docs/Slide7.png" style="border: 1px solid black" />
+<img src="docs/Slide8.png" style="border: 1px solid black" />
+<img src="docs/Slide9.png" style="border: 1px solid black" />
+<img src="docs/Slide10.png" style="border: 1px solid black" />
 
 ### Key Technical Features
 
