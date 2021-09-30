@@ -13,15 +13,15 @@
 NoBank is a smart contract wallet designed with worry-free recovery using your Google Authenticator (no worry about key phrases, passwords, device loss, email phishing, sms hijacking), and with many advanced wallet features.
 
 <kbd><img src="docs/Slide1.png" style="border: 1px solid black" /></kbd>
-<img src="docs/Slide2.png" style="border: 1px solid black" />
-<img src="docs/Slide3.png" style="border: 1px solid black" />
-<img src="docs/Slide4.png" style="border: 1px solid black" />
-<img src="docs/Slide5.png" style="border: 1px solid black" />
-<img src="docs/Slide6.png" style="border: 1px solid black" />
-<img src="docs/Slide7.png" style="border: 1px solid black" />
-<img src="docs/Slide8.png" style="border: 1px solid black" />
-<img src="docs/Slide9.png" style="border: 1px solid black" />
-<img src="docs/Slide10.png" style="border: 1px solid black" />
+<kbd><img src="docs/Slide2.png" style="border: 1px solid black" /></kbd>
+<kbd><img src="docs/Slide3.png" style="border: 1px solid black" /></kbd>
+<kbd><img src="docs/Slide4.png" style="border: 1px solid black" /></kbd>
+<kbd><img src="docs/Slide5.png" style="border: 1px solid black" /></kbd>
+<kbd><img src="docs/Slide6.png" style="border: 1px solid black" /></kbd>
+<kbd><img src="docs/Slide7.png" style="border: 1px solid black" /></kbd>
+<kbd><img src="docs/Slide8.png" style="border: 1px solid black" /></kbd>
+<kbd><img src="docs/Slide9.png" style="border: 1px solid black" /></kbd>
+<kbd><img src="docs/Slide10.png" style="border: 1px solid black" /></kbd>
 
 ### Key Technical Features
 
