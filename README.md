@@ -12,7 +12,7 @@
 
 NoBank is a smart contract wallet designed with worry-free recovery using your Google Authenticator (no worry about key phrases, passwords, device loss, email phishing, sms hijacking), and with many advanced wallet features.
 
-<img src="docs/Slide1.png" style="border: 1px solid black" />
+<kbd><img src="docs/Slide1.png" style="border: 1px solid black" /></kbd>
 <img src="docs/Slide2.png" style="border: 1px solid black" />
 <img src="docs/Slide3.png" style="border: 1px solid black" />
 <img src="docs/Slide4.png" style="border: 1px solid black" />
@@ -39,62 +39,15 @@ Contract Audited by **Slowmist** - see [report](/audit/SlowMist%20Audit%20Report
 
 ### Demo Videos
 
-## Developer Guide
-
-[SmartVault Specifications](https://github.com/hashmesan/harmony-totp/wiki/SmartVault-Specifications)
-
-[Developer Guide](https://github.com/hashmesan/harmony-totp/wiki/Developer-Guide)
-
-[Integrating Dapp](https://github.com/hashmesan/harmony-totp/wiki/Integrating-DAPP)
-
-## Deployment
-
-Deployed to gh-pages branch.
-Start using it out at [smartvault.one](https://smartvaule.one)
-
-## Components
-
-### Command Line
-
-Install: `npm -g @hashmesan/smartvault`
-
-```
-Usage: smartvault [options] [command]
-
-Options:
-  -V, --version                                           output the version number
-  -e --env <env>                                          environment mainnet0, testnet0, testnet3 (default: "mainnet0")
-  -h, --help                                              display help for command
-
-Commands:
-  new [options] <name>                                    creates a new wallet
-  recover <name> <code1> <code2> <code3> <code4> <code5>  recover wallet
-  list                                                    list all wallets
-  balance <address>                                       get balance
-  transfer [options] [to] [amount]                        Transfer funds
-  info <address>                                          Display wallet info
-  set_daily_limit [options] <amount>                      set daily limit
-  set_drain_address [options] <address>                   set drain address
-  upgrade [options]                                       upgrades contract to latest
-  debug-break [options]                                   forces a revert
-  help [command]                                          display help for command
-```
-
-See [Examples](https://github.com/hashmesan/harmony-totp/wiki/CLI-Examples)
-
-### Smart contracts
-
-See [/contracts](/contracts/README.md)
-
-Contract Audited by Slowmist - see [report](/audit/SlowMist%20Audit%20Report.pdf)
-
-### Relayer
-
-See [/relayer](/relayer/README.md)
-
-### Webclient
-
-See [/webclient](/webclient/README.md)
+<iframe
+    width="640"
+    height="480"
+    src="https://youtu.be/R8IbQo_eZ3I"
+    frameborder="0"
+    allow="autoplay; encrypted-media"
+    allowfullscreen
+>
+</iframe>
 
 ## Credits
 
