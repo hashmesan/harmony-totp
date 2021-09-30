@@ -95,7 +95,7 @@ class Stats extends Component {
             name: this.state.to.name,
             symbol: this.state.to.symbol,
             decimals: this.state.to.decimals,
-            contractAddress: this.state.to.address,
+            contractAddress: this.state.to.address.toLowerCase(),
           });
           this.context.saveWallet();
         }
