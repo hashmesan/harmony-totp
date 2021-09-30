@@ -56,6 +56,7 @@ class TokenSelect extends Component {
                       <button
                         className="btn btn-block btn-light text-left"
                         onClick={(ev) => this.props.chooseToken(e)}
+                        key={e.symbol}
                       >
                         <img
                           src={e.logoURI}
