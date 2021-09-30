@@ -58,12 +58,8 @@ const Token = (props) => {
         setBalance(balanceForUser);
         setChainlinkPrice(ONEPrice);
       } else {
-        let tokenInfo = JSON.parse(localStorage.getItem(address));
+        const tokenInfo = await smartvault.getTokenInfo(address);
 
-        if (!tokenInfo) {
-          tokenInfo = await smartvault.getTokenInfo(address);
-          localStorage.setItem(tokenInfo.address, JSON.stringify(tokenInfo));
-        }
         setName(tokenInfo.name);
         setBalance(tokenInfo.balance);
 
@@ -256,7 +252,11 @@ const Token = (props) => {
               </div>
               <div className="my-2 text-no-bank-primary">
                 <span className="fs-1">
-                  {totalValue && totalValue.toLocaleString()}
+                  {totalValue &&
+                    totalValue.toLocaleString(undefined, {
+                      minimumFractionDigits: 3,
+                      maximumFractionDigits: 6,
+                    })}
                 </span>
                 <span className="fs-5 ms-1">CHF</span>
               </div>
@@ -264,7 +264,10 @@ const Token = (props) => {
                 <span className="fs-5 text-no-bank-grayscale-iron">Amount</span>
 
                 <span className="ms-2 text-no-bank-primary">
-                  {balance.toLocaleString()}
+                  {balance.toLocaleString(undefined, {
+                    minimumFractionDigits: 3,
+                    maximumFractionDigits: 6,
+                  })}
                 </span>
               </div>
             </div>
