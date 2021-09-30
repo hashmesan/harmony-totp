@@ -50,6 +50,7 @@ const Top3Positions = (props) => {
       smartvault.walletData.erc20 = smartvault.walletData.erc20 || [];
 
       // const temp = smartvault.walletData.erc20.pop();
+      // smartvault.walletData.erc20 = [];
       // saveWallet();
 
       await Promise.all(
