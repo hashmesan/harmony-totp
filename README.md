@@ -1,4 +1,4 @@
-![Slide 1](docs/nobanklogosquareorange.png)
+<img src="docs/nobanklogosquareorange.png" alt="logo" width="200"/>
 
 [**NoBank.Finance**](https://no-bank.finace) |
 [**Demo Videos**](#demo-videos) |
