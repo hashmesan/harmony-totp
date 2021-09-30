@@ -5,12 +5,16 @@
 [**Relayer**](#relayer) |
 [**Web client**](#Webclient)
 
-[![](https://github.com/hashmesan/harmony-totp/actions/workflows/webclient.yml/badge.svg?branch=develop)](https://github.com/hashmesan/harmony-totp/actions/workflows/webclient.yml)
 [![](https://github.com/adirery/nobank/actions/workflows/heroku.yml/badge.svg?branch=develop)](https://github.com/adirery/nobank/actions/workflows/heroku.yml)
 
 </p>
 
+### Overview
+
 NoBank is a smart contract wallet designed with worry-free recovery using your Google Authenticator (no worry about key phrases, passwords, device loss, email phishing, sms hijacking), and with many advanced wallet features.
+
+</p>
+To learn more, watch our demo: [![Watch the video](https://img.youtube.com/vi/R8IbQo_eZ3I/default.jpg)](https://youtu.be/R8IbQo_eZ3I)
 
 <kbd><img src="docs/Slide1.png" style="border: 1px solid black; padding-bottom: 10px" /></kbd>
 <kbd><img src="docs/Slide2.png" style="border: 1px solid black; padding-bottom: 10px" /></kbd>
@@ -36,10 +40,6 @@ NoBank is a smart contract wallet designed with worry-free recovery using your G
 - **Dapp integration**: Integrate with any Dapp with multi-call support. See [Uniswap/Viper demo](https://github.com/hashmesan/harmony-totp/wiki/Integrating-DAPP)
 
 Contract Audited by **Slowmist** - see [report](/audit/SlowMist%20Audit%20Report.pdf)
-
-### Demo Videos
-
-[![Watch the video](https://img.youtube.com/vi/R8IbQo_eZ3I/default.jpg)](https://youtu.be/R8IbQo_eZ3I)
 
 ## Credits
 
