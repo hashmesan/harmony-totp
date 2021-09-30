@@ -29,10 +29,6 @@ NoBank is a smart contract wallet designed with worry-free recovery using your G
 
 <kbd><img src="docs/Slide8.png" style="border: 1px solid black" /></kbd>
 
-<kbd><img src="docs/Slide9.png" style="border: 1px solid black" /></kbd>
-
-<kbd><img src="docs/Slide10.png" style="border: 1px solid black" /></kbd>
-
 ### Key Technical Features
 
 - **Worry-free recovery**: No worry about key phrases, passwords, device loss, email phishing, sms hijacking. Recover with 5 OTP tokens which means entering 30 digits code, providing you security of 100bits+ of entropy.
