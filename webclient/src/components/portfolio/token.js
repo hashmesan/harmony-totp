@@ -118,41 +118,6 @@ const Token = (props) => {
     //props.setHoldingTokens({ address: tokenAddress, name: name, latestPrice: price, priceChange: priceChange });
   }
 
-  // useEffect(() => {
-  //   if (!props.holdingTokens.length) {
-  //     setName("ETH");
-  //     setLatestPrice("2943");
-  //     setPriceChange("2.61");
-  //   } else {
-  //     const tokenInfo = props.holdingTokens.filter((token) => {
-  //       return token.address == address;
-  //     });
-
-  //     console.log(tokenInfo);
-  //     setName(tokenInfo[0].name);
-  //     setLatestPrice(tokenInfo[0].latestPrice);
-  //     setPriceChange(tokenInfo[0].priceChange);
-  //   }
-  // }, []);
-
-  // const { loading, error, data } = useQuery(get30DaysPrice, {
-  //   variables: {
-  //     tokenAddress: address,
-  //   },
-  // });
-
-  // if (loading) return "Loading...";
-  // if (error) return `Error! ${error.message}`;
-
-  // if (data) {
-  //   data.token.dayData.forEach((day) => {
-  //     const priceCHF = Number(day.priceUSD) * CHFUSD;
-  //     const priceForUser = Math.round(priceCHF * 1000) / 1000;
-  //     const daydata = { time: moment.unix(day.date).format("YYYY-MM-DD"), value: priceForUser };
-  //     dayPriceData.unshift(daydata);
-  //   });
-  // }
-
   return (
     <div className="container-fluid">
       <section>

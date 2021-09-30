@@ -6,7 +6,9 @@ import { useHistory, useRouteMatch } from "react-router-dom";
 import TokenRecordSmall from "./tokenRecordSmall";
 import TokenCategory from "./tokenCategory";
 
-import AccountProvider, { SmartVaultContext } from "../../context/SmartvaultContext";
+import AccountProvider, {
+  SmartVaultContext,
+} from "../../context/SmartvaultContext";
 
 import { useQuery, useLazyQuery } from "@apollo/client";
 import { get2DaysPrice } from "../../subgraph_query";
@@ -15,7 +17,7 @@ import { calcPriceBySushi, getPriceForUser } from "../../helper/priceCalc";
 const web3utils = require("web3-utils");
 
 const Top3Positions = (props) => {
-  const { smartvault } = useContext(SmartVaultContext);
+  const { smartvault, saveWallet } = useContext(SmartVaultContext);
 
   const history = useHistory();
   const { url } = useRouteMatch();
@@ -45,12 +47,38 @@ const Top3Positions = (props) => {
 
       let holdingTokens = await smartvault.getHoldingTokens();
 
-      if (holdingTokens.length > 2) {
-        holdingTokens = holdingTokens.slice(0, 2);
-      }
-      setholdingTokensInfo(holdingTokens);
+      smartvault.walletData.erc20 = smartvault.walletData.erc20 || [];
 
-      console.log(holdingTokens);
+      // const temp = smartvault.walletData.erc20.pop();
+      // saveWallet();
+
+      await Promise.all(
+        holdingTokens.map(async (tokenAddress) => {
+          if (
+            smartvault.walletData.erc20.findIndex(
+              (e) => e.contractAddress == tokenAddress
+            ) == -1
+          ) {
+            const tokenInfo = await smartvault.getTokenInfo(tokenAddress);
+
+            smartvault.walletData.erc20.push({
+              name: tokenInfo.name,
+              symbol: tokenInfo.name,
+              decimals: tokenInfo.symbol,
+              contractAddress: tokenAddress,
+            });
+            saveWallet();
+          }
+        })
+      );
+
+      let erc20 = smartvault.walletData.erc20;
+
+      if (erc20.length > 2) {
+        erc20 = erc20.slice(0, 2);
+      }
+
+      setholdingTokensInfo(erc20);
     }
 
     fetchData();
@@ -66,13 +94,18 @@ const Top3Positions = (props) => {
   if (error) return `Error! ${error.message}`;
 
   if (data && data.token != null) {
-    [price, priceChange, priceChangePercent] = calcPriceBySushi(data.token, ONEPrice);
+    [price, priceChange, priceChangePercent] = calcPriceBySushi(
+      data.token,
+      ONEPrice
+    );
   }
 
   return (
     <>
       <div className="d-flex align-items-center justify-content-between">
-        <div className="fs-4 text-no-bank-grayscale-iron">Top 3 portofolio Positions</div>
+        <div className="fs-4 text-no-bank-grayscale-iron">
+          Top 3 portofolio Positions
+        </div>
 
         <i className="bi bi-arrow-up-right fs-5"></i>
       </div>
@@ -107,7 +140,13 @@ const Top3Positions = (props) => {
                 <span className="ms-1 text-no-bank-grayscale-iron">CHF</span>
               </td>
               <td>
-                <span className={priceChangePercent > 0 ? "text-success" : "text-danger"}>{priceChangePercent} %</span>
+                <span
+                  className={
+                    priceChangePercent > 0 ? "text-success" : "text-danger"
+                  }
+                >
+                  {priceChangePercent} %
+                </span>
               </td>
               <td>
                 <span className="text-no-bank-primary">4.3</span>
@@ -117,9 +156,17 @@ const Top3Positions = (props) => {
             </tr>
 
             {holdingTokensInfo &&
-              holdingTokensInfo.map((tokenAddress) => (
-                <tr key={tokenAddress} className="pointer" onClick={() => handleRowClick(tokenAddress)}>
-                  <TokenRecordSmall address={tokenAddress} />
+              holdingTokensInfo.map((token) => (
+                <tr
+                  key={token.contractAddress}
+                  className="pointer"
+                  onClick={() =>
+                    handleRowClick(token.contractAddress.toLowerCase())
+                  }
+                >
+                  <TokenRecordSmall
+                    address={token.contractAddress.toLowerCase()}
+                  />
                 </tr>
               ))}
           </tbody>

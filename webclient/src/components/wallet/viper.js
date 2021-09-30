@@ -121,7 +121,7 @@ class Stats extends Component {
       if (token.address) {
         this.context.smartvault.harmonyClient
           .getErc20Balance(
-            [token.address],
+            token.address,
             this.context.smartvault.walletData.walletAddress
           )
           .then((balances) => {
