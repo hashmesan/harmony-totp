@@ -1,5 +1,4 @@
-<p align="center"><br/>&nbsp;
-  <img src="./webclient/public/logo_smartvault.png"" height ="65" alt="" align="middle"/><br/>&nbsp;
+![Slide 1](docs/nobanklogosquareorange.png)
 
 [**NoBank.Finance**](https://no-bank.finace) |
 [**Demo Videos**](#demo-videos) |
@@ -8,7 +7,6 @@
 [**Relayer**](#relayer) |
 [**Web client**](#Webclient)
 
-[![](https://github.com/adirery/nobank/actions/workflows/docker-test.yml/badge.svg?branch=develop)](https://github.com/adirery/nobank/actions/workflows/docker-test.yml)
 [![](https://github.com/hashmesan/harmony-totp/actions/workflows/webclient.yml/badge.svg?branch=develop)](https://github.com/hashmesan/harmony-totp/actions/workflows/webclient.yml)
 [![](https://github.com/adirery/nobank/actions/workflows/heroku.yml/badge.svg?branch=develop)](https://github.com/adirery/nobank/actions/workflows/heroku.yml)
 
