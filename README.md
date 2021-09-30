@@ -12,11 +12,10 @@ NoBank is a smart contract wallet designed with worry-free recovery using your G
 </p>
 To learn more, watch our demo:
 
-[**Link to Youtube video**](https://youtu.be/R8IbQo_eZ3I)
+[![Youtube Demo](docs/Slide1.png)](https://youtu.be/R8IbQo_eZ3I)
 
 ### Overview
 
-<kbd><img src="docs/Slide1.png" style="border: 1px solid black; padding-bottom: 10px" /></kbd>
 <kbd><img src="docs/Slide2.png" style="border: 1px solid black; padding-bottom: 10px" /></kbd>
 <kbd><img src="docs/Slide3.png" style="border: 1px solid black; padding-bottom: 10px" /></kbd>
 <kbd><img src="docs/Slide4.png" style="border: 1px solid black; padding-bottom: 10px" /></kbd>
