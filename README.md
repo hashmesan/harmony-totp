@@ -1,6 +1,6 @@
 [**NoBank.Finance**](https://no-bank.finance) |
 [**Overview**](#overview) |
-[**Technical Features**](#key--technical--features)
+[**Technical Features**](#key-technical-features)
 
 [![](https://github.com/adirery/nobank/actions/workflows/heroku.yml/badge.svg?branch=develop)](https://github.com/adirery/nobank/actions/workflows/heroku.yml)
 
