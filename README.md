@@ -12,16 +12,16 @@
 
 NoBank is a smart contract wallet designed with worry-free recovery using your Google Authenticator (no worry about key phrases, passwords, device loss, email phishing, sms hijacking), and with many advanced wallet features.
 
-<kbd><img src="docs/Slide1.png" style="border: 1px solid black" /></kbd>
-<kbd><img src="docs/Slide2.png" style="border: 1px solid black" /></kbd>
-<kbd><img src="docs/Slide3.png" style="border: 1px solid black" /></kbd>
-<kbd><img src="docs/Slide4.png" style="border: 1px solid black" /></kbd>
-<kbd><img src="docs/Slide5.png" style="border: 1px solid black" /></kbd>
-<kbd><img src="docs/Slide6.png" style="border: 1px solid black" /></kbd>
-<kbd><img src="docs/Slide7.png" style="border: 1px solid black" /></kbd>
-<kbd><img src="docs/Slide8.png" style="border: 1px solid black" /></kbd>
-<kbd><img src="docs/Slide9.png" style="border: 1px solid black" /></kbd>
-<kbd><img src="docs/Slide10.png" style="border: 1px solid black" /></kbd>
+<kbd><img src="docs/Slide1.png" style="border: 1px solid black; padding-bottom: 10px" /></kbd>
+<kbd><img src="docs/Slide2.png" style="border: 1px solid black; padding-bottom: 10px" /></kbd>
+<kbd><img src="docs/Slide3.png" style="border: 1px solid black; padding-bottom: 10px" /></kbd>
+<kbd><img src="docs/Slide4.png" style="border: 1px solid black; padding-bottom: 10px" /></kbd>
+<kbd><img src="docs/Slide5.png" style="border: 1px solid black; padding-bottom: 10px" /></kbd>
+<kbd><img src="docs/Slide6.png" style="border: 1px solid black; padding-bottom: 10px" /></kbd>
+<kbd><img src="docs/Slide7.png" style="border: 1px solid black; padding-bottom: 10px" /></kbd>
+<kbd><img src="docs/Slide8.png" style="border: 1px solid black; padding-bottom: 10px" /></kbd>
+<kbd><img src="docs/Slide9.png" style="border: 1px solid black; padding-bottom: 10px" /></kbd>
+<kbd><img src="docs/Slide10.png" style="border: 1px solid black; padding-bottom: 10px" /></kbd>
 
 ### Key Technical Features
 
@@ -39,15 +39,7 @@ Contract Audited by **Slowmist** - see [report](/audit/SlowMist%20Audit%20Report
 
 ### Demo Videos
 
-<iframe
-    width="640"
-    height="480"
-    src="https://youtu.be/R8IbQo_eZ3I"
-    frameborder="0"
-    allow="autoplay; encrypted-media"
-    allowfullscreen
->
-</iframe>
+[![Watch the video](https://img.youtube.com/vi/R8IbQo_eZ3I/default.jpg)](https://youtu.be/R8IbQo_eZ3I)
 
 ## Credits
 
