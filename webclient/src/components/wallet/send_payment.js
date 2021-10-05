@@ -25,7 +25,9 @@ class SendPayment extends Component {
 		var self = this;
 		self.setState({ submitting: true });
 
-		this.context.smartvault.relayClient.transferTX(this.context.smartvault.walletData.walletAddress, fromBech32(this.state.destination), web3utils.toWei(this.state.sendAmount), parseInt(web3utils.toWei(""+this.state.gasPrice,'gwei')), this.state.gasLimit, this.context.smartvault.ownerAccount).then(e => {
+		const tx = RelayerClient.getContract().methods.multiCall([{to: fromBech32(this.state.destination), value: web3utils.toWei(this.state.sendAmount), data: "0x"}]).encodeABI();
+		this.context.smartvault.submitTransaction(tx)
+		.then(e => {
 			console.log("sigs", e);
 			setTimeout(() => {
 				self.setState({ submitting: false, destination: "", sendAmount: "" });

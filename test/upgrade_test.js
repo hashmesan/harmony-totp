@@ -92,7 +92,7 @@ contract("Upgrade", accounts => {
 
 		var dest = web3.eth.accounts.create();
 		var feeWallet = web3.eth.accounts.create();
-		methodData = wallet.contract.methods.makeTransfer(dest.address, web3.utils.toWei("0.0012345", "ether")).encodeABI();
+		methodData = wallet.contract.methods.multiCall([{to: dest.address, value: web3.utils.toWei("0.0012345", "ether"), data: "0x"}]).encodeABI();
                 
         var sigs = await commons.signOffchain2(
             [tmpWallet],

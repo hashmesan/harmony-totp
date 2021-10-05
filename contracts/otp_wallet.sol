@@ -32,6 +32,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
     Core.Wallet public wallet;
     bool internal isImplementationContract;
     uint public constant version = 1;
+    bytes4 private constant _INTERFACE_ID_ERC1271 = 0x1626ba7e;
 
     // END OF DATA LAYOUT
     struct Call {
@@ -147,8 +148,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
     function getRequiredSignatures(bytes calldata _data) public view returns (uint8, Core.OwnerSignature) {
         bytes4 methodId = functionPrefix(_data);
 
-        if(methodId == TOTPWallet.makeTransfer.selector ||
-            methodId == TOTPWallet.multiCall.selector ||
+        if(methodId == TOTPWallet.multiCall.selector ||
             methodId == TOTPWallet.addGuardian.selector ||
             methodId == TOTPWallet.revokeGuardian.selector||
             methodId == TOTPWallet.upgradeMasterCopy.selector ||
@@ -211,17 +211,6 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
             results[i] = invoke(_transactions[i].to, _transactions[i].value, _transactions[i].data);
         }
         return results;
-    }
-
-    function makeTransfer(address payable to, uint amount) external onlyFromWalletOrOwnerWhenUnlocked() 
-    {
-        require(wallet.isUnderLimit(amount), "over withdrawal limit");
-        require(address(this).balance >= amount, "not enough balance");  
-
-        wallet.spentToday += amount;
-        (bool success,) = to.call{value: amount, gas: 100000}("");
-        require(success, "MakeTransfer: External call failed");
-        emit WalletTransfer(to, amount);             
     }
 
     function getOwner()  public
@@ -380,7 +369,8 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
     function supportsInterface(bytes4 interfaceID) external override pure returns (bool) {
         return interfaceID == this.supportsInterface.selector ||
         interfaceID == this.onERC1155Received.selector ||
-        interfaceID == this.onERC721Received.selector;
+        interfaceID == this.onERC721Received.selector ||
+        interfaceID == _INTERFACE_ID_ERC1271;
     }
 
     function onERC721Received(
@@ -390,6 +380,18 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
         bytes calldata
     ) external pure override returns (bytes4){
         return this.onERC721Received.selector;
+    }
+
+    /**
+    * @notice Implementation of EIP 1271.
+    * Should return whether the signature provided is valid for the provided data.
+    * @param _msgHash Hash of a message signed on the behalf of address(this)
+    * @param _signature Signature byte array associated with _msgHash
+    */
+    function isValidSignature(bytes32 _msgHash, bytes memory _signature) external view returns (bytes4) {
+        require(_signature.length == 65, "TM: invalid signature length");
+        require(MetaTx.validateSignatures(wallet, _msgHash, _signature, Core.OwnerSignature.Required), "Invalid owner signature");
+        return _INTERFACE_ID_ERC1271;
     }
 
     //

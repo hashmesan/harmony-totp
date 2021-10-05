@@ -24,7 +24,7 @@ contract("OTPWallet", accounts => {
         console.log("root="+ root);
 
         await web3.eth.sendTransaction({from: accounts[0], to: wallet.address, value: web3.utils.toWei("2", "ether")});
-        await wallet.makeTransfer(tmpWallet.address, web3.utils.toWei("0.001234", "ether"));
+        await wallet.multiCall([{to: tmpWallet.address, value: web3.utils.toWei("0.001234", "ether"), data: "0x"}]);
 
         var newBalance = await web3.eth.getBalance(tmpWallet.address);
         console.log("Balance=", newBalance);
@@ -80,7 +80,7 @@ contract("OTPWallet", accounts => {
         await wallet.executeMetaTx(methodData0, sigs, nonce, 0, gasLimit, ethers.constants.AddressZero, feeWallet.address);
 
     
-        const methodData = wallet.contract.methods.makeTransfer(tmpWallet.address, web3.utils.toWei("0.0012345", "ether")).encodeABI();
+        const methodData = wallet.contract.methods.multiCall([{to: tmpWallet.address, value: web3.utils.toWei("0.0012345", "ether"), data: "0x"}]).encodeABI();
                 
         var sigs = await walletLib.signOffchain2(
             [tmpWallet],
@@ -133,7 +133,7 @@ contract("OTPWallet", accounts => {
         await web3.eth.sendTransaction({from: accounts[0], to: wallet.address, value: web3.utils.toWei("2", "ether")});
 
         // send to the other smart wallet        
-        const methodData = wallet.contract.methods.makeTransfer(wallet2.wallet.address, web3.utils.toWei("0.1234", "ether")).encodeABI();
+        const methodData = wallet.contract.methods.multiCall([{to: wallet2.wallet.address, value: web3.utils.toWei("0.1234", "ether"), data: "0x"}]).encodeABI();
         const nonce = await commons.getNonceForRelay();
         const gasLimit = 100000;
         var sigs = await commons.signOffchain2(
@@ -219,7 +219,7 @@ contract("OTPWallet", accounts => {
                                 await web3.eth.getBalance(wallet2));
 
         var wallet = await commons.walletWithAddress(wallet1);
-        const methodData = wallet.contract.methods.makeTransfer(wallet2, web3.utils.toWei("0.5", "ether")).encodeABI();
+        const methodData = wallet.contract.methods.multiCall([{to: wallet2, value: web3.utils.toWei("0.5", "ether"), data: "0x"}]).encodeABI();
         const nonce = await commons.getNonceForRelay();
         const gasLimit = 100000;
         var feeWallet = web3.eth.accounts.create();

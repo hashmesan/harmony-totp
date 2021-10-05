@@ -30,7 +30,7 @@ async function getWallet(address) {
 async function transferTx() {
     const wallet = await getWallet("0x21bA1bdfC2cD6BfA72e487Acd504Ab429C29EF5C");
     const amount = Web3.utils.toWei("0.0123", "ether");
-    const tx = await wallet.makeTransfer("0x1727adCCe8F11E7b9cbDd065e5ab64158F8BcE3B", amount);
+    const tx = await wallet.multiCall([{to: "0x1727adCCe8F11E7b9cbDd065e5ab64158F8BcE3B", value: amount, data: "0x"}]);
     console.log(tx);
 }
 
