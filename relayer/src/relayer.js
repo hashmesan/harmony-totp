@@ -39,7 +39,7 @@ const submitMetaTx = (input, callback) => {
 };
 
 const storeHash = (input, callback) => {
-  ipfs.storeHash(input.env, input.data.wallet, input.data.hashes).then(res=>{
+  ipfs.storeHash(input.env, input.data.wallet, input.data.rootHashes, input.data.hashes).then(res=>{
     callback(200, {result: res});
   }).catch(ex=>{
     console.log(ex);

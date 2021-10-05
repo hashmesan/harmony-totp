@@ -53,16 +53,20 @@ function isValidHashes(roots, hashes) {
     return true;
 }
 
-async function storeHash(env, wallet, hashesBase64) {
-    // TODO: NEED VALIDATION HERE
+async function storeHash(env, wallet, rootHashes, hashesBase64) {
     // get the root hash
+
+    // step1: computeTheAddress...(owner, salt) -> address
+
     // var wallet = await new Transactions(env || "testnet").getWallet(wallet);
     // var rootHashes = await wallet.getRootHashes();
     var rawData = base64.decode(hashesBase64);
+
     // ensure reduction of hashes match with rootHash
-    // if(!isValidHashes(rootHashes, rawData)) {
-    //     throw "Hashes don't match"
-    // }
+    if(!isValidHashes(rootHashes, rawData)) {
+        console.log("rootHashes", rootHashes)
+        throw "Hashes don't match"
+    }
 
     // upload to IPFS
     var cid = add(rawData);
