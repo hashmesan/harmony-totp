@@ -31,7 +31,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
     address masterCopy;
     Core.Wallet public wallet;
     bool internal isImplementationContract;
-    uint public constant version = 1;
+    uint public constant version = 2;
     bytes4 private constant _INTERFACE_ID_ERC1271 = 0x1626ba7e;
 
     // END OF DATA LAYOUT
@@ -41,12 +41,6 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
         bytes data;
     }
 
-    event DebugEvent(bytes16 data);
-    event DebugEvent32(bytes32 data);
-    event DebugEventN(uint32 data);
-    event DebugEventA(address data);    
-    event DebugEvent256(uint256 data);
-    event WalletTransfer(address to, uint amount);
     event Deposit(address indexed sender, uint value);
     event WalletUpgraded(address newImpl);
     event TransactionExecuted(bool indexed success, bytes returnData, bytes32 signedHash);
@@ -65,14 +59,14 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
     // keep methods <= 8 parameters of get stack to deep
     function initialize(
         address              resolver_,
-        string[2]   calldata domain_, // empty means no registration
+        string[3]   calldata domainAndHashId_, // empty means no registration
         address             owner_, 
         bytes32[] calldata    rootHash_, 
         uint8               merkelHeight_, 
         address payable     drainAddr_, 
         uint                dailyLimit_,
         address             feeRecipient,
-        uint                feeAmount                
+        uint                feeAmount
         ) external 
         // disableInImplementationContract()
     {
@@ -91,13 +85,15 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
         wallet.dailyLimit = dailyLimit_;
 
         // STACK TOO DEEP
-        if(bytes(domain_[0]).length > 0) {
-            this.registerENS(domain_[0], domain_[1], 60 * 60 * 24 * 365);
+        if(bytes(domainAndHashId_[0]).length > 0) {
+            this.registerENS(domainAndHashId_[0], domainAndHashId_[1], 60 * 60 * 24 * 365);
         }
 
         if (feeRecipient != address(0)) {
             payable(feeRecipient).sendValue(feeAmount);
-        }        
+        }  
+        
+        wallet.hashStorageID = domainAndHashId_[2];        
     }   
 
     function registerENS(string calldata subdomain, string calldata domain, uint duration) external onlyFromWalletOrOwnerWhenUnlocked() {

@@ -88,8 +88,8 @@ async function createWallet(resolver, domain,owner, depth, spendingLimit, drainA
     */
 
    const encodedRequest = ethAbi.encodeParameters(
-    ["address", "string[2]", "address", "bytes32[]", "uint8","address", "uint", "address", "uint"],
-    [resolver, ["quoc", "supercrazy"], owner, root_arr, depth, drainAddr, spendingLimit, feeAddress, feeAmount]
+    ["address", "string[3]", "address", "bytes32[]", "uint8","address", "uint", "address", "uint"],
+    [resolver, domain, owner, root_arr, depth, drainAddr, spendingLimit, feeAddress, feeAmount]
   );
     var wallet = await TOTPWallet.new();
     //console.log("createWallet", resolver, domain, owner, root_arr, depth, drainAddr, spendingLimit, feeAddress, feeAmount);

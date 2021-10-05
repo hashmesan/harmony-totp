@@ -23,7 +23,7 @@ contract("Recovery", accounts => {
         //createWallet(resolver, domain,owner, depth, spendingLimit, drainAddr, feeAddress, feeAmount) {
         var {root_arr, leaves_arr, wallet} = await commons.createWallet(
                     ethers.constants.AddressZero,  //resolver
-                    ["",""],
+                    ["","","hashId"],
                     accounts[0], //owner
                     8,
                     web3.utils.toWei("100", "ether"),
@@ -152,7 +152,7 @@ contract("Recovery", accounts => {
         var newOwnerWallet = web3.eth.accounts.create();
         var {root_arr, leaves_arr, wallet} = await commons.createWallet(
             ethers.constants.AddressZero,
-            ["",""],
+            ["","","hashId"],
             accounts[0], // drain
             8,
             web3.utils.toWei("100", "ether"),
@@ -217,7 +217,7 @@ contract("Recovery", accounts => {
         var newOwnerWallet = web3.eth.accounts.create();
         var {root_arr, leaves_arr, wallet} = await commons.createWallet(
             ethers.constants.AddressZero,
-            ["",""],
+            ["","","hashId"],
             accounts[0], // drain
             8,
             web3.utils.toWei("100", "ether"),

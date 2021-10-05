@@ -15,7 +15,7 @@ contract("ERC1271 tests", accounts => {
 
         var { root, leaves, wallet } = await commons.createWallet(
             ethers.constants.AddressZero,
-            ["", ""],
+            ["", "","hashId"],
             tmpWallet.address,
             8,
             web3.utils.toWei("0.1", "ether"),

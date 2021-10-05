@@ -59,8 +59,8 @@ class Transactions {
     async createWallet(config) {
         var count = await new Web3(this.provider).eth.getTransactionCount(this.defaultAddress);
         const factory = await this.getWalletFactory();
-        console.log("sent=", config);
-        var tx = await factory.createWallet(config,{ from: this.defaultAddress, gas: 712388, nonce: count});
+        console.log("sent=", this.env, config);
+        var tx = await factory.createWallet(config,{ from: this.defaultAddress, gas: 812388, nonce: count});
         return {tx: tx.tx};
     }
 

@@ -54,14 +54,15 @@ function isValidHashes(roots, hashes) {
 }
 
 async function storeHash(env, wallet, hashesBase64) {
+    // TODO: NEED VALIDATION HERE
     // get the root hash
-    var wallet = await new Transactions(env || "testnet").getWallet(wallet);
-    var rootHashes = await wallet.getRootHashes();
+    // var wallet = await new Transactions(env || "testnet").getWallet(wallet);
+    // var rootHashes = await wallet.getRootHashes();
     var rawData = base64.decode(hashesBase64);
     // ensure reduction of hashes match with rootHash
-    if(!isValidHashes(rootHashes, rawData)) {
-        throw "Hashes don't match"
-    }
+    // if(!isValidHashes(rootHashes, rawData)) {
+    //     throw "Hashes don't match"
+    // }
 
     // upload to IPFS
     var cid = add(rawData);

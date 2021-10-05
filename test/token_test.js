@@ -51,7 +51,7 @@ contract("TokenTest", async (accounts) => {
         tmpWallet = web3.eth.accounts.create();
         var {root, leaves, wallet} = await commons.createWallet(
             ethers.constants.AddressZero,
-            ["",""],
+            ["","","hashId"],
             tmpWallet.address, //owner
             8, 
             web3.utils.toWei("100", "ether"),

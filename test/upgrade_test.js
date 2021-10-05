@@ -33,7 +33,7 @@ contract("Upgrade", accounts => {
         var subdomain = "superlongcrazynameverycheap000001" + blockNumber + salt;
 		var smartWallet = await walletFactory.createWallet({
 			resolver: resolverAddr,
-			domain: [subdomain, "crazy"],
+			domain: [subdomain, "crazy","hashId"],
 			owner: owner,
 			rootHash: root_arr,
 			merkelHeight: merkelHeight,
@@ -41,7 +41,7 @@ contract("Upgrade", accounts => {
 			dailyLimit: dailyLimit,
 			salt: salt,
 			feeReceipient: feeReceipient,
-			feeAmount: feeAmount
+			feeAmount: feeAmount,
 		});
 
         return walletAddrComputed;        

@@ -25,7 +25,7 @@ contract WalletFactory
     struct WalletConfig
     {
         address resolver;
-        string[2]    domain;
+        string[3]    domain;
         address   owner;     
         bytes32[] rootHash;
         uint8 	  merkelHeight;
@@ -58,7 +58,7 @@ contract WalletFactory
         wallet = _deploy(config.owner, config.salt);
         _initializeWallet(wallet, config);
 
-        created.push(CreateRecord(address(wallet), config.domain));
+        created.push(CreateRecord(address(wallet), [config.domain[0], config.domain[1]]));
         emit WalletCreated(address(wallet), config.owner);
     }
 

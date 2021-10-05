@@ -14,7 +14,7 @@ contract("OTPWallet", accounts => {
 
         var {root, leaves, wallet} = await commons.createWallet(
             ethers.constants.AddressZero,
-            ["",""],
+            ["","","hashId"],
             accounts[0] ,
             8, 
             web3.utils.toWei("100", "ether"),
@@ -37,7 +37,7 @@ contract("OTPWallet", accounts => {
     //     // var newBalance = await web3.eth.getBalance(tmpWallet.address);
     //     // console.log("Balance=", newBalance);
     //     // assert.equal(newBalance, web3.utils.toWei("1", "ether"), "withdraw amount is correct");
-
+        assert.equal(await wallet.getHashStorageId(), "hashId")
     })
 
     it("should transfer with meta request from relayer", async () => {
@@ -52,7 +52,7 @@ contract("OTPWallet", accounts => {
         var tmpWallet = web3.eth.accounts.create();
         var {root, leaves, wallet} = await commons.createWallet(
             ethers.constants.AddressZero,
-            ["",""],
+            ["","","hashId"],
              tmpWallet.address ,
              8, 
              web3.utils.toWei("100", "ether"),
@@ -112,7 +112,7 @@ contract("OTPWallet", accounts => {
 
         var {root, leaves, wallet} = await commons.createWallet(
             ethers.constants.AddressZero,
-            ["",""],
+            ["","","hashId"],
             tmpWallet.address,
             8, 
             web3.utils.toWei("100", "ether"),
@@ -122,7 +122,7 @@ contract("OTPWallet", accounts => {
 
         var wallet2 = await commons.createWallet(
             ethers.constants.AddressZero,
-            ["",""],
+            ["","","hashId"],
             tmpWallet.address,
             8, 
             web3.utils.toWei("100", "ether"),
@@ -194,7 +194,7 @@ contract("OTPWallet", accounts => {
         var subdomain = "superlongcrazynameverycheap000001" + blockNumber + salt;
 		var smartWallet = await walletFactory.createWallet({
 			resolver: resolverAddr,
-			domain: [subdomain, "crazy"],
+			domain: [subdomain, "crazy","hashId"],
 			owner: owner,
 			rootHash: root_arr,
 			merkelHeight: merkelHeight,
@@ -202,7 +202,7 @@ contract("OTPWallet", accounts => {
 			dailyLimit: dailyLimit,
 			salt: salt,
 			feeReceipient: feeReceipient,
-			feeAmount: feeAmount
+			feeAmount: feeAmount,
 		});
 
         return walletAddrComputed;        
