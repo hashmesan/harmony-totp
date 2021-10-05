@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { connect } from "redux-zero/react";
 import actions from "../../redux/actions";
 import AddGuardianFriendModal from "./addGuardianFriendModal";
@@ -8,6 +8,7 @@ const web3utils = require("web3-utils");
 const { toBech32, fromBech32 } = require("@harmony-js/crypto");
 
 const SendONEModal = ({ selected = { hns: "" } }) => {
+  console.log("selected", selected.address);
   const { smartvault } = useContext(SmartVaultContext);
   //const gasLimit = web3utils.toBN(smartvault.config.gasLimit);
   const gasLimit = smartvault.config.gasLimit;
@@ -17,28 +18,25 @@ const SendONEModal = ({ selected = { hns: "" } }) => {
   //const gasFee = gasLimit.mul(gasPrice);
   const walletAddress = smartvault.walletData.walletAddress;
   const ownerAccount = smartvault.ownerAccount;
-
-  const [destination, setDestination] = useState(
-    fromBech32("one1qrgrp4mcdt8ha2kfn7m7tph5udv2j576qd2eun")
-  );
   const [amount, setAmount] = useState(web3utils.toWei("1"));
 
-  const transferONE = async () => {
-    console.log("arrived here", amount);
-    try {
-      const transfer = await smartvault.relayClient.transferTX(
-        walletAddress,
-        destination,
-        amount,
-        parseInt(gasPriceWEIWEI),
-        gasLimit,
-        ownerAccount
-      );
-      console.log("transfer");
-    } catch (e) {
-      alert(e.message);
+  const transferONE = useCallback(async () => {
+    if (selected.address) {
+      try {
+        const transfer = await smartvault.relayClient.transferTX(
+          walletAddress,
+          selected.address,
+          amount,
+          parseInt(gasPriceWEIWEI),
+          gasLimit,
+          ownerAccount
+        );
+        console.log("transfer");
+      } catch (e) {
+        alert(e.message);
+      }
     }
-  };
+  }, [selected, fromBech32]);
   return (
     <div
       className="modal fade"
