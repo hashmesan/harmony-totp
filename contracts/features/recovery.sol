@@ -34,7 +34,26 @@ library Recovery {
     //
     // HOTP Verification functions
     //
-    function _deriveChildTreeIdx(uint merkelHeight, bytes32 sides) public pure returns (uint32) {
+
+    function isValidHOTP(Core.Wallet storage wallet, bytes32[] memory confirmMaterial) public view {
+        bytes32 reduced = _reduceConfirmMaterial(confirmMaterial);
+        uint32 counterProvided = _deriveChildTreeIdx(wallet.merkelHeight, confirmMaterial[confirmMaterial.length-1]);
+        require(counterProvided >= wallet.counter, "Bad otp counter");
+
+        // Google Authenticator doesn't allow custom counter or change counter back; so we must allow room to fudge
+        // allow some room if the counters were skipped at some point
+        require(counterProvided - wallet.counter  < 50, "Counter more than 50 steps");
+
+        bool foundMatch = false;
+        for (uint32 i = 0; i < wallet.rootHash.length; i++) {
+            if(reduced==wallet.rootHash[i]) {
+                foundMatch = true;
+            }
+        }
+        require(foundMatch, "UNEXPECTED PROOF");        
+    }
+
+    function _deriveChildTreeIdx(uint merkelHeight, bytes32 sides) internal pure returns (uint32) {
         uint32 derivedIdx = 0;
         for(uint8 i = 0 ; i < merkelHeight ; i++){
             if(bytes1(0x01) == sides[i]){
@@ -44,7 +63,7 @@ library Recovery {
         return derivedIdx;
     }
     
-    function _reduceConfirmMaterial(bytes32[] memory confirmMaterial) public pure returns (bytes32) {
+    function _reduceConfirmMaterial(bytes32[] memory confirmMaterial) internal pure returns (bytes32) {
         //  and then compute h(OTP) to get the leaf of the tree
         confirmMaterial[0] = keccak256(abi.encodePacked(confirmMaterial[0]));
         bytes32 sides = confirmMaterial[confirmMaterial.length - 1];

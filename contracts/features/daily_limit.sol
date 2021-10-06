@@ -14,11 +14,11 @@ library DailyLimit {
         internal
         returns (bool)
     {
-        if (block.timestamp > _wallet.lastDay + 24 hours) {
-            _wallet.lastDay = block.timestamp;
-            _wallet.spentToday = 0;
+        if (block.timestamp > _wallet.dailyLimit.lastDay + 24 hours) {
+            _wallet.dailyLimit.lastDay = block.timestamp;
+            _wallet.dailyLimit.spentToday = 0;
         }
-        if (_wallet.spentToday + amount > _wallet.dailyLimit || _wallet.spentToday + amount < _wallet.spentToday)
+        if (_wallet.dailyLimit.spentToday + amount > _wallet.dailyLimit.limit || _wallet.dailyLimit.spentToday + amount < _wallet.dailyLimit.spentToday)
             return false;
         return true;
     }
@@ -32,10 +32,10 @@ library DailyLimit {
         public view
         returns (uint)
     {
-        if (block.timestamp > _wallet.lastDay + 24 hours)
-            return _wallet.dailyLimit;
-        if (_wallet.dailyLimit < _wallet.spentToday)
+        if (block.timestamp > _wallet.dailyLimit.lastDay + 24 hours)
+            return _wallet.dailyLimit.limit;
+        if (_wallet.dailyLimit.limit < _wallet.dailyLimit.spentToday)
             return 0;
-        return _wallet.dailyLimit - _wallet.spentToday;
+        return _wallet.dailyLimit.limit - _wallet.dailyLimit.spentToday;
     }    
 }

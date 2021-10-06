@@ -4,10 +4,7 @@ pragma solidity >=0.7.6;
 pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
-import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 
 import "./core/wallet_data.sol";
@@ -52,7 +49,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
 
     modifier disableInImplementationContract
     {
-        require(!isImplementationContract, "DISALLOWED_ON_IMPLEMENTATION_CONTRACT");
+        require(!isImplementationContract, "DISALLOWED");
         _;
     }
 
@@ -73,8 +70,8 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
         wallet.resolver = resolver_;
 
         //emit DebugEvent256(address(this).balance);
-        require(wallet.owner == address(0), "INITIALIZED_ALREADY");
-        require(address(this).balance >= feeAmount, "NOT ENOUGH TO PAY FEE");
+        require(wallet.owner == address(0), "NOT_ALLOWED");
+        require(address(this).balance >= feeAmount, "NOT_ENOUGH_TO_PAY_FEE");
 
         wallet.owner = owner_;
         for (uint32 i = 0; i < rootHash_.length; i++) {
@@ -82,7 +79,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
         }        
         wallet.merkelHeight = merkelHeight_;
         wallet.drainAddr = drainAddr_;
-        wallet.dailyLimit = dailyLimit_;
+        wallet.dailyLimit.limit = dailyLimit_;
 
         // STACK TOO DEEP
         if(bytes(domainAndHashId_[0]).length > 0) {
@@ -98,11 +95,6 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
 
     function registerENS(string calldata subdomain, string calldata domain, uint duration) external onlyFromWalletOrOwnerWhenUnlocked() {
         wallet.registerENS(subdomain, domain, duration);
-    }
-
-    modifier onlyModule() {
-        require(msg.sender == address(this));
-        _;        
     }
 
     modifier onlyFromWalletOrOwnerWhenUnlocked()
@@ -123,35 +115,43 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
     // confirmMaterial contains OTP + intermediatory hashes + sides
     modifier onlyValidTOTP(bytes32[] memory confirmMaterial) 
     {
-        bytes32 reduced = Recovery._reduceConfirmMaterial(confirmMaterial);
-        uint32 counterProvided = Recovery._deriveChildTreeIdx(wallet.merkelHeight, confirmMaterial[confirmMaterial.length-1]);
-        require(counterProvided >= wallet.counter, "Provided counter must be greater or same");
-
-        // Google Authenticator doesn't allow custom counter or change counter back; so we must allow room to fudge
-        // allow some room if the counters were skipped at some point
-        require(counterProvided - wallet.counter  < 50, "Provided counter must not be more than 50 steps");
-
-        bool foundMatch = false;
-        for (uint32 i = 0; i < wallet.rootHash.length; i++) {
-            if(reduced==wallet.rootHash[i]) {
-                foundMatch = true;
-            }
-        }
-        require(foundMatch, "UNEXPECTED PROOF");
+        // revert if false
+        wallet.isValidHOTP(confirmMaterial);
         _;
     }
 
+    function isRestrictedMethod(bytes4 methodId) internal pure returns (bool) {
+        return (methodId == TOTPWallet.upgradeMasterCopy.selector ||
+            methodId == TOTPWallet.setDailyLimit.selector ||
+            methodId == TOTPWallet.setDrainAddress.selector);
+    }
+
     function getRequiredSignatures(bytes calldata _data) public view returns (uint8, Core.OwnerSignature) {
-        bytes4 methodId = functionPrefix(_data);
+        bytes4 methodId = MetaTx.functionPrefix(_data);
 
         if(methodId == TOTPWallet.multiCall.selector ||
             methodId == TOTPWallet.addGuardian.selector ||
             methodId == TOTPWallet.revokeGuardian.selector||
-            methodId == TOTPWallet.upgradeMasterCopy.selector ||
-            methodId == TOTPWallet.setDailyLimit.selector ||
-            methodId == TOTPWallet.setDrainAddress.selector ||
+            methodId == TOTPWallet.clearSession.selector||
             methodId == TOTPWallet.setHashStorageId.selector) {
             return (1, Core.OwnerSignature.Required);
+        }
+
+        // these will be called on multiCallWithSession with guardians
+        if(wallet.guardians.length == 0) {
+            if(isRestrictedMethod(methodId)) {
+                return (1, Core.OwnerSignature.Required); 
+            }
+        } else {
+            if(methodId == TOTPWallet.startSession.selector) {          
+                // owner + 1 guardian   => require 2
+                // owner + 2 guardian   => require 2
+                // owner + 3 guardian   => require 3            
+                return (uint8(MetaTx.ceil(wallet.guardians.length, 2) + 1), Core.OwnerSignature.Required);  
+            }
+            if(methodId == TOTPWallet.multiCallWithSession.selector) {
+                return (1, Core.OwnerSignature.Session); 
+            }
         }
 
         if(methodId == TOTPWallet.startRecoverGuardianOnly.selector) {
@@ -204,9 +204,37 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
     function multiCall(Call[] calldata _transactions) external onlyFromWalletOrOwnerWhenUnlocked() returns (bytes[] memory) {
         bytes[] memory results = new bytes[](_transactions.length);
         for(uint i = 0; i < _transactions.length; i++) {
-            results[i] = invoke(_transactions[i].to, _transactions[i].value, _transactions[i].data);
+            bytes calldata data = _transactions[i].data;
+            uint value = _transactions[i].value;
+            
+            if(wallet.guardians.length > 0) {
+                require(data.length < 4 || !isRestrictedMethod(MetaTx.functionPrefix(data))); 
+                require(wallet.isUnderLimit(value), "over limit");
+                wallet.dailyLimit.spentToday += value;
+            }
+            results[i] = MetaTx.invoke(_transactions[i].to, value, data);
         }
         return results;
+    }
+
+    function multiCallWithSession(Call[] calldata _transactions) external onlySelf() returns (bytes[] memory) {
+        bytes[] memory results = new bytes[](_transactions.length);
+        for(uint i = 0; i < _transactions.length; i++) {
+            results[i] = MetaTx.invoke(_transactions[i].to, _transactions[i].value, _transactions[i].data);
+        }
+        return results;
+    }
+
+    /**
+     * startSession can only be started by majority of guardians
+     */
+    function startSession(uint duration) external onlySelf() {
+        wallet.session.key = wallet.owner;
+        wallet.session.expires = uint(block.timestamp + duration);
+    }
+
+    function clearSession()  external onlyFromWalletOrOwnerWhenUnlocked() {
+        wallet.session.expires = 0;
     }
 
     function getOwner()  public
@@ -221,7 +249,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
         returns (uint) 
     {
         return wallet.counter;
-    }
+    }    
 
     function setHashStorageId(string calldata id) external  onlyFromWalletOrOwnerWhenUnlocked()  {
         wallet.hashStorageID = id;
@@ -239,12 +267,12 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
          return wallet.rootHash;
      }
 
-    function setDrainAddress(address payable addr) external onlyFromWalletOrOwnerWhenUnlocked() {
+    function setDrainAddress(address payable addr) external onlySelf() {
         wallet.drainAddr = addr;
     }
 
-    function setDailyLimit(uint amount) external onlyFromWalletOrOwnerWhenUnlocked() {
-        wallet.dailyLimit = amount;
+    function setDailyLimit(uint amount) external onlySelf() {
+        wallet.dailyLimit.limit = amount;
     }
     //
     // Guardians functions
@@ -313,32 +341,12 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
         wallet.counter = wallet.counter + 1;
     }
 
-    function isRecovering() external view returns (bool) {
-        return wallet.pendingRecovery.expiration != 0;
-    }
-
-    function cancelRecovery() external onlyFromWalletOrOwnerWhenUnlocked() {
-        wallet.pendingRecovery = Core.RecoveryInfo(address(0),0);
-    }
-
-    function getRecovery() external view returns (address,uint) {
-        return (wallet.pendingRecovery.newOwner, wallet.pendingRecovery.expiration);
-    }
-
-    function finalizeRecovery() external {
-        wallet.finalizeRecovery();
-    }
-
     function upgradeMasterCopy(address newMasterCopy) external onlySelf() {
         masterCopy = newMasterCopy;
         emit WalletUpgraded(newMasterCopy);
     }
 
-    function getMasterCopy()
-        public
-        view
-        returns (address)
-    {
+    function getMasterCopy() public view returns (address) {
         return masterCopy;
     }
 
@@ -394,16 +402,6 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
     // Utility functions
     //
 
-    /**
-    * @notice Helper method to parse data and extract the method signature.
-    */
-    function functionPrefix(bytes memory _data) internal pure returns (bytes4 prefix) {
-        require(_data.length >= 4, "Utils: Invalid functionPrefix");
-        // solhint-disable-next-line no-inline-assembly
-        assembly {
-            prefix := mload(add(_data, 0x20))
-        }
-    }
     /// @dev Fallback function allows to deposit ether.
     receive() external payable {
         if (msg.value > 0) {
@@ -416,24 +414,4 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
         }
     }
 
-    /**
-     * @notice Performs a generic transaction.
-     * @param _target The address for the transaction.
-     * @param _value The value of the transaction.
-     * @param _data The data of the transaction.
-     */
-    function invoke(address _target, uint _value, bytes calldata _data) internal returns (bytes memory _result) {
-        bool success;
-        (success, _result) = _target.call{value: _value}(_data);
-
-        emit Invoked(_target, _value, _data, success, _result);
-
-        if (!success) {
-            // solhint-disable-next-line no-inline-assembly
-            assembly {
-                returndatacopy(0, 0, returndatasize())
-                revert(0, returndatasize())
-            }
-        }
-    }
 }

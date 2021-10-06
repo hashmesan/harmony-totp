@@ -110,6 +110,51 @@ async function createWallet(resolver, domain,owner, depth, spendingLimit, drainA
     }
 }
 
+async function startSession(wallet, duration, accounts) {
+  const methodData0 = wallet.contract.methods.startSession(duration).encodeABI();
+  const nonce = await getNonceForRelay();
+  const blockNumber = await web3.eth.getBlockNumber();
+  const chainId = await web3.eth.getChainId();
+  const gasLimit = 100000;
+
+  var sigs = await walletLib.signOffchain2(
+      accounts,
+      wallet.address,
+      0,
+      methodData0,
+      chainId,
+      nonce,
+      0,
+      gasLimit,
+      ethers.constants.AddressZero,
+      ethers.constants.AddressZero,
+  );
+  return await wallet.executeMetaTx(methodData0, sigs, nonce, 0, gasLimit, ethers.constants.AddressZero, ethers.constants.AddressZero);
+}
+
+async function executeMetaTx(wallet, methodData, accounts, gasPrice, gasLimit, refundToken, refundAddress) {
+  const nonce = await getNonceForRelay();
+  const chainId = await web3.eth.getChainId();
+  var gasPrice = gasPrice || 0;
+  var gasLimit = gasLimit || 100000;
+  var refundToken = refundToken || ethers.constants.AddressZero;
+  var refundAddress = refundAddress || ethers.constants.AddressZero;
+
+  var sigs = await walletLib.signOffchain2(
+      accounts,
+      wallet.address,
+      0,
+      methodData,
+      chainId,
+      nonce,
+      gasPrice,
+      gasLimit,
+      refundToken,
+      refundAddress,
+  );
+  return await wallet.executeMetaTx(methodData, sigs, nonce, gasPrice, gasLimit, refundToken, refundAddress);
+}
+
 async function getTOTPAndProof(offset, counter, leavesSet) {
     var token = [];
     for(var j=0;j < NUMOFTOKENS; j++) {
@@ -154,7 +199,7 @@ async function getNonceForRelay() {
   }
 
 function getMessageHash2(from, value, data, chainId, nonce, gasPrice, gasLimit, refundToken, refundAddress) {
-  console.log("chainId", ethers.utils.hexZeroPad(ethers.utils.hexlify(chainId), 32));
+  //console.log("chainId", ethers.utils.hexZeroPad(ethers.utils.hexlify(chainId), 32));
   const message = `0x${[
     "0x19",
     "0x00",
@@ -290,5 +335,7 @@ module.exports = {
     createWalletFactory,
     walletWithAddress,
     createNewImplementation,
-    mineBlock
+    mineBlock,
+    startSession,
+    executeMetaTx
 }
