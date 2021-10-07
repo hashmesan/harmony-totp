@@ -215,9 +215,10 @@ contract("OTPWallet", accounts => {
         var wallet1 = await createFactoryWallet(tmpWallet.address, 0);
         var wallet2 = await createFactoryWallet(tmpWallet2.address, 0);
 
-        console.log("Balance 2 =", await web3.eth.getBalance(wallet1),
-                                await web3.eth.getBalance(wallet2));
+        var beforeW2Balance = await web3.eth.getBalance(wallet2);
+        console.log("Balance 2 =", await web3.eth.getBalance(wallet1),beforeW2Balance);
 
+        // SEND 0.5 WEI to other wallet
         var wallet = await commons.walletWithAddress(wallet1);
         const methodData = wallet.contract.methods.multiCall([{to: wallet2, value: web3.utils.toWei("0.5", "ether"), data: "0x"}]).encodeABI();
         const nonce = await commons.getNonceForRelay();
@@ -239,8 +240,10 @@ contract("OTPWallet", accounts => {
         var tx = await wallet.executeMetaTx(methodData, sigs, nonce, 0, gasLimit, ethers.constants.AddressZero, feeWallet.address);       
         //console.log(web3utils.hexToAscii(tx.logs[0].args.returnData))
 
+        // EXPECTED TO RECEIVE 0.5 ONE
         newBalance = await web3.eth.getBalance(wallet2);
         console.log("Balance(AFTER) =", newBalance);
-        assert.strictEqual(tx.logs[2].args.success, true)                  
+        assert.strictEqual(web3utils.toBN(newBalance).sub(web3utils.toBN(beforeW2Balance)).toString(), web3.utils.toWei("0.5", "ether"))
+        //assert.strictEqual(tx.logs[2].args.success, true)                  
     })
 });
