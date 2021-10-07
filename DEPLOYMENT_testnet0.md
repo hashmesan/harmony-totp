@@ -145,3 +145,207 @@ TypeError: Cannot read property 'resolver' of undefined
     at module.exports (/home/quoc/Projects/harmony-totp-pure/migrations/02_testENS.js:31:62)
     at process._tickCallback (internal/process/next_tick.js:68:7)
 Truffle v5.1.67 (core: 5.1.67)
+
+
+
+####
+#### Version 2
+####
+
+
+Compiling your contracts...
+===========================
+> Compiling ./contracts/_deprecated/forwarder.sol
+> Compiling ./contracts/_deprecated/relayer.sol
+> Compiling ./contracts/features/metatx.sol
+> Compiling ./contracts/features/recovery.sol
+> Compiling ./contracts/otp_wallet.sol
+> Compiling ./contracts/wallet_factory.sol
+> Artifacts written to /home/quoc/Projects/harmony-totp-pure/build/contracts
+> Compiled successfully using:
+   - solc: 0.8.0+commit.c7dfd78e.Emscripten.clang
+
+Network up to date.
+quoc@quoc-linux:~/Projects/harmony-totp-pure$ truffle migrate --network testnet0 --reset
+
+Compiling your contracts...
+===========================
+> Everything is up to date, there is nothing to compile.
+
+
+
+Starting migrations...
+======================
+> Network name:    'testnet0'
+> Network id:      1666700000
+> Block gas limit: 80000000 (0x4c4b400)
+
+
+01_initial_migrations.js
+========================
+
+   Replacing 'Migrations'
+   ----------------------
+   > transaction hash:    0x84d9aba4d5d4937bcd18e7174baff6ae2c93cdd492285dc7d351e9aa413578e5
+   > Blocks: 3            Seconds: 4
+   > contract address:    0xD1AF112ea0524E902937Eca370631F8e982c7585
+   > block number:        15911868
+   > block timestamp:     1633614973
+   > account:             0x1727adCCe8F11E7b9cbDd065e5ab64158F8BcE3B
+   > balance:             181.041909917036857074
+   > gas used:            244300 (0x3ba4c)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.004886 ETH
+
+
+   > Saving migration to chain.
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:            0.004886 ETH
+
+
+02_libraries.js
+===============
+
+   Replacing 'Guardians'
+   ---------------------
+   > transaction hash:    0x2d098530fa95cf7ed0b56e14a302c0ad5cdf1109b70237940f17645025eda839
+   > Blocks: 2            Seconds: 4
+   > contract address:    0x210e1C2a916D828ca026a30B05599225074cfF47
+   > block number:        15911876
+   > block timestamp:     1633614989
+   > account:             0x1727adCCe8F11E7b9cbDd065e5ab64158F8BcE3B
+   > balance:             181.028101257036857074
+   > gas used:            647920 (0x9e2f0)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.0129584 ETH
+
+
+   Replacing 'DailyLimit'
+   ----------------------
+   > transaction hash:    0x84a6603d83d924d9e950cb31a40042c4760995f774376e50cf9549445d670a7f
+   > Blocks: 3            Seconds: 4
+   > contract address:    0xA433e0e2782f0C906F2b06aDB7F72c3887969954
+   > block number:        15911881
+   > block timestamp:     1633614999
+   > account:             0x1727adCCe8F11E7b9cbDd065e5ab64158F8BcE3B
+   > balance:             181.024435157036857074
+   > gas used:            183305 (0x2cc09)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.0036661 ETH
+
+
+   Replacing 'Recovery'
+   --------------------
+   > transaction hash:    0x7ce795db8c57f8a91b0207799a7373c0961416e90a9942451b1fab3191b5704e
+   > Blocks: 2            Seconds: 4
+   > contract address:    0x267D5fFf48cCA385eCb9AeE2AAbA653269437583
+   > block number:        15911885
+   > block timestamp:     1633615007
+   > account:             0x1727adCCe8F11E7b9cbDd065e5ab64158F8BcE3B
+   > balance:             181.004926737036857074
+   > gas used:            975421 (0xee23d)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.01950842 ETH
+
+
+   Replacing 'MetaTx'
+   ------------------
+   > transaction hash:    0x1dc88980a810f62e16a9f7ba8e2f55725ebfa197f795378999a955db63e8bb96
+   > Blocks: 2            Seconds: 4
+   > contract address:    0xC7f136a2eBC5e70Fc4cB3900bbEE9692F7dF159b
+   > block number:        15911889
+   > block timestamp:     1633615015
+   > account:             0x1727adCCe8F11E7b9cbDd065e5ab64158F8BcE3B
+   > balance:             180.982069477036857074
+   > gas used:            1142863 (0x11704f)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.02285726 ETH
+
+
+   Replacing 'NameService'
+   -----------------------
+   > transaction hash:    0x27b39bcba775c7780f67de8738c9a35f79fa37c940bf4142ddeae334240cb91e
+   > Blocks: 2            Seconds: 4
+   > contract address:    0x8fD55d4Ba7a24bFAcF65C5154894604b0e144b80
+   > block number:        15911893
+   > block timestamp:     1633615023
+   > account:             0x1727adCCe8F11E7b9cbDd065e5ab64158F8BcE3B
+   > balance:             180.972181577036857074
+   > gas used:            494395 (0x78b3b)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.0098879 ETH
+
+
+   Linking
+   -------
+   * Contract: TOTPWallet <--> Library: Guardians (at address: 0x210e1C2a916D828ca026a30B05599225074cfF47)
+
+   Linking
+   -------
+   * Contract: TOTPWallet <--> Library: Recovery (at address: 0x267D5fFf48cCA385eCb9AeE2AAbA653269437583)
+
+   Linking
+   -------
+   * Contract: TOTPWallet <--> Library: MetaTx (at address: 0xC7f136a2eBC5e70Fc4cB3900bbEE9692F7dF159b)
+
+   Linking
+   -------
+   * Contract: TOTPWallet <--> Library: NameService (at address: 0x8fD55d4Ba7a24bFAcF65C5154894604b0e144b80)
+
+   Replacing 'TOTPWallet'
+   ----------------------
+   > transaction hash:    0xaa085bfc377898fdd68b0c85f66d3ccf151d3a558a3ac9a5adf7ecf2d7ad1cc8
+   > Blocks: 2            Seconds: 4
+   > contract address:    0xD9ca3618165E198481B320090ABF9FEA60dE1187
+   > block number:        15911898
+   > block timestamp:     1633615033
+   > account:             0x1727adCCe8F11E7b9cbDd065e5ab64158F8BcE3B
+   > balance:             180.865586877036857074
+   > gas used:            5329735 (0x515347)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.1065947 ETH
+
+Implementation= 0xD9ca3618165E198481B320090ABF9FEA60dE1187
+
+   Replacing 'WalletFactory'
+   -------------------------
+   > transaction hash:    0x7bbad4eb558489da5713dbabdca30ead3569b6d6232dcb61538238ad2b23245c
+   > Blocks: 3            Seconds: 4
+   > contract address:    0x8B984Dd90f9df767c0741213E273B9bcaaCfa411
+   > block number:        15911903
+   > block timestamp:     1633615043
+   > account:             0x1727adCCe8F11E7b9cbDd065e5ab64158F8BcE3B
+   > balance:             180.834222237036857074
+   > gas used:            1568232 (0x17ede8)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.03136464 ETH
+
+Factory= 0x8B984Dd90f9df767c0741213E273B9bcaaCfa411
+
+   > Saving migration to chain.
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:          0.20683742 ETH
+
+
+03_testENS.js
+=============
+
+   > Saving migration to chain.
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+Summary
+=======
+> Total deployments:   8
+> Final cost:          0.21172342 ETH
