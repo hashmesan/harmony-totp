@@ -404,6 +404,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
 
     /// @dev Fallback function allows to deposit ether.
     receive() external payable {
+        /*
         if (msg.value > 0) {
             if(msg.sender == wallet.drainAddr && msg.value == 1 ether) {
                 uint amount = address(this).balance;
@@ -411,7 +412,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
                 require(success, "Receive: External call failed");
             }
             emit Deposit(msg.sender, msg.value);
-        }
+        }*/
     }
 
 }
