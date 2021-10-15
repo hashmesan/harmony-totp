@@ -45,7 +45,7 @@ contract("DrainTest", accounts => {
         return walletAddrComputed;        
     }
 
-    it("should test for drain test", async () => {
+    it.skip("should test for drain test", async () => {
         var owner = accounts[7];
         var startBalance = await web3.eth.getBalance(owner);
         //console.log(owner, startBalance);

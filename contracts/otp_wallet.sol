@@ -40,7 +40,8 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
 
     event Deposit(address indexed sender, uint value);
     event WalletUpgraded(address newImpl);
-    event TransactionExecuted(bool indexed success, bytes returnData, bytes32 signedHash);
+    event Initialized(address wallet, address refundAddress, uint refundFee);
+    event TransactionExecuted(bool indexed success, bytes returnData, bytes32 signedHash, address refundAddress, uint refundFee);
     event Invoked(address indexed target, uint indexed value, bytes data, bool success, bytes returnData);
 
     constructor() {
@@ -88,6 +89,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
 
         if (feeRecipient != address(0)) {
             payable(feeRecipient).sendValue(feeAmount);
+            emit Initialized(address(this), feeRecipient, feeAmount);
         }  
         
         wallet.hashStorageID = domainAndHashId_[2];        
@@ -197,8 +199,10 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
         if(gasPrice > 0 && success && refundAddress != address(0x0)) {
             uint gasUsed = gasLeft - gasleft() + 70000; //35k overhead
             refundAddress.transfer(gasUsed);
+            emit TransactionExecuted(success, returnData, 0x0, refundAddress, gasUsed);
+        } else {
+            emit TransactionExecuted(success, returnData, 0x0, refundAddress, 0);        
         }
-        emit TransactionExecuted(success, returnData, 0x0);        
     }
 
     function multiCall(Call[] calldata _transactions) external onlyFromWalletOrOwnerWhenUnlocked() returns (bytes[] memory) {

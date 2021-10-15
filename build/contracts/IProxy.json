@@ -15,7 +15,7 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.8.0+commit.c7dfd78e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"masterCopy\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"Richard Meissner - <richard@gnosis.io>\",\"kind\":\"dev\",\"methods\":{},\"title\":\"IProxy - Helper interface to access masterCopy of the Proxy on-chain\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/home/quoc/Projects/harmony-totp-pure/contracts/external/walletproxy.sol\":\"IProxy\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/quoc/Projects/harmony-totp-pure/contracts/external/walletproxy.sol\":{\"keccak256\":\"0xf93be23c6c45c2c27e7d079a451348d5e9e5cfe845996b54252bcdf2eb3785b3\",\"license\":\"LGPL-3.0-or-later\",\"urls\":[\"bzz-raw://ae919d0660dc9a33dbc5f289b89c5520bdaf8b0eb0e3a824264cedbe328c1474\",\"dweb:/ipfs/QmTAtfkvwCL9DW14JrU1sSnyPkdQK8m36wdVUyswVsDKkR\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.0+commit.c7dfd78e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"masterCopy\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"Richard Meissner - <richard@gnosis.io>\",\"kind\":\"dev\",\"methods\":{},\"title\":\"IProxy - Helper interface to access masterCopy of the Proxy on-chain\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/home/quoc/Projects/harmony-totp-pure/contracts/external/walletproxy.sol\":\"IProxy\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/quoc/Projects/harmony-totp-pure/contracts/external/walletproxy.sol\":{\"keccak256\":\"0xb1bf639a638d8cc5c80efba54968d93c146083baebf889a2795f6dc1798fcd13\",\"license\":\"LGPL-3.0-or-later\",\"urls\":[\"bzz-raw://7fd07239dcb0464e7470a6c812a4358886bdf7a7083aee40af38c89134692dde\",\"dweb:/ipfs/QmU93XQkDt9AHrtumt942SLsE9vDNTRgZ21XtvMUKqxt5s\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "immutableReferences": {},
@@ -23,24 +23,24 @@
   "deployedGeneratedSources": [],
   "sourceMap": "",
   "deployedSourceMap": "",
-  "source": "// SPDX-License-Identifier: LGPL-3.0-or-later\n// Taken from: https://github.com/gnosis/safe-contracts/blob/development/contracts/proxies/GnosisSafeProxy.sol\npragma solidity >=0.7.0;\n\n/// @title IProxy - Helper interface to access masterCopy of the Proxy on-chain\n/// @author Richard Meissner - <richard@gnosis.io>\ninterface IProxy {\n    function masterCopy() external view returns (address);\n}\n\n/// @title WalletProxy - Generic proxy contract allows to execute all transactions applying the code of a master contract.\n/// @author Stefan George - <stefan@gnosis.io>\n/// @author Richard Meissner - <richard@gnosis.io>\ncontract WalletProxy {\n\n    // masterCopy always needs to be first declared variable, to ensure that it is at the same location in the contracts to which calls are delegated.\n    // To reduce deployment costs this variable is internal and needs to be retrieved via `getStorageAt`\n    address internal masterCopy;\n\n    /// @dev Constructor function sets address of master copy contract.\n    /// @param _masterCopy Master copy address.\n    constructor(address _masterCopy)\n    {\n        require(_masterCopy != address(0), \"Invalid master copy address provided\");\n        masterCopy = _masterCopy;\n    }\n\n    /// @dev Fallback function forwards all transactions and returns all received return data.\n    fallback()\n        payable\n        external\n    {\n        // solium-disable-next-line security/no-inline-assembly\n        assembly {\n            let _masterCopy := and(sload(0), 0xffffffffffffffffffffffffffffffffffffffff)\n            // 0xa619486e == keccak(\"masterCopy()\"). The value is right padded to 32-bytes with 0s\n            if eq(calldataload(0), 0xa619486e00000000000000000000000000000000000000000000000000000000) {\n                mstore(0, _masterCopy)\n                return(0, 0x20)\n            }\n            calldatacopy(0, 0, calldatasize())\n            let success := delegatecall(gas(), _masterCopy, 0, calldatasize(), 0, 0)\n            returndatacopy(0, 0, returndatasize())\n            if eq(success, 0) { revert(0, returndatasize()) }\n            return(0, returndatasize())\n        }\n    }\n}",
+  "source": "// SPDX-License-Identifier: LGPL-3.0-or-later\n// Taken from: https://github.com/gnosis/safe-contracts/blob/development/contracts/proxies/GnosisSafeProxy.sol\npragma solidity >=0.7.0;\n\n/// @title IProxy - Helper interface to access masterCopy of the Proxy on-chain\n/// @author Richard Meissner - <richard@gnosis.io>\ninterface IProxy {\n    function masterCopy() external view returns (address);\n}\n\n/// @title WalletProxy - Generic proxy contract allows to execute all transactions applying the code of a master contract.\n/// @author Stefan George - <stefan@gnosis.io>\n/// @author Richard Meissner - <richard@gnosis.io>\ncontract WalletProxy {\n\n    // masterCopy always needs to be first declared variable, to ensure that it is at the same location in the contracts to which calls are delegated.\n    // To reduce deployment costs this variable is internal and needs to be retrieved via `getStorageAt`\n    address internal masterCopy;\n\n    /// @dev Constructor function sets address of master copy contract.\n    /// @param _masterCopy Master copy address.\n    constructor(address _masterCopy)\n    {\n        require(_masterCopy != address(0), \"Invalid master copy address provided\");\n        masterCopy = _masterCopy;\n    }\n\n    /// @dev Fallback function forwards all transactions and returns all received return data.\n    fallback()\n        payable\n        external\n    {\n        // solium-disable-next-line security/no-inline-assembly\n        assembly {\n            let _masterCopy := and(sload(0), 0xffffffffffffffffffffffffffffffffffffffff)\n            // 0xa619486e == keccak(\"masterCopy()\"). The value is right padded to 32-bytes with 0s\n            if eq(calldataload(0), 0xa619486e00000000000000000000000000000000000000000000000000000000) {\n                mstore(0, _masterCopy)\n                return(0, 0x20)\n            }\n            calldatacopy(0, 0, calldatasize())\n            let success := delegatecall(gas(), _masterCopy, 0, calldatasize(), 0, 0)\n            returndatacopy(0, 0, returndatasize())\n            if eq(success, 0) { revert(0, returndatasize()) }\n            return(0, returndatasize())\n        }\n    }\n\n    receive() external payable {\n    }    \n}",
   "sourcePath": "/home/quoc/Projects/harmony-totp-pure/contracts/external/walletproxy.sol",
   "ast": {
     "absolutePath": "/home/quoc/Projects/harmony-totp-pure/contracts/external/walletproxy.sol",
     "exportedSymbols": {
       "IProxy": [
-        1186
+        1047
       ],
       "WalletProxy": [
-        1217
+        1082
       ]
     },
-    "id": 1218,
+    "id": 1083,
     "license": "LGPL-3.0-or-later",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1179,
+        "id": 1040,
         "literals": [
           "solidity",
           ">=",
@@ -48,7 +48,7 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "157:24:10"
+        "src": "157:24:8"
       },
       {
         "abstract": false,
@@ -56,45 +56,45 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 1180,
+          "id": 1041,
           "nodeType": "StructuredDocumentation",
-          "src": "183:131:10",
+          "src": "183:131:8",
           "text": "@title IProxy - Helper interface to access masterCopy of the Proxy on-chain\n @author Richard Meissner - <richard@gnosis.io>"
         },
         "fullyImplemented": false,
-        "id": 1186,
+        "id": 1047,
         "linearizedBaseContracts": [
-          1186
+          1047
         ],
         "name": "IProxy",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "functionSelector": "a619486e",
-            "id": 1185,
+            "id": 1046,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "masterCopy",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1181,
+              "id": 1042,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "356:2:10"
+              "src": "356:2:8"
             },
             "returnParameters": {
-              "id": 1184,
+              "id": 1045,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1183,
+                  "id": 1044,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1185,
-                  "src": "382:7:10",
+                  "scope": 1046,
+                  "src": "382:7:8",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -102,10 +102,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1182,
+                    "id": 1043,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "382:7:10",
+                    "src": "382:7:8",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -115,17 +115,17 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "381:9:10"
+              "src": "381:9:8"
             },
-            "scope": 1186,
-            "src": "337:54:10",
+            "scope": 1047,
+            "src": "337:54:8",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 1218,
-        "src": "314:79:10"
+        "scope": 1083,
+        "src": "314:79:8"
       },
       {
         "abstract": false,
@@ -133,27 +133,27 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "documentation": {
-          "id": 1187,
+          "id": 1048,
           "nodeType": "StructuredDocumentation",
-          "src": "395:221:10",
+          "src": "395:221:8",
           "text": "@title WalletProxy - Generic proxy contract allows to execute all transactions applying the code of a master contract.\n @author Stefan George - <stefan@gnosis.io>\n @author Richard Meissner - <richard@gnosis.io>"
         },
         "fullyImplemented": true,
-        "id": 1217,
+        "id": 1082,
         "linearizedBaseContracts": [
-          1217
+          1082
         ],
         "name": "WalletProxy",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 1189,
+            "id": 1050,
             "mutability": "mutable",
             "name": "masterCopy",
             "nodeType": "VariableDeclaration",
-            "scope": 1217,
-            "src": "900:27:10",
+            "scope": 1082,
+            "src": "900:27:8",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -161,10 +161,10 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 1188,
+              "id": 1049,
               "name": "address",
               "nodeType": "ElementaryTypeName",
-              "src": "900:7:10",
+              "src": "900:7:8",
               "stateMutability": "nonpayable",
               "typeDescriptions": {
                 "typeIdentifier": "t_address",
@@ -175,9 +175,9 @@
           },
           {
             "body": {
-              "id": 1209,
+              "id": 1070,
               "nodeType": "Block",
-              "src": "1091:125:10",
+              "src": "1091:125:8",
               "statements": [
                 {
                   "expression": {
@@ -187,18 +187,18 @@
                           "typeIdentifier": "t_address",
                           "typeString": "address"
                         },
-                        "id": 1201,
+                        "id": 1062,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
-                          "id": 1196,
+                          "id": 1057,
                           "name": "_masterCopy",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1192,
-                          "src": "1109:11:10",
+                          "referencedDeclaration": 1053,
+                          "src": "1109:11:8",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
                             "typeString": "address"
@@ -210,14 +210,14 @@
                           "arguments": [
                             {
                               "hexValue": "30",
-                              "id": 1199,
+                              "id": 1060,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
                               "kind": "number",
                               "lValueRequested": false,
                               "nodeType": "Literal",
-                              "src": "1132:1:10",
+                              "src": "1132:1:8",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_rational_0_by_1",
                                 "typeString": "int_const 0"
@@ -232,26 +232,26 @@
                                 "typeString": "int_const 0"
                               }
                             ],
-                            "id": 1198,
+                            "id": 1059,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
                             "lValueRequested": false,
                             "nodeType": "ElementaryTypeNameExpression",
-                            "src": "1124:7:10",
+                            "src": "1124:7:8",
                             "typeDescriptions": {
                               "typeIdentifier": "t_type$_t_address_$",
                               "typeString": "type(address)"
                             },
                             "typeName": {
-                              "id": 1197,
+                              "id": 1058,
                               "name": "address",
                               "nodeType": "ElementaryTypeName",
-                              "src": "1124:7:10",
+                              "src": "1124:7:8",
                               "typeDescriptions": {}
                             }
                           },
-                          "id": 1200,
+                          "id": 1061,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -259,14 +259,14 @@
                           "lValueRequested": false,
                           "names": [],
                           "nodeType": "FunctionCall",
-                          "src": "1124:10:10",
+                          "src": "1124:10:8",
                           "tryCall": false,
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
                             "typeString": "address"
                           }
                         },
-                        "src": "1109:25:10",
+                        "src": "1109:25:8",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bool",
                           "typeString": "bool"
@@ -274,14 +274,14 @@
                       },
                       {
                         "hexValue": "496e76616c6964206d617374657220636f707920616464726573732070726f7669646564",
-                        "id": 1202,
+                        "id": 1063,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
                         "kind": "string",
                         "lValueRequested": false,
                         "nodeType": "Literal",
-                        "src": "1136:38:10",
+                        "src": "1136:38:8",
                         "typeDescriptions": {
                           "typeIdentifier": "t_stringliteral_108d84599042957b954e89d43b52f80be89321dfc114a37800028eba58dafc87",
                           "typeString": "literal_string \"Invalid master copy address provided\""
@@ -300,7 +300,7 @@
                           "typeString": "literal_string \"Invalid master copy address provided\""
                         }
                       ],
-                      "id": 1195,
+                      "id": 1056,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -308,13 +308,13 @@
                         4294967278
                       ],
                       "referencedDeclaration": 4294967278,
-                      "src": "1101:7:10",
+                      "src": "1101:7:8",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 1203,
+                    "id": 1064,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -322,31 +322,31 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "1101:74:10",
+                    "src": "1101:74:8",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1204,
+                  "id": 1065,
                   "nodeType": "ExpressionStatement",
-                  "src": "1101:74:10"
+                  "src": "1101:74:8"
                 },
                 {
                   "expression": {
-                    "id": 1207,
+                    "id": 1068,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
-                      "id": 1205,
+                      "id": 1066,
                       "name": "masterCopy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1189,
-                      "src": "1185:10:10",
+                      "referencedDeclaration": 1050,
+                      "src": "1185:10:8",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
                         "typeString": "address"
@@ -355,53 +355,53 @@
                     "nodeType": "Assignment",
                     "operator": "=",
                     "rightHandSide": {
-                      "id": 1206,
+                      "id": 1067,
                       "name": "_masterCopy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1192,
-                      "src": "1198:11:10",
+                      "referencedDeclaration": 1053,
+                      "src": "1198:11:8",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
                         "typeString": "address"
                       }
                     },
-                    "src": "1185:24:10",
+                    "src": "1185:24:8",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
                       "typeString": "address"
                     }
                   },
-                  "id": 1208,
+                  "id": 1069,
                   "nodeType": "ExpressionStatement",
-                  "src": "1185:24:10"
+                  "src": "1185:24:8"
                 }
               ]
             },
             "documentation": {
-              "id": 1190,
+              "id": 1051,
               "nodeType": "StructuredDocumentation",
-              "src": "934:115:10",
+              "src": "934:115:8",
               "text": "@dev Constructor function sets address of master copy contract.\n @param _masterCopy Master copy address."
             },
-            "id": 1210,
+            "id": 1071,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1193,
+              "id": 1054,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1192,
+                  "id": 1053,
                   "mutability": "mutable",
                   "name": "_masterCopy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1210,
-                  "src": "1066:19:10",
+                  "scope": 1071,
+                  "src": "1066:19:8",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -409,10 +409,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1191,
+                    "id": 1052,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1066:7:10",
+                    "src": "1066:7:8",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -422,34 +422,34 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1065:21:10"
+              "src": "1065:21:8"
             },
             "returnParameters": {
-              "id": 1194,
+              "id": 1055,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1091:0:10"
+              "src": "1091:0:8"
             },
-            "scope": 1217,
-            "src": "1054:162:10",
+            "scope": 1082,
+            "src": "1054:162:8",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           },
           {
             "body": {
-              "id": 1215,
+              "id": 1076,
               "nodeType": "Block",
-              "src": "1365:763:10",
+              "src": "1365:763:8",
               "statements": [
                 {
                   "AST": {
                     "nodeType": "YulBlock",
-                    "src": "1448:674:10",
+                    "src": "1448:674:8",
                     "statements": [
                       {
                         "nodeType": "YulVariableDeclaration",
-                        "src": "1462:76:10",
+                        "src": "1462:76:8",
                         "value": {
                           "arguments": [
                             {
@@ -457,7 +457,7 @@
                                 {
                                   "kind": "number",
                                   "nodeType": "YulLiteral",
-                                  "src": "1491:1:10",
+                                  "src": "1491:1:8",
                                   "type": "",
                                   "value": "0"
                                 }
@@ -465,15 +465,15 @@
                               "functionName": {
                                 "name": "sload",
                                 "nodeType": "YulIdentifier",
-                                "src": "1485:5:10"
+                                "src": "1485:5:8"
                               },
                               "nodeType": "YulFunctionCall",
-                              "src": "1485:8:10"
+                              "src": "1485:8:8"
                             },
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1495:42:10",
+                              "src": "1495:42:8",
                               "type": "",
                               "value": "0xffffffffffffffffffffffffffffffffffffffff"
                             }
@@ -481,16 +481,16 @@
                           "functionName": {
                             "name": "and",
                             "nodeType": "YulIdentifier",
-                            "src": "1481:3:10"
+                            "src": "1481:3:8"
                           },
                           "nodeType": "YulFunctionCall",
-                          "src": "1481:57:10"
+                          "src": "1481:57:8"
                         },
                         "variables": [
                           {
                             "name": "_masterCopy",
                             "nodeType": "YulTypedName",
-                            "src": "1466:11:10",
+                            "src": "1466:11:8",
                             "type": ""
                           }
                         ]
@@ -498,7 +498,7 @@
                       {
                         "body": {
                           "nodeType": "YulBlock",
-                          "src": "1741:86:10",
+                          "src": "1741:86:8",
                           "statements": [
                             {
                               "expression": {
@@ -506,26 +506,26 @@
                                   {
                                     "kind": "number",
                                     "nodeType": "YulLiteral",
-                                    "src": "1766:1:10",
+                                    "src": "1766:1:8",
                                     "type": "",
                                     "value": "0"
                                   },
                                   {
                                     "name": "_masterCopy",
                                     "nodeType": "YulIdentifier",
-                                    "src": "1769:11:10"
+                                    "src": "1769:11:8"
                                   }
                                 ],
                                 "functionName": {
                                   "name": "mstore",
                                   "nodeType": "YulIdentifier",
-                                  "src": "1759:6:10"
+                                  "src": "1759:6:8"
                                 },
                                 "nodeType": "YulFunctionCall",
-                                "src": "1759:22:10"
+                                "src": "1759:22:8"
                               },
                               "nodeType": "YulExpressionStatement",
-                              "src": "1759:22:10"
+                              "src": "1759:22:8"
                             },
                             {
                               "expression": {
@@ -533,14 +533,14 @@
                                   {
                                     "kind": "number",
                                     "nodeType": "YulLiteral",
-                                    "src": "1805:1:10",
+                                    "src": "1805:1:8",
                                     "type": "",
                                     "value": "0"
                                   },
                                   {
                                     "kind": "number",
                                     "nodeType": "YulLiteral",
-                                    "src": "1808:4:10",
+                                    "src": "1808:4:8",
                                     "type": "",
                                     "value": "0x20"
                                   }
@@ -548,13 +548,13 @@
                                 "functionName": {
                                   "name": "return",
                                   "nodeType": "YulIdentifier",
-                                  "src": "1798:6:10"
+                                  "src": "1798:6:8"
                                 },
                                 "nodeType": "YulFunctionCall",
-                                "src": "1798:15:10"
+                                "src": "1798:15:8"
                               },
                               "nodeType": "YulExpressionStatement",
-                              "src": "1798:15:10"
+                              "src": "1798:15:8"
                             }
                           ]
                         },
@@ -565,7 +565,7 @@
                                 {
                                   "kind": "number",
                                   "nodeType": "YulLiteral",
-                                  "src": "1669:1:10",
+                                  "src": "1669:1:8",
                                   "type": "",
                                   "value": "0"
                                 }
@@ -573,15 +573,15 @@
                               "functionName": {
                                 "name": "calldataload",
                                 "nodeType": "YulIdentifier",
-                                "src": "1656:12:10"
+                                "src": "1656:12:8"
                               },
                               "nodeType": "YulFunctionCall",
-                              "src": "1656:15:10"
+                              "src": "1656:15:8"
                             },
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1673:66:10",
+                              "src": "1673:66:8",
                               "type": "",
                               "value": "0xa619486e00000000000000000000000000000000000000000000000000000000"
                             }
@@ -589,13 +589,13 @@
                           "functionName": {
                             "name": "eq",
                             "nodeType": "YulIdentifier",
-                            "src": "1653:2:10"
+                            "src": "1653:2:8"
                           },
                           "nodeType": "YulFunctionCall",
-                          "src": "1653:87:10"
+                          "src": "1653:87:8"
                         },
                         "nodeType": "YulIf",
-                        "src": "1650:2:10"
+                        "src": "1650:2:8"
                       },
                       {
                         "expression": {
@@ -603,14 +603,14 @@
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1853:1:10",
+                              "src": "1853:1:8",
                               "type": "",
                               "value": "0"
                             },
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1856:1:10",
+                              "src": "1856:1:8",
                               "type": "",
                               "value": "0"
                             },
@@ -619,26 +619,26 @@
                               "functionName": {
                                 "name": "calldatasize",
                                 "nodeType": "YulIdentifier",
-                                "src": "1859:12:10"
+                                "src": "1859:12:8"
                               },
                               "nodeType": "YulFunctionCall",
-                              "src": "1859:14:10"
+                              "src": "1859:14:8"
                             }
                           ],
                           "functionName": {
                             "name": "calldatacopy",
                             "nodeType": "YulIdentifier",
-                            "src": "1840:12:10"
+                            "src": "1840:12:8"
                           },
                           "nodeType": "YulFunctionCall",
-                          "src": "1840:34:10"
+                          "src": "1840:34:8"
                         },
                         "nodeType": "YulExpressionStatement",
-                        "src": "1840:34:10"
+                        "src": "1840:34:8"
                       },
                       {
                         "nodeType": "YulVariableDeclaration",
-                        "src": "1887:72:10",
+                        "src": "1887:72:8",
                         "value": {
                           "arguments": [
                             {
@@ -646,20 +646,20 @@
                               "functionName": {
                                 "name": "gas",
                                 "nodeType": "YulIdentifier",
-                                "src": "1915:3:10"
+                                "src": "1915:3:8"
                               },
                               "nodeType": "YulFunctionCall",
-                              "src": "1915:5:10"
+                              "src": "1915:5:8"
                             },
                             {
                               "name": "_masterCopy",
                               "nodeType": "YulIdentifier",
-                              "src": "1922:11:10"
+                              "src": "1922:11:8"
                             },
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1935:1:10",
+                              "src": "1935:1:8",
                               "type": "",
                               "value": "0"
                             },
@@ -668,22 +668,22 @@
                               "functionName": {
                                 "name": "calldatasize",
                                 "nodeType": "YulIdentifier",
-                                "src": "1938:12:10"
+                                "src": "1938:12:8"
                               },
                               "nodeType": "YulFunctionCall",
-                              "src": "1938:14:10"
+                              "src": "1938:14:8"
                             },
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1954:1:10",
+                              "src": "1954:1:8",
                               "type": "",
                               "value": "0"
                             },
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1957:1:10",
+                              "src": "1957:1:8",
                               "type": "",
                               "value": "0"
                             }
@@ -691,16 +691,16 @@
                           "functionName": {
                             "name": "delegatecall",
                             "nodeType": "YulIdentifier",
-                            "src": "1902:12:10"
+                            "src": "1902:12:8"
                           },
                           "nodeType": "YulFunctionCall",
-                          "src": "1902:57:10"
+                          "src": "1902:57:8"
                         },
                         "variables": [
                           {
                             "name": "success",
                             "nodeType": "YulTypedName",
-                            "src": "1891:7:10",
+                            "src": "1891:7:8",
                             "type": ""
                           }
                         ]
@@ -711,14 +711,14 @@
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1987:1:10",
+                              "src": "1987:1:8",
                               "type": "",
                               "value": "0"
                             },
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1990:1:10",
+                              "src": "1990:1:8",
                               "type": "",
                               "value": "0"
                             },
@@ -727,27 +727,27 @@
                               "functionName": {
                                 "name": "returndatasize",
                                 "nodeType": "YulIdentifier",
-                                "src": "1993:14:10"
+                                "src": "1993:14:8"
                               },
                               "nodeType": "YulFunctionCall",
-                              "src": "1993:16:10"
+                              "src": "1993:16:8"
                             }
                           ],
                           "functionName": {
                             "name": "returndatacopy",
                             "nodeType": "YulIdentifier",
-                            "src": "1972:14:10"
+                            "src": "1972:14:8"
                           },
                           "nodeType": "YulFunctionCall",
-                          "src": "1972:38:10"
+                          "src": "1972:38:8"
                         },
                         "nodeType": "YulExpressionStatement",
-                        "src": "1972:38:10"
+                        "src": "1972:38:8"
                       },
                       {
                         "body": {
                           "nodeType": "YulBlock",
-                          "src": "2041:31:10",
+                          "src": "2041:31:8",
                           "statements": [
                             {
                               "expression": {
@@ -755,7 +755,7 @@
                                   {
                                     "kind": "number",
                                     "nodeType": "YulLiteral",
-                                    "src": "2050:1:10",
+                                    "src": "2050:1:8",
                                     "type": "",
                                     "value": "0"
                                   },
@@ -764,22 +764,22 @@
                                     "functionName": {
                                       "name": "returndatasize",
                                       "nodeType": "YulIdentifier",
-                                      "src": "2053:14:10"
+                                      "src": "2053:14:8"
                                     },
                                     "nodeType": "YulFunctionCall",
-                                    "src": "2053:16:10"
+                                    "src": "2053:16:8"
                                   }
                                 ],
                                 "functionName": {
                                   "name": "revert",
                                   "nodeType": "YulIdentifier",
-                                  "src": "2043:6:10"
+                                  "src": "2043:6:8"
                                 },
                                 "nodeType": "YulFunctionCall",
-                                "src": "2043:27:10"
+                                "src": "2043:27:8"
                               },
                               "nodeType": "YulExpressionStatement",
-                              "src": "2043:27:10"
+                              "src": "2043:27:8"
                             }
                           ]
                         },
@@ -788,12 +788,12 @@
                             {
                               "name": "success",
                               "nodeType": "YulIdentifier",
-                              "src": "2029:7:10"
+                              "src": "2029:7:8"
                             },
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "2038:1:10",
+                              "src": "2038:1:8",
                               "type": "",
                               "value": "0"
                             }
@@ -801,13 +801,13 @@
                           "functionName": {
                             "name": "eq",
                             "nodeType": "YulIdentifier",
-                            "src": "2026:2:10"
+                            "src": "2026:2:8"
                           },
                           "nodeType": "YulFunctionCall",
-                          "src": "2026:14:10"
+                          "src": "2026:14:8"
                         },
                         "nodeType": "YulIf",
-                        "src": "2023:2:10"
+                        "src": "2023:2:8"
                       },
                       {
                         "expression": {
@@ -815,7 +815,7 @@
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "2092:1:10",
+                              "src": "2092:1:8",
                               "type": "",
                               "value": "0"
                             },
@@ -824,86 +824,117 @@
                               "functionName": {
                                 "name": "returndatasize",
                                 "nodeType": "YulIdentifier",
-                                "src": "2095:14:10"
+                                "src": "2095:14:8"
                               },
                               "nodeType": "YulFunctionCall",
-                              "src": "2095:16:10"
+                              "src": "2095:16:8"
                             }
                           ],
                           "functionName": {
                             "name": "return",
                             "nodeType": "YulIdentifier",
-                            "src": "2085:6:10"
+                            "src": "2085:6:8"
                           },
                           "nodeType": "YulFunctionCall",
-                          "src": "2085:27:10"
+                          "src": "2085:27:8"
                         },
                         "nodeType": "YulExpressionStatement",
-                        "src": "2085:27:10"
+                        "src": "2085:27:8"
                       }
                     ]
                   },
                   "evmVersion": "istanbul",
                   "externalReferences": [],
-                  "id": 1214,
+                  "id": 1075,
                   "nodeType": "InlineAssembly",
-                  "src": "1439:683:10"
+                  "src": "1439:683:8"
                 }
               ]
             },
             "documentation": {
-              "id": 1211,
+              "id": 1072,
               "nodeType": "StructuredDocumentation",
-              "src": "1222:90:10",
+              "src": "1222:90:8",
               "text": "@dev Fallback function forwards all transactions and returns all received return data."
             },
-            "id": 1216,
+            "id": 1077,
             "implemented": true,
             "kind": "fallback",
             "modifiers": [],
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1212,
+              "id": 1073,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1325:2:10"
+              "src": "1325:2:8"
             },
             "returnParameters": {
-              "id": 1213,
+              "id": 1074,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1365:0:10"
+              "src": "1365:0:8"
             },
-            "scope": 1217,
-            "src": "1317:811:10",
+            "scope": 1082,
+            "src": "1317:811:8",
+            "stateMutability": "payable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": {
+              "id": 1080,
+              "nodeType": "Block",
+              "src": "2161:7:8",
+              "statements": []
+            },
+            "id": 1081,
+            "implemented": true,
+            "kind": "receive",
+            "modifiers": [],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1078,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2141:2:8"
+            },
+            "returnParameters": {
+              "id": 1079,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2161:0:8"
+            },
+            "scope": 1082,
+            "src": "2134:34:8",
             "stateMutability": "payable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 1218,
-        "src": "616:1514:10"
+        "scope": 1083,
+        "src": "616:1558:8"
       }
     ],
-    "src": "157:1973:10"
+    "src": "157:2017:8"
   },
   "legacyAST": {
     "absolutePath": "/home/quoc/Projects/harmony-totp-pure/contracts/external/walletproxy.sol",
     "exportedSymbols": {
       "IProxy": [
-        1186
+        1047
       ],
       "WalletProxy": [
-        1217
+        1082
       ]
     },
-    "id": 1218,
+    "id": 1083,
     "license": "LGPL-3.0-or-later",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1179,
+        "id": 1040,
         "literals": [
           "solidity",
           ">=",
@@ -911,7 +942,7 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "157:24:10"
+        "src": "157:24:8"
       },
       {
         "abstract": false,
@@ -919,45 +950,45 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 1180,
+          "id": 1041,
           "nodeType": "StructuredDocumentation",
-          "src": "183:131:10",
+          "src": "183:131:8",
           "text": "@title IProxy - Helper interface to access masterCopy of the Proxy on-chain\n @author Richard Meissner - <richard@gnosis.io>"
         },
         "fullyImplemented": false,
-        "id": 1186,
+        "id": 1047,
         "linearizedBaseContracts": [
-          1186
+          1047
         ],
         "name": "IProxy",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "functionSelector": "a619486e",
-            "id": 1185,
+            "id": 1046,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "masterCopy",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1181,
+              "id": 1042,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "356:2:10"
+              "src": "356:2:8"
             },
             "returnParameters": {
-              "id": 1184,
+              "id": 1045,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1183,
+                  "id": 1044,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1185,
-                  "src": "382:7:10",
+                  "scope": 1046,
+                  "src": "382:7:8",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -965,10 +996,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1182,
+                    "id": 1043,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "382:7:10",
+                    "src": "382:7:8",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -978,17 +1009,17 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "381:9:10"
+              "src": "381:9:8"
             },
-            "scope": 1186,
-            "src": "337:54:10",
+            "scope": 1047,
+            "src": "337:54:8",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 1218,
-        "src": "314:79:10"
+        "scope": 1083,
+        "src": "314:79:8"
       },
       {
         "abstract": false,
@@ -996,27 +1027,27 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "documentation": {
-          "id": 1187,
+          "id": 1048,
           "nodeType": "StructuredDocumentation",
-          "src": "395:221:10",
+          "src": "395:221:8",
           "text": "@title WalletProxy - Generic proxy contract allows to execute all transactions applying the code of a master contract.\n @author Stefan George - <stefan@gnosis.io>\n @author Richard Meissner - <richard@gnosis.io>"
         },
         "fullyImplemented": true,
-        "id": 1217,
+        "id": 1082,
         "linearizedBaseContracts": [
-          1217
+          1082
         ],
         "name": "WalletProxy",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 1189,
+            "id": 1050,
             "mutability": "mutable",
             "name": "masterCopy",
             "nodeType": "VariableDeclaration",
-            "scope": 1217,
-            "src": "900:27:10",
+            "scope": 1082,
+            "src": "900:27:8",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1024,10 +1055,10 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 1188,
+              "id": 1049,
               "name": "address",
               "nodeType": "ElementaryTypeName",
-              "src": "900:7:10",
+              "src": "900:7:8",
               "stateMutability": "nonpayable",
               "typeDescriptions": {
                 "typeIdentifier": "t_address",
@@ -1038,9 +1069,9 @@
           },
           {
             "body": {
-              "id": 1209,
+              "id": 1070,
               "nodeType": "Block",
-              "src": "1091:125:10",
+              "src": "1091:125:8",
               "statements": [
                 {
                   "expression": {
@@ -1050,18 +1081,18 @@
                           "typeIdentifier": "t_address",
                           "typeString": "address"
                         },
-                        "id": 1201,
+                        "id": 1062,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
-                          "id": 1196,
+                          "id": 1057,
                           "name": "_masterCopy",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1192,
-                          "src": "1109:11:10",
+                          "referencedDeclaration": 1053,
+                          "src": "1109:11:8",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
                             "typeString": "address"
@@ -1073,14 +1104,14 @@
                           "arguments": [
                             {
                               "hexValue": "30",
-                              "id": 1199,
+                              "id": 1060,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
                               "kind": "number",
                               "lValueRequested": false,
                               "nodeType": "Literal",
-                              "src": "1132:1:10",
+                              "src": "1132:1:8",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_rational_0_by_1",
                                 "typeString": "int_const 0"
@@ -1095,26 +1126,26 @@
                                 "typeString": "int_const 0"
                               }
                             ],
-                            "id": 1198,
+                            "id": 1059,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
                             "lValueRequested": false,
                             "nodeType": "ElementaryTypeNameExpression",
-                            "src": "1124:7:10",
+                            "src": "1124:7:8",
                             "typeDescriptions": {
                               "typeIdentifier": "t_type$_t_address_$",
                               "typeString": "type(address)"
                             },
                             "typeName": {
-                              "id": 1197,
+                              "id": 1058,
                               "name": "address",
                               "nodeType": "ElementaryTypeName",
-                              "src": "1124:7:10",
+                              "src": "1124:7:8",
                               "typeDescriptions": {}
                             }
                           },
-                          "id": 1200,
+                          "id": 1061,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -1122,14 +1153,14 @@
                           "lValueRequested": false,
                           "names": [],
                           "nodeType": "FunctionCall",
-                          "src": "1124:10:10",
+                          "src": "1124:10:8",
                           "tryCall": false,
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
                             "typeString": "address"
                           }
                         },
-                        "src": "1109:25:10",
+                        "src": "1109:25:8",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bool",
                           "typeString": "bool"
@@ -1137,14 +1168,14 @@
                       },
                       {
                         "hexValue": "496e76616c6964206d617374657220636f707920616464726573732070726f7669646564",
-                        "id": 1202,
+                        "id": 1063,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
                         "kind": "string",
                         "lValueRequested": false,
                         "nodeType": "Literal",
-                        "src": "1136:38:10",
+                        "src": "1136:38:8",
                         "typeDescriptions": {
                           "typeIdentifier": "t_stringliteral_108d84599042957b954e89d43b52f80be89321dfc114a37800028eba58dafc87",
                           "typeString": "literal_string \"Invalid master copy address provided\""
@@ -1163,7 +1194,7 @@
                           "typeString": "literal_string \"Invalid master copy address provided\""
                         }
                       ],
-                      "id": 1195,
+                      "id": 1056,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -1171,13 +1202,13 @@
                         4294967278
                       ],
                       "referencedDeclaration": 4294967278,
-                      "src": "1101:7:10",
+                      "src": "1101:7:8",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 1203,
+                    "id": 1064,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1185,31 +1216,31 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "1101:74:10",
+                    "src": "1101:74:8",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1204,
+                  "id": 1065,
                   "nodeType": "ExpressionStatement",
-                  "src": "1101:74:10"
+                  "src": "1101:74:8"
                 },
                 {
                   "expression": {
-                    "id": 1207,
+                    "id": 1068,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
-                      "id": 1205,
+                      "id": 1066,
                       "name": "masterCopy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1189,
-                      "src": "1185:10:10",
+                      "referencedDeclaration": 1050,
+                      "src": "1185:10:8",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
                         "typeString": "address"
@@ -1218,53 +1249,53 @@
                     "nodeType": "Assignment",
                     "operator": "=",
                     "rightHandSide": {
-                      "id": 1206,
+                      "id": 1067,
                       "name": "_masterCopy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1192,
-                      "src": "1198:11:10",
+                      "referencedDeclaration": 1053,
+                      "src": "1198:11:8",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
                         "typeString": "address"
                       }
                     },
-                    "src": "1185:24:10",
+                    "src": "1185:24:8",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
                       "typeString": "address"
                     }
                   },
-                  "id": 1208,
+                  "id": 1069,
                   "nodeType": "ExpressionStatement",
-                  "src": "1185:24:10"
+                  "src": "1185:24:8"
                 }
               ]
             },
             "documentation": {
-              "id": 1190,
+              "id": 1051,
               "nodeType": "StructuredDocumentation",
-              "src": "934:115:10",
+              "src": "934:115:8",
               "text": "@dev Constructor function sets address of master copy contract.\n @param _masterCopy Master copy address."
             },
-            "id": 1210,
+            "id": 1071,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1193,
+              "id": 1054,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1192,
+                  "id": 1053,
                   "mutability": "mutable",
                   "name": "_masterCopy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1210,
-                  "src": "1066:19:10",
+                  "scope": 1071,
+                  "src": "1066:19:8",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1272,10 +1303,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1191,
+                    "id": 1052,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1066:7:10",
+                    "src": "1066:7:8",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -1285,34 +1316,34 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1065:21:10"
+              "src": "1065:21:8"
             },
             "returnParameters": {
-              "id": 1194,
+              "id": 1055,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1091:0:10"
+              "src": "1091:0:8"
             },
-            "scope": 1217,
-            "src": "1054:162:10",
+            "scope": 1082,
+            "src": "1054:162:8",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           },
           {
             "body": {
-              "id": 1215,
+              "id": 1076,
               "nodeType": "Block",
-              "src": "1365:763:10",
+              "src": "1365:763:8",
               "statements": [
                 {
                   "AST": {
                     "nodeType": "YulBlock",
-                    "src": "1448:674:10",
+                    "src": "1448:674:8",
                     "statements": [
                       {
                         "nodeType": "YulVariableDeclaration",
-                        "src": "1462:76:10",
+                        "src": "1462:76:8",
                         "value": {
                           "arguments": [
                             {
@@ -1320,7 +1351,7 @@
                                 {
                                   "kind": "number",
                                   "nodeType": "YulLiteral",
-                                  "src": "1491:1:10",
+                                  "src": "1491:1:8",
                                   "type": "",
                                   "value": "0"
                                 }
@@ -1328,15 +1359,15 @@
                               "functionName": {
                                 "name": "sload",
                                 "nodeType": "YulIdentifier",
-                                "src": "1485:5:10"
+                                "src": "1485:5:8"
                               },
                               "nodeType": "YulFunctionCall",
-                              "src": "1485:8:10"
+                              "src": "1485:8:8"
                             },
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1495:42:10",
+                              "src": "1495:42:8",
                               "type": "",
                               "value": "0xffffffffffffffffffffffffffffffffffffffff"
                             }
@@ -1344,16 +1375,16 @@
                           "functionName": {
                             "name": "and",
                             "nodeType": "YulIdentifier",
-                            "src": "1481:3:10"
+                            "src": "1481:3:8"
                           },
                           "nodeType": "YulFunctionCall",
-                          "src": "1481:57:10"
+                          "src": "1481:57:8"
                         },
                         "variables": [
                           {
                             "name": "_masterCopy",
                             "nodeType": "YulTypedName",
-                            "src": "1466:11:10",
+                            "src": "1466:11:8",
                             "type": ""
                           }
                         ]
@@ -1361,7 +1392,7 @@
                       {
                         "body": {
                           "nodeType": "YulBlock",
-                          "src": "1741:86:10",
+                          "src": "1741:86:8",
                           "statements": [
                             {
                               "expression": {
@@ -1369,26 +1400,26 @@
                                   {
                                     "kind": "number",
                                     "nodeType": "YulLiteral",
-                                    "src": "1766:1:10",
+                                    "src": "1766:1:8",
                                     "type": "",
                                     "value": "0"
                                   },
                                   {
                                     "name": "_masterCopy",
                                     "nodeType": "YulIdentifier",
-                                    "src": "1769:11:10"
+                                    "src": "1769:11:8"
                                   }
                                 ],
                                 "functionName": {
                                   "name": "mstore",
                                   "nodeType": "YulIdentifier",
-                                  "src": "1759:6:10"
+                                  "src": "1759:6:8"
                                 },
                                 "nodeType": "YulFunctionCall",
-                                "src": "1759:22:10"
+                                "src": "1759:22:8"
                               },
                               "nodeType": "YulExpressionStatement",
-                              "src": "1759:22:10"
+                              "src": "1759:22:8"
                             },
                             {
                               "expression": {
@@ -1396,14 +1427,14 @@
                                   {
                                     "kind": "number",
                                     "nodeType": "YulLiteral",
-                                    "src": "1805:1:10",
+                                    "src": "1805:1:8",
                                     "type": "",
                                     "value": "0"
                                   },
                                   {
                                     "kind": "number",
                                     "nodeType": "YulLiteral",
-                                    "src": "1808:4:10",
+                                    "src": "1808:4:8",
                                     "type": "",
                                     "value": "0x20"
                                   }
@@ -1411,13 +1442,13 @@
                                 "functionName": {
                                   "name": "return",
                                   "nodeType": "YulIdentifier",
-                                  "src": "1798:6:10"
+                                  "src": "1798:6:8"
                                 },
                                 "nodeType": "YulFunctionCall",
-                                "src": "1798:15:10"
+                                "src": "1798:15:8"
                               },
                               "nodeType": "YulExpressionStatement",
-                              "src": "1798:15:10"
+                              "src": "1798:15:8"
                             }
                           ]
                         },
@@ -1428,7 +1459,7 @@
                                 {
                                   "kind": "number",
                                   "nodeType": "YulLiteral",
-                                  "src": "1669:1:10",
+                                  "src": "1669:1:8",
                                   "type": "",
                                   "value": "0"
                                 }
@@ -1436,15 +1467,15 @@
                               "functionName": {
                                 "name": "calldataload",
                                 "nodeType": "YulIdentifier",
-                                "src": "1656:12:10"
+                                "src": "1656:12:8"
                               },
                               "nodeType": "YulFunctionCall",
-                              "src": "1656:15:10"
+                              "src": "1656:15:8"
                             },
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1673:66:10",
+                              "src": "1673:66:8",
                               "type": "",
                               "value": "0xa619486e00000000000000000000000000000000000000000000000000000000"
                             }
@@ -1452,13 +1483,13 @@
                           "functionName": {
                             "name": "eq",
                             "nodeType": "YulIdentifier",
-                            "src": "1653:2:10"
+                            "src": "1653:2:8"
                           },
                           "nodeType": "YulFunctionCall",
-                          "src": "1653:87:10"
+                          "src": "1653:87:8"
                         },
                         "nodeType": "YulIf",
-                        "src": "1650:2:10"
+                        "src": "1650:2:8"
                       },
                       {
                         "expression": {
@@ -1466,14 +1497,14 @@
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1853:1:10",
+                              "src": "1853:1:8",
                               "type": "",
                               "value": "0"
                             },
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1856:1:10",
+                              "src": "1856:1:8",
                               "type": "",
                               "value": "0"
                             },
@@ -1482,26 +1513,26 @@
                               "functionName": {
                                 "name": "calldatasize",
                                 "nodeType": "YulIdentifier",
-                                "src": "1859:12:10"
+                                "src": "1859:12:8"
                               },
                               "nodeType": "YulFunctionCall",
-                              "src": "1859:14:10"
+                              "src": "1859:14:8"
                             }
                           ],
                           "functionName": {
                             "name": "calldatacopy",
                             "nodeType": "YulIdentifier",
-                            "src": "1840:12:10"
+                            "src": "1840:12:8"
                           },
                           "nodeType": "YulFunctionCall",
-                          "src": "1840:34:10"
+                          "src": "1840:34:8"
                         },
                         "nodeType": "YulExpressionStatement",
-                        "src": "1840:34:10"
+                        "src": "1840:34:8"
                       },
                       {
                         "nodeType": "YulVariableDeclaration",
-                        "src": "1887:72:10",
+                        "src": "1887:72:8",
                         "value": {
                           "arguments": [
                             {
@@ -1509,20 +1540,20 @@
                               "functionName": {
                                 "name": "gas",
                                 "nodeType": "YulIdentifier",
-                                "src": "1915:3:10"
+                                "src": "1915:3:8"
                               },
                               "nodeType": "YulFunctionCall",
-                              "src": "1915:5:10"
+                              "src": "1915:5:8"
                             },
                             {
                               "name": "_masterCopy",
                               "nodeType": "YulIdentifier",
-                              "src": "1922:11:10"
+                              "src": "1922:11:8"
                             },
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1935:1:10",
+                              "src": "1935:1:8",
                               "type": "",
                               "value": "0"
                             },
@@ -1531,22 +1562,22 @@
                               "functionName": {
                                 "name": "calldatasize",
                                 "nodeType": "YulIdentifier",
-                                "src": "1938:12:10"
+                                "src": "1938:12:8"
                               },
                               "nodeType": "YulFunctionCall",
-                              "src": "1938:14:10"
+                              "src": "1938:14:8"
                             },
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1954:1:10",
+                              "src": "1954:1:8",
                               "type": "",
                               "value": "0"
                             },
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1957:1:10",
+                              "src": "1957:1:8",
                               "type": "",
                               "value": "0"
                             }
@@ -1554,16 +1585,16 @@
                           "functionName": {
                             "name": "delegatecall",
                             "nodeType": "YulIdentifier",
-                            "src": "1902:12:10"
+                            "src": "1902:12:8"
                           },
                           "nodeType": "YulFunctionCall",
-                          "src": "1902:57:10"
+                          "src": "1902:57:8"
                         },
                         "variables": [
                           {
                             "name": "success",
                             "nodeType": "YulTypedName",
-                            "src": "1891:7:10",
+                            "src": "1891:7:8",
                             "type": ""
                           }
                         ]
@@ -1574,14 +1605,14 @@
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1987:1:10",
+                              "src": "1987:1:8",
                               "type": "",
                               "value": "0"
                             },
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1990:1:10",
+                              "src": "1990:1:8",
                               "type": "",
                               "value": "0"
                             },
@@ -1590,27 +1621,27 @@
                               "functionName": {
                                 "name": "returndatasize",
                                 "nodeType": "YulIdentifier",
-                                "src": "1993:14:10"
+                                "src": "1993:14:8"
                               },
                               "nodeType": "YulFunctionCall",
-                              "src": "1993:16:10"
+                              "src": "1993:16:8"
                             }
                           ],
                           "functionName": {
                             "name": "returndatacopy",
                             "nodeType": "YulIdentifier",
-                            "src": "1972:14:10"
+                            "src": "1972:14:8"
                           },
                           "nodeType": "YulFunctionCall",
-                          "src": "1972:38:10"
+                          "src": "1972:38:8"
                         },
                         "nodeType": "YulExpressionStatement",
-                        "src": "1972:38:10"
+                        "src": "1972:38:8"
                       },
                       {
                         "body": {
                           "nodeType": "YulBlock",
-                          "src": "2041:31:10",
+                          "src": "2041:31:8",
                           "statements": [
                             {
                               "expression": {
@@ -1618,7 +1649,7 @@
                                   {
                                     "kind": "number",
                                     "nodeType": "YulLiteral",
-                                    "src": "2050:1:10",
+                                    "src": "2050:1:8",
                                     "type": "",
                                     "value": "0"
                                   },
@@ -1627,22 +1658,22 @@
                                     "functionName": {
                                       "name": "returndatasize",
                                       "nodeType": "YulIdentifier",
-                                      "src": "2053:14:10"
+                                      "src": "2053:14:8"
                                     },
                                     "nodeType": "YulFunctionCall",
-                                    "src": "2053:16:10"
+                                    "src": "2053:16:8"
                                   }
                                 ],
                                 "functionName": {
                                   "name": "revert",
                                   "nodeType": "YulIdentifier",
-                                  "src": "2043:6:10"
+                                  "src": "2043:6:8"
                                 },
                                 "nodeType": "YulFunctionCall",
-                                "src": "2043:27:10"
+                                "src": "2043:27:8"
                               },
                               "nodeType": "YulExpressionStatement",
-                              "src": "2043:27:10"
+                              "src": "2043:27:8"
                             }
                           ]
                         },
@@ -1651,12 +1682,12 @@
                             {
                               "name": "success",
                               "nodeType": "YulIdentifier",
-                              "src": "2029:7:10"
+                              "src": "2029:7:8"
                             },
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "2038:1:10",
+                              "src": "2038:1:8",
                               "type": "",
                               "value": "0"
                             }
@@ -1664,13 +1695,13 @@
                           "functionName": {
                             "name": "eq",
                             "nodeType": "YulIdentifier",
-                            "src": "2026:2:10"
+                            "src": "2026:2:8"
                           },
                           "nodeType": "YulFunctionCall",
-                          "src": "2026:14:10"
+                          "src": "2026:14:8"
                         },
                         "nodeType": "YulIf",
-                        "src": "2023:2:10"
+                        "src": "2023:2:8"
                       },
                       {
                         "expression": {
@@ -1678,7 +1709,7 @@
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "2092:1:10",
+                              "src": "2092:1:8",
                               "type": "",
                               "value": "0"
                             },
@@ -1687,69 +1718,100 @@
                               "functionName": {
                                 "name": "returndatasize",
                                 "nodeType": "YulIdentifier",
-                                "src": "2095:14:10"
+                                "src": "2095:14:8"
                               },
                               "nodeType": "YulFunctionCall",
-                              "src": "2095:16:10"
+                              "src": "2095:16:8"
                             }
                           ],
                           "functionName": {
                             "name": "return",
                             "nodeType": "YulIdentifier",
-                            "src": "2085:6:10"
+                            "src": "2085:6:8"
                           },
                           "nodeType": "YulFunctionCall",
-                          "src": "2085:27:10"
+                          "src": "2085:27:8"
                         },
                         "nodeType": "YulExpressionStatement",
-                        "src": "2085:27:10"
+                        "src": "2085:27:8"
                       }
                     ]
                   },
                   "evmVersion": "istanbul",
                   "externalReferences": [],
-                  "id": 1214,
+                  "id": 1075,
                   "nodeType": "InlineAssembly",
-                  "src": "1439:683:10"
+                  "src": "1439:683:8"
                 }
               ]
             },
             "documentation": {
-              "id": 1211,
+              "id": 1072,
               "nodeType": "StructuredDocumentation",
-              "src": "1222:90:10",
+              "src": "1222:90:8",
               "text": "@dev Fallback function forwards all transactions and returns all received return data."
             },
-            "id": 1216,
+            "id": 1077,
             "implemented": true,
             "kind": "fallback",
             "modifiers": [],
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1212,
+              "id": 1073,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1325:2:10"
+              "src": "1325:2:8"
             },
             "returnParameters": {
-              "id": 1213,
+              "id": 1074,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1365:0:10"
+              "src": "1365:0:8"
             },
-            "scope": 1217,
-            "src": "1317:811:10",
+            "scope": 1082,
+            "src": "1317:811:8",
+            "stateMutability": "payable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": {
+              "id": 1080,
+              "nodeType": "Block",
+              "src": "2161:7:8",
+              "statements": []
+            },
+            "id": 1081,
+            "implemented": true,
+            "kind": "receive",
+            "modifiers": [],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1078,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2141:2:8"
+            },
+            "returnParameters": {
+              "id": 1079,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2161:0:8"
+            },
+            "scope": 1082,
+            "src": "2134:34:8",
             "stateMutability": "payable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 1218,
-        "src": "616:1514:10"
+        "scope": 1083,
+        "src": "616:1558:8"
       }
     ],
-    "src": "157:1973:10"
+    "src": "157:2017:8"
   },
   "compiler": {
     "name": "solc",
@@ -1757,7 +1819,7 @@
   },
   "networks": {},
   "schemaVersion": "3.3.4",
-  "updatedAt": "2021-08-31T17:48:18.039Z",
+  "updatedAt": "2021-10-09T00:52:30.363Z",
   "devdoc": {
     "author": "Richard Meissner - <richard@gnosis.io>",
     "kind": "dev",
