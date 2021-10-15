@@ -24,7 +24,7 @@ class Indexer {
 		let rawdata = fs.readFileSync(factoryPath);
 		let jsonData = JSON.parse(rawdata);
 		const factories = jsonData[env];
-		this.factories = [factories[factories.length-1]];
+		this.factories = factories;
 		console.log("Loaded factories", this.factories);
 
 		// db 
