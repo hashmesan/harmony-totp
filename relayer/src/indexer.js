@@ -12,6 +12,7 @@ const walletFactoryArtifacts = require('../../build/contracts/WalletFactory.json
 const LAST_BLOCK_ID = "LAST_BLOCK_ID";
 const RELAYER_GAS_USED = "RELAYER_GAS_USED";
 const RELAYER_GAS_RECEIVED = "RELAYER_GAS_RECEIVED";
+const WALLET_COUNT = "WALLET_COUNT";
 
 class Indexer {
 	
@@ -27,8 +28,11 @@ class Indexer {
 		console.log("Loaded factories", this.factories);
 
 		// db 
+		this.env = env;
 		this.db = new DB(dbpath);
-		this.db.createSchema();
+		try {
+			this.db.createSchema();
+		}catch(e) {}
 
 		// harmony api
 		this.harmonyClient = new HarmonyClient(config.CONFIG[env].RPC_URL, config.CONFIG[env].ENS_ADDRESS);
@@ -73,12 +77,24 @@ class Indexer {
 	}
 
 	// will use paging to get all txs
-	async getTransactionsSinceBlock(blockId) {
-		return await this.db.getAllTxFromBlock(blockId) 
+	async getTransactionsSinceBlock(blockId, limit, offset) {
+		console.log("getTransactionsSinceBlock",this.env,  blockId, limit, offset);
+		return await this.db.getAllTxFromBlock(blockId, limit, offset) 
+	}
+
+	async getAggregatedInfo() {
+		return {
+			"txCount": await this.db.getTotalTxs(0),
+			"gasUsed": await this.db.getByKey(RELAYER_GAS_USED),
+			"relayerReceived": await this.db.getByKey(RELAYER_GAS_RECEIVED),
+			"walletCount": await this.db.getByKey(WALLET_COUNT),
+			"balanceOne": await this.db.getTotalBalance()
+		}
 	}
 
 	async updateTransactions(blockId, currentBlock) {
 		// get all wallet addresses
+		var walletCount = 0;
 		for (var factory of this.factories) {
 			const factoryContract = new this.harmonyClient.web3.eth.Contract(
 				walletFactoryArtifacts.abi,
@@ -86,19 +102,25 @@ class Indexer {
 			);
 
 			const created = await factoryContract.methods.getCreated().call();
-			const wallets = created.map(e => e.wallet);
+			walletCount += created.length;
 
-			console.log("wallets found", wallets, "in", factory);
+			console.log("wallets found", created.map(e=>e.wallet), "in", factory);
 			
 			// loop through each accounts
 			// sync up all the tx blocks since lastBlock
-			for (var  wallet  of wallets) {
+			for (var item of created) {
+				var wallet = item.wallet;
 				var txs = await this.harmonyClient.getTransactionsByAccount(wallet);
 				txs = txs.filter(e => e.blockNumber >= blockId && e.blockNumber <= currentBlock);
 				await this.updateDBWithTx(txs);
-				console.log("updated wallet=", wallet, "# of txs", txs.length);				
+				
+				var balance = await this.harmonyClient.getBalance(wallet);
+				console.log("updated wallet=", wallet, "# of txs", txs.length, "balance=", balance);
+
+				await this.db.upsertBalance(wallet, item.domain.join("."), balance);
 			}
 		}
+		await this.db.upsertKeyValue(WALLET_COUNT, walletCount);
 	}
 
 	async updateFees() {
@@ -126,7 +148,7 @@ class Indexer {
 		console.log("Total tx", await this.db.getTotalTxs(0));
 		console.log("Gas used=", await this.db.getByKey(RELAYER_GAS_USED));
 		console.log("Relayer received=", await this.db.getByKey(RELAYER_GAS_RECEIVED));
-
+		console.log("Total balance=", await this.db.getTotalBalance(), "ONE");
 		await this.db.upsertKeyValue(LAST_BLOCK_ID, this.currentBlock+1);
 	}
 }

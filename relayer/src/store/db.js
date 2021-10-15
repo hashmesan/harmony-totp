@@ -9,12 +9,15 @@ class DBStore {
 	createSchema() {
 		// create KV table
 		this.db.serialize(()=>{
-			this.db.run("CREATE TABLE keyvalues (key TEXT, value TEXT)");
+			this.db.run("CREATE TABLE IF NOT EXISTS keyvalues (key TEXT PRIMARY KEY, value TEXT)");
 			// create  TX  table
-			this.db.run("CREATE TABLE txs (id INTEGER, hash TEXT, blocktime INTEGER, [from] TEXT, [to] TEXT, value TEXT, data TEXT,  fname TEXT, decoded TEXT, gasUsed INTEGER, gasPrice TEXT, refundAddress TEXT, relayerPaid TEXT)");
+			this.db.run("CREATE TABLE IF NOT EXISTS txs (id INTEGER PRIMARY KEY, hash TEXT, blocktime INTEGER, [from] TEXT, [to] TEXT, value TEXT, data TEXT,  fname TEXT, decoded TEXT, gasUsed INTEGER, gasPrice TEXT, refundAddress TEXT, relayerPaid TEXT)");
+
+			this.db.run("CREATE TABLE IF NOT EXISTS balance (account TEXT PRIMARY KEY, domain TEXT, balance TEXT)");
 		})
 	}
 
+	// KEY-VALUE TABLE
 	async getByKey(key) {
 		var stmt = this.db.prepare("SELECT value from keyvalues where key=?");
 		return new Promise((resolve, reject) => {
@@ -26,15 +29,47 @@ class DBStore {
 	}
 
 	async upsertKeyValue(key, value) {
-		var stmt = this.db.prepare("INSERT INTO keyvalues(key, value)  VALUES(?, ?)");
+		var stmt = this.db.prepare("INSERT INTO keyvalues(key, value)  VALUES(?, ?) ON CONFLICT(key) DO UPDATE SET value=?");
 		return  new Promise((resolve, reject) =>  {
-			stmt.run(key, value, (err, row) =>{
+			stmt.run(key, value, value, (err, row) =>{
 				if(err) { reject(err) }
 				resolve(row);
 			});
 		});
 	}
 
+	// BALANCE TABLE
+	async getBalanceByAccount(account) {
+		var stmt = this.db.prepare("SELECT * from balance where account=?");
+		return new Promise((resolve, reject) => {
+			stmt.get(account, (err, row) => {
+				if (err) { reject(err) }
+				resolve(row);
+			});
+		});
+	}
+
+	async upsertBalance(account, domain, balance) {
+		var stmt = this.db.prepare("INSERT INTO balance VALUES(?, ?, ?) ON CONFLICT(account) DO UPDATE SET balance=?");
+		return new Promise((resolve, reject) => {
+			stmt.run(account, domain, balance, balance, (err, row) => {
+				if (err) { reject(err) }
+				resolve(row);
+			});
+		});
+	}
+
+	async getTotalBalance() {
+		var stmt = this.db.prepare("SELECT sum(balance/1e18) as totalBalance from balance");
+		return new Promise((resolve, reject) => {
+			stmt.get((err, row) => {
+				if (err) { reject(err) }
+				resolve(row.totalBalance);
+			});
+		});
+	}
+
+	// Transactions
 	async upsertTx(data) {
 		var stmt = this.db.prepare("INSERT INTO txs  VALUES(?, ?, ?, ?, ?, ? , ? , ?, ? , ? , ?, ?,?)");
 		return new Promise((resolve, reject) => {
@@ -45,10 +80,13 @@ class DBStore {
 		});
 	}
 
-	async getAllTxFromBlock(blockId) {
-		var stmt = this.db.prepare("SELECT * from txs where id>=?");
+	async getAllTxFromBlock(blockId, limit, offset) {
+		limit = limit || 10
+		offset = offset || 0
+
+		var stmt = this.db.prepare("SELECT * from txs where id>=? LIMIT ? OFFSET ?");
 		return new Promise((resolve, reject) => {
-			stmt.all(blockId, (err, rows) => {
+			stmt.all(blockId, limit, offset, (err, rows) => {
 				if (err) { reject(err) }
 				resolve(rows);
 			});
