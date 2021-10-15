@@ -88,7 +88,8 @@ class Indexer {
 			"gasUsed": await this.db.getByKey(RELAYER_GAS_USED),
 			"relayerReceived": await this.db.getByKey(RELAYER_GAS_RECEIVED),
 			"walletCount": await this.db.getByKey(WALLET_COUNT),
-			"balanceOne": await this.db.getTotalBalance()
+			"balanceOne": await this.db.getTotalBalance(),
+			"currentBlock": await this.db.getByKey(LAST_BLOCK_ID)
 		}
 	}
 
@@ -149,7 +150,7 @@ class Indexer {
 		console.log("Gas used=", await this.db.getByKey(RELAYER_GAS_USED));
 		console.log("Relayer received=", await this.db.getByKey(RELAYER_GAS_RECEIVED));
 		console.log("Total balance=", await this.db.getTotalBalance(), "ONE");
-		await this.db.upsertKeyValue(LAST_BLOCK_ID, this.currentBlock+1);
+		await this.db.upsertKeyValue(LAST_BLOCK_ID, currentBlock+1);
 	}
 }
 
