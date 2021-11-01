@@ -4,6 +4,7 @@ var config = require("../../webclient/src/config");
 var DB  =  require("./store/db");
 var web3utils = require("web3-utils");
 const walletFactoryArtifacts = require('../../build/contracts/WalletFactory.json');
+var sqlite3 = require('sqlite3');
 
 /**
  * Indexes data for info page
@@ -16,20 +17,21 @@ const WALLET_COUNT = "WALLET_COUNT";
 
 class Indexer {
 	
-	constructor(factoryPath, dbpath, env) {
+	constructor(factoryPath, dbpath, env, mode) {
 		// get factories
 		factoryPath = factoryPath || __dirname + "/../../contracts/deployed.json"
 		env = env || "mainnet0"
+		var readOnly = mode ? sqlite3.OPEN_READONLY : sqlite3.OPEN_READWRITE;
 
 		let rawdata = fs.readFileSync(factoryPath);
 		let jsonData = JSON.parse(rawdata);
 		const factories = jsonData[env];
-		this.factories = factories;
+		this.factories = factories.splice(factories.length-2);
 		console.log("Loaded factories", this.factories);
 
 		// db 
 		this.env = env;
-		this.db = new DB(dbpath);
+		this.db = new DB(dbpath, readOnly);
 		try {
 			this.db.createSchema();
 		}catch(e) {}
@@ -43,7 +45,7 @@ class Indexer {
 		// lookup all the factories
 		var allTxs = {}
 		for(var factory of this.factories) {
-			var txs = await this.harmonyClient.getTransactionsByAccount(factory);
+			var txs = await this.harmonyClient.getTransactionsByAccount(factory, 20);
 			//console.log(factory, txs);
 			allTxs[factory] = txs.filter(e => e.blockNumber >= blockId && e.blockNumber <= currentBlock);
 		}
@@ -69,9 +71,17 @@ class Indexer {
 				refundFee = events[0].args.refundFee.toString();
 				console.log(tx.hash, "RefundAddress=", refundAddress, "refundFee", refundFee);
 			}
+			var fname = "";
+			if(Array.isArray(tx.function)) {
+				fname = tx.function.map(e => e.name).join(" -> ");
+			} else if(tx.function) {
+				fname = tx.function.name;
+			}
+			console.log(tx.hash, tx.function, fname);
+
 			//events.length  > 0 && console.log(events);
-			await this.db.upsertTx([tx.blockNumber, tx.blockHash, web3utils.hexToNumber(tx.timestamp),
-			tx.from, tx.to, tx.value, "", tx.function ? tx.function.name : "", JSON.stringify(tx.function),
+			await this.db.upsertTx([tx.blockNumber, tx.hash, web3utils.hexToNumber(tx.timestamp),
+			tx.from, tx.to, tx.value, "", fname, JSON.stringify(tx.function),
 				tx.gas, tx.gasPrice, refundAddress, refundFee])
 		}
 	}

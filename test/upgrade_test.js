@@ -28,7 +28,7 @@ contract("Upgrade", accounts => {
 			owner,
 			salt
 		  );
-		await web3.eth.sendTransaction({ from: accounts[0], to: walletAddrComputed, value: web3.utils.toWei("2", "ether") , gas: 300000});
+		await web3.eth.sendTransaction({ from: accounts[0], to: walletAddrComputed, value: web3.utils.toWei("10", "ether") , gas: 300000});
 
         var subdomain = "superlongcrazynameverycheap000001" + blockNumber + salt;
 		var smartWallet = await walletFactory.createWallet({

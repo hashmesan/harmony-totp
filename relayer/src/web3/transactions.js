@@ -41,6 +41,7 @@ class Transactions {
         this.config = CONFIG[env];
         this.provider = new Provider(process.env.PRIVATE_KEY, this.config.provider);
         this.defaultAddress = this.provider.getAddress(0);
+        console.log("WalletFactory=",walletFactoryArtifacts.networks[this.config.network_id].address);
         //console.log("Loaded ENV=" + env + " provider=" + this.config.provider, "defaultAddress=", this.defaultAddress);
     }
 
@@ -59,7 +60,7 @@ class Transactions {
     async createWallet(config) {
         var count = await new Web3(this.provider).eth.getTransactionCount(this.defaultAddress);
         const factory = await this.getWalletFactory();
-        console.log("sent=", this.env, config);
+        console.log("sent=", count, this.env, config);
         var tx = await factory.createWallet(config,{ from: this.defaultAddress, gas: 812388, nonce: count});
         return {tx: tx.tx};
     }
@@ -93,6 +94,14 @@ class Transactions {
         return {address: tx};
     }
         
+
+    /**
+     * verify the tx before we send it, why bother if it will fail?
+     * validate gas minimums as well with estimateGas
+     * 
+     * @param {*} data 
+     * @returns 
+     */
     async submitMetaTx(data) {
         // console.log(data);
         var count = await new Web3(this.provider).eth.getTransactionCount(this.defaultAddress);

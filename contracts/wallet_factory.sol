@@ -9,7 +9,7 @@ import "./external/signatureutil.sol";
 
 contract WalletFactory
 {
-    event WalletCreated (address wallet, address owner);
+    event WalletCreated (address wallet, address owner, string[3] domain);
     event Debug(bytes32 signHash, address addr);
 
     address public immutable walletImplementation;
@@ -59,7 +59,7 @@ contract WalletFactory
         _initializeWallet(wallet, config);
 
         created.push(CreateRecord(address(wallet), [config.domain[0], config.domain[1]]));
-        emit WalletCreated(address(wallet), config.owner);
+        emit WalletCreated(address(wallet), config.owner, config.domain);
     }
 
     function computeWalletAddress(

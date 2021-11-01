@@ -11,6 +11,7 @@ library MetaTx {
         bool success;
         bytes returnData;
     }
+    event Invoked(address indexed target, uint indexed value, bytes data, bool success, bytes returnData);
 
     function validateTx(
                         Core.Wallet storage _wallet,
@@ -91,7 +92,7 @@ library MetaTx {
         bool success;
         (success, _result) = _target.call{value: _value}(_data);
 
-        //emit Invoked(_target, _value, _data, success, _result);
+        emit Invoked(_target, _value, _data, success, _result);
 
         if (!success) {
             // solhint-disable-next-line no-inline-assembly

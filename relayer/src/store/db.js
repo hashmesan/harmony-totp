@@ -2,8 +2,9 @@ var sqlite3 = require('sqlite3').verbose();
 const util = require('util');
 
 class DBStore {
-	constructor(location) {
-		this.db = new sqlite3.Database(location);
+	constructor(location, mode) {
+		mode = mode || sqlite3.OPEN_READWRITE;
+		this.db = new sqlite3.Database(location, sqlite3.OPEN_SHAREDCACHE | mode);
 	}
 
 	createSchema() {
@@ -11,7 +12,7 @@ class DBStore {
 		this.db.serialize(()=>{
 			this.db.run("CREATE TABLE IF NOT EXISTS keyvalues (key TEXT PRIMARY KEY, value TEXT)");
 			// create  TX  table
-			this.db.run("CREATE TABLE IF NOT EXISTS txs (id INTEGER PRIMARY KEY, hash TEXT, blocktime INTEGER, [from] TEXT, [to] TEXT, value TEXT, data TEXT,  fname TEXT, decoded TEXT, gasUsed INTEGER, gasPrice TEXT, refundAddress TEXT, relayerPaid TEXT)");
+			this.db.run("CREATE TABLE IF NOT EXISTS txs (id INTEGER, hash TEXT PRIMARY KEY, blocktime INTEGER, [from] TEXT, [to] TEXT, value TEXT, data TEXT,  fname TEXT, decoded TEXT, gasUsed INTEGER, gasPrice TEXT, refundAddress TEXT, relayerPaid TEXT)");
 
 			this.db.run("CREATE TABLE IF NOT EXISTS balance (account TEXT PRIMARY KEY, domain TEXT, balance TEXT)");
 		})
@@ -84,7 +85,7 @@ class DBStore {
 		limit = limit || 10
 		offset = offset || 0
 
-		var stmt = this.db.prepare("SELECT * from txs where id>=? LIMIT ? OFFSET ?");
+		var stmt = this.db.prepare("SELECT * from txs where id>=? ORDER BY id DESC, blocktime DESC LIMIT ? OFFSET ?");
 		return new Promise((resolve, reject) => {
 			stmt.all(blockId, limit, offset, (err, rows) => {
 				if (err) { reject(err) }

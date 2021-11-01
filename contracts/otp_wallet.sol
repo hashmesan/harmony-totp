@@ -42,7 +42,6 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
     event WalletUpgraded(address newImpl);
     event Initialized(address wallet, address refundAddress, uint refundFee);
     event TransactionExecuted(bool indexed success, bytes returnData, bytes32 signedHash, address refundAddress, uint refundFee);
-    event Invoked(address indexed target, uint indexed value, bytes data, bool success, bytes returnData);
 
     constructor() {
         isImplementationContract = true;
@@ -84,7 +83,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
 
         // STACK TOO DEEP
         if(bytes(domainAndHashId_[0]).length > 0) {
-            this.registerENS(domainAndHashId_[0], domainAndHashId_[1], 60 * 60 * 24 * 365);
+            this.registerENS(domainAndHashId_[0], domainAndHashId_[1], 200000000);
         }
 
         if (feeRecipient != address(0)) {
@@ -332,17 +331,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
     }
 
     function startRecoveryReveal(address newOwner, bytes32[] calldata confirmMaterial)  onlySelf() onlyValidTOTP(confirmMaterial) external {
-        bytes32 secretHash = keccak256(abi.encodePacked(confirmMaterial[0]));
-        require(wallet.commitHash[secretHash].blockNumber != 0, "NO COMMIT");
-        require(wallet.commitHash[secretHash].revealed == false, "COMMIT ALREADY REVEALED");
-        require(block.number - wallet.commitHash[secretHash].blockNumber < 15, "Commit is too old");
-
-        bytes32 hash = keccak256(abi.encodePacked(newOwner, confirmMaterial[0]));
-        require(hash == wallet.commitHash[secretHash].dataHash, "Datahash does not match");
-
-        wallet.commitHash[secretHash].revealed = true;
-        wallet.owner = newOwner;
-        wallet.counter = wallet.counter + 1;
+        wallet.startRecoveryReveal(newOwner, confirmMaterial);
     }
 
     function upgradeMasterCopy(address newMasterCopy) external onlySelf() {
