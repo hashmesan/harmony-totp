@@ -8,5 +8,5 @@ if(!["testnet0", "testnet3", "mainnet0"].includes(env)) {
 
 console.log("Run Indexer for", env);
 
-var indexer = new Indexer(null, "./index_" + env + ".db", env);
+var indexer = new Indexer(null, "./db/index_" + env + ".db", env);
 indexer.run().then();
