@@ -150,8 +150,9 @@ async function main() {
                 await loadWalletByNameOrAddress(client, from);
                 
                 //console.log(envConfig.gasPrice, envConfig.gasLimit);
-                const res = await client.relayClient.transferTX(client.walletData.walletAddress, fromBech32(to), web3utils.toWei(amount), envConfig.gasPrice, envConfig.gasLimit, client.ownerAccount);    
-
+                const tx = RelayerClient.getContract().methods.multiCall([{to: fromBech32(to), value: web3utils.toWei(amount), data: "0x"}]).encodeABI();
+                var res = await client.submitTransaction(tx);
+        
                 if(res.success) {
                     console.log("Success! TX=" + res.data.tx)
                 } else {

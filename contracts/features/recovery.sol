@@ -6,6 +6,8 @@ import "./metatx.sol";
 
 library Recovery {
 
+    event WalletRecovered(address newOner, uint counter);
+
     bytes32 public constant START_RECOVERY_TYPEHASH = keccak256(
         "startRecovery(bytes16, uint8, uint, uint)"
     );
@@ -29,12 +31,45 @@ library Recovery {
     //
     // Private functions
     //
+    
+    function startRecoveryReveal(Core.Wallet storage wallet, address newOwner, bytes32[] calldata confirmMaterial) public {
+        bytes32 secretHash = keccak256(abi.encodePacked(confirmMaterial[0]));
+        require(wallet.commitHash[secretHash].blockNumber != 0, "NO COMMIT");
+        require(wallet.commitHash[secretHash].revealed == false, "COMMIT ALREADY REVEALED");
+        require(block.number - wallet.commitHash[secretHash].blockNumber < 15, "Commit is too old");
 
+        bytes32 hash = keccak256(abi.encodePacked(newOwner, confirmMaterial[0]));
+        require(hash == wallet.commitHash[secretHash].dataHash, "Datahash does not match");
+
+        wallet.commitHash[secretHash].revealed = true;
+        wallet.owner = newOwner;
+        wallet.counter = wallet.counter + 1;
+        emit WalletRecovered(newOwner, wallet.counter);
+    }
 
     //
     // HOTP Verification functions
     //
-    function _deriveChildTreeIdx(uint merkelHeight, bytes32 sides) public pure returns (uint32) {
+
+    function isValidHOTP(Core.Wallet storage wallet, bytes32[] memory confirmMaterial) public view {
+        bytes32 reduced = _reduceConfirmMaterial(confirmMaterial);
+        uint32 counterProvided = _deriveChildTreeIdx(wallet.merkelHeight, confirmMaterial[confirmMaterial.length-1]);
+        require(counterProvided >= wallet.counter, "Bad otp counter");
+
+        // Google Authenticator doesn't allow custom counter or change counter back; so we must allow room to fudge
+        // allow some room if the counters were skipped at some point
+        require(counterProvided - wallet.counter  < 50, "Counter more than 50 steps");
+
+        bool foundMatch = false;
+        for (uint32 i = 0; i < wallet.rootHash.length; i++) {
+            if(reduced==wallet.rootHash[i]) {
+                foundMatch = true;
+            }
+        }
+        require(foundMatch, "UNEXPECTED PROOF");        
+    }
+
+    function _deriveChildTreeIdx(uint merkelHeight, bytes32 sides) internal pure returns (uint32) {
         uint32 derivedIdx = 0;
         for(uint8 i = 0 ; i < merkelHeight ; i++){
             if(bytes1(0x01) == sides[i]){
@@ -44,7 +79,7 @@ library Recovery {
         return derivedIdx;
     }
     
-    function _reduceConfirmMaterial(bytes32[] memory confirmMaterial) public pure returns (bytes32) {
+    function _reduceConfirmMaterial(bytes32[] memory confirmMaterial) internal pure returns (bytes32) {
         //  and then compute h(OTP) to get the leaf of the tree
         confirmMaterial[0] = keccak256(abi.encodePacked(confirmMaterial[0]));
         bytes32 sides = confirmMaterial[confirmMaterial.length - 1];

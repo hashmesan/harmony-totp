@@ -9,6 +9,7 @@ const BN = require("bn.js");
 const bnChai = require("bn-chai");
 const { assert, expect } = chai;
 chai.use(bnChai(BN));
+const TOTPWallet = artifacts.require("TOTPWallet");
 
 const ERC20SampleToken = artifacts.require("ERC20SampleToken");
 const FungibleToken = artifacts.require("FungibleToken");
@@ -46,29 +47,55 @@ contract("TokenTest", async (accounts) => {
                                         ethers.constants.AddressZero)
     }
 
+    async function createFactoryWallet(owner, salt) {
+		const blockNumber = await web3.eth.getBlockNumber();
+		const resolverAddr = "0x9590030b26dE3A037Cd679b33A177A645BFaC114";
+
+		var merkelHeight = 6;
+		var dailyLimit = web3.utils.toWei("1000");
+		var walletFactory = await commons.createWalletFactory(resolverAddr);
+		var {root_arr, leaves_arr} = walletLib.createHOTP("SECRET", merkelHeight);
+		var relayerWallet = web3.eth.accounts.create();
+		var feeReceipient = relayerWallet.address;
+		var feeAmount = web3.utils.toWei("0.0012345", "ether");		
+
+        const walletAddrComputed = await walletFactory.computeWalletAddress(
+			owner,
+			salt
+		  );
+		await web3.eth.sendTransaction({ from: accounts[0], to: walletAddrComputed, value: web3.utils.toWei("10", "ether") , gas: 300000});
+
+        var subdomain = "superlongcrazynameverycheap000001" + blockNumber + salt;
+		var smartWallet = await walletFactory.createWallet({
+			resolver: resolverAddr,
+			domain: [subdomain, "crazy","hashId"],
+			owner: owner,
+			rootHash: root_arr,
+			merkelHeight: merkelHeight,
+			drainAddr: owner,
+			dailyLimit: dailyLimit,
+			salt: salt,
+			feeReceipient: feeReceipient,
+			feeAmount: feeAmount,
+		});
+
+        return walletAddrComputed;        
+    }
+
     before(async () => {
         const blockNumber = await web3.eth.getBlockNumber();
         tmpWallet = web3.eth.accounts.create();
-        var {root, leaves, wallet} = await commons.createWallet(
-            ethers.constants.AddressZero,
-            ["",""],
-            tmpWallet.address, //owner
-            8, 
-            web3.utils.toWei("100", "ether"),
-            tmpWallet.address, 
-            tmpWallet.address, 
-            0);
-        await web3.eth.sendTransaction({from: accounts[0], to: wallet.address, value: web3.utils.toWei("2", "ether")});
-        smartWallet = wallet;
+        var address = await createFactoryWallet(tmpWallet.address, 123);
+       smartWallet = await TOTPWallet.at(address);
     })
 
     it("should accept ERC20 and send ERC20", async () => {
         console.log("wallet="+ smartWallet.address);
         var erc20 = await ERC20SampleToken.new(web3utils.toWei("1000000"));
         let before = await erc20.balanceOf(smartWallet.address);
-        await erc20.transfer(smartWallet.address, 10000, { from: accounts[0] });
+        await erc20.transfer(smartWallet.address, 50000, { from: accounts[0] });
         let after = await erc20.balanceOf(smartWallet.address);
-        expect(after.sub(before)).to.eq.BN(10000);
+        expect(after.sub(before)).to.eq.BN(50000);
 
         before = after;
         var recipient = web3.eth.accounts.create();
@@ -76,7 +103,7 @@ contract("TokenTest", async (accounts) => {
         await multiCall(smartWallet, [{to: erc20.address, value: 0, data: data}])
 
         after = await erc20.balanceOf(smartWallet.address);        
-        expect(before.sub(after)).to.eq.BN(10000);         
+        expect(after).to.eq.BN(40000);         
     })
 
     it("should accept HRC721 and send HRC721", async () => {

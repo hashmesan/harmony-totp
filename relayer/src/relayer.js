@@ -2,7 +2,7 @@ require('dotenv').config()
 var Transactions = require("./web3/transactions");
 var ipfs = require("./ipfs");
 const web3utils = require("web3-utils");
-const CREATE_FEE = web3utils.toWei("0.09", "ether");
+const CREATE_FEE = web3utils.toWei("0.1", "ether");
 
 // accepts createwallet, then forwards to our own relayer
 const createWallet = (input, callback) => {
@@ -39,7 +39,7 @@ const submitMetaTx = (input, callback) => {
 };
 
 const storeHash = (input, callback) => {
-  ipfs.storeHash(input.env, input.data.wallet, input.data.hashes).then(res=>{
+  ipfs.storeHash(input.env, input.data.wallet, input.data.rootHashes, input.data.hashes).then(res=>{
     callback(200, {result: res});
   }).catch(ex=>{
     console.log(ex);
@@ -88,6 +88,10 @@ curl -X POST -H 'Content-Type: application/json' -d '{"operation": "getHash", "e
 curl -X POST -H 'Content-Type: application/json' -d '{"operation": "getFactoryInfo", "env": "mainnet0"}' http://localhost:8989/
 curl -X POST -H 'Content-Type: application/json' -d '{"operation": "getWallet", "address": "0xfFDe5FA53cA674562a04ea547658dBdB13E0D88f", "env": "mainnet0"}' http://localhost:8989/
 curl -X POST -H 'Content-Type: application/json' -d '{"operation": "getContractCreated", "env": "mainnet0"}' http://localhost:8989/
+
+curl -X POST -H 'Content-Type: application/json' -d '{"operation": "getInfo", "env": "mainnet0"}' http://localhost:8989/
+curl -X POST -H 'Content-Type: application/json' -d '{"operation": "getInfoTx", "env": "mainnet0", "limit": 3, "offset": 0}' http://localhost:8989/
+
 */
 
 const createRequest = (input, callback) => {
@@ -105,8 +109,6 @@ const createRequest = (input, callback) => {
       case "getContractCreated": getContractCreated(input, callback); break;
       default: callback(400, "Invalid operation");
     }
-
-
 }
 
 module.exports.createRequest = createRequest

@@ -153,3 +153,192 @@ Summary
 =======
 > Total deployments:   7
 > Final cost:          0.14518942 ETH
+
+
+#####
+##### V2
+#####
+
+
+Compiling your contracts...
+===========================
+> Everything is up to date, there is nothing to compile.
+
+
+
+Starting migrations...
+======================
+> Network name:    'mainnet0'
+> Network id:      1666600000
+> Block gas limit: 80000000 (0x4c4b400)
+
+
+01_initial_migrations.js
+========================
+
+   Replacing 'Migrations'
+   ----------------------
+   > transaction hash:    0x4695873c43226d0743c6c802583ac2931ebce2716ae44fd2ee10cc18c4236de9
+   > Blocks: 2            Seconds: 4
+   > contract address:    0x43F043af691D2d916BC74652FE9e1E57376dAaD9
+   > block number:        17903533
+   > block timestamp:     1633615120
+   > account:             0x257455D4AB8d71E813E36942Bba7BbD1B7f15031
+   > balance:             231.196280789345060396
+   > gas used:            244300 (0x3ba4c)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.004886 ETH
+
+
+   > Saving migration to chain.
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:            0.004886 ETH
+
+
+02_libraries.js
+===============
+
+   Replacing 'Guardians'
+   ---------------------
+   > transaction hash:    0xeb166524e05263458a38e74a7f0138368c2a5f284223e3b91d5acc2cd8e6499c
+   > Blocks: 2            Seconds: 4
+   > contract address:    0x40B237bE80E7103FD9B59e8a67de86DF51921443
+   > block number:        17903540
+   > block timestamp:     1633615134
+   > account:             0x257455D4AB8d71E813E36942Bba7BbD1B7f15031
+   > balance:             231.182472129345060396
+   > gas used:            647920 (0x9e2f0)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.0129584 ETH
+
+
+   Replacing 'DailyLimit'
+   ----------------------
+   > transaction hash:    0x0da62e91ef3d48f2ae49cdaabb7d917710aa9ece7d4569a783d52cee90e2baea
+   > Blocks: 2            Seconds: 4
+   > contract address:    0xA9b52e86D416684608aD9169A8B3BA85692C864B
+   > block number:        17903544
+   > block timestamp:     1633615141
+   > account:             0x257455D4AB8d71E813E36942Bba7BbD1B7f15031
+   > balance:             231.178806029345060396
+   > gas used:            183305 (0x2cc09)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.0036661 ETH
+
+
+   Replacing 'Recovery'
+   --------------------
+   > transaction hash:    0x90ac8c4999e076f80fb2b9e339ebda1459e33dcde1e6a47219ea13a7a006d2b6
+   > Blocks: 3            Seconds: 4
+   > contract address:    0x1A175072Ad1165686CAA0C4FD0Bb32c7EFC94272
+   > block number:        17903548
+   > block timestamp:     1633615150
+   > account:             0x257455D4AB8d71E813E36942Bba7BbD1B7f15031
+   > balance:             231.159297609345060396
+   > gas used:            975421 (0xee23d)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.01950842 ETH
+
+
+   Replacing 'MetaTx'
+   ------------------
+   > transaction hash:    0xb20f13b25571fbdf3fe0ef3f231a4543bb37092cd5c305cefd71863df2815c9f
+   > Blocks: 2            Seconds: 4
+   > contract address:    0x98a6764d69935aB9d0354cCae8a1Eb15E0fA7Db8
+   > block number:        17903552
+   > block timestamp:     1633615158
+   > account:             0x257455D4AB8d71E813E36942Bba7BbD1B7f15031
+   > balance:             231.136440349345060396
+   > gas used:            1142863 (0x11704f)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.02285726 ETH
+
+
+   Replacing 'NameService'
+   -----------------------
+   > transaction hash:    0xc725b36de1699cb568e0874eaca8040a9eccdfd5de9aeb3b7c7ccb25bbd2597d
+   > Blocks: 3            Seconds: 4
+   > contract address:    0xF5E72B482F31DB878426c15659F7e409e172cAaa
+   > block number:        17903556
+   > block timestamp:     1633615166
+   > account:             0x257455D4AB8d71E813E36942Bba7BbD1B7f15031
+   > balance:             231.126552449345060396
+   > gas used:            494395 (0x78b3b)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.0098879 ETH
+
+
+   Linking
+   -------
+   * Contract: TOTPWallet <--> Library: Guardians (at address: 0x40B237bE80E7103FD9B59e8a67de86DF51921443)
+
+   Linking
+   -------
+   * Contract: TOTPWallet <--> Library: Recovery (at address: 0x1A175072Ad1165686CAA0C4FD0Bb32c7EFC94272)
+
+   Linking
+   -------
+   * Contract: TOTPWallet <--> Library: MetaTx (at address: 0x98a6764d69935aB9d0354cCae8a1Eb15E0fA7Db8)
+
+   Linking
+   -------
+   * Contract: TOTPWallet <--> Library: NameService (at address: 0xF5E72B482F31DB878426c15659F7e409e172cAaa)
+
+   Replacing 'TOTPWallet'
+   ----------------------
+   > transaction hash:    0x0702dad74591fc9dc34361080d362ca31584ba13f68a1f1478d2e6640aae5d57
+   > Blocks: 2            Seconds: 4
+   > contract address:    0x47aDEc4e3500cbC80d4B0514af27216FdDbe8C3E
+   > block number:        17903560
+   > block timestamp:     1633615174
+   > account:             0x257455D4AB8d71E813E36942Bba7BbD1B7f15031
+   > balance:             231.019957509345060396
+   > gas used:            5329747 (0x515353)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.10659494 ETH
+
+Implementation= 0x47aDEc4e3500cbC80d4B0514af27216FdDbe8C3E
+
+   Replacing 'WalletFactory'
+   -------------------------
+   > transaction hash:    0x6b577c916e9b80e32ee5e172d092ae93b4df6c58d23a11b63f9f21ac7a5bf6ca
+   > Blocks: 2            Seconds: 4
+   > contract address:    0xa86E90b63331B92004d324D56053F9a20BA19da5
+   > block number:        17903566
+   > block timestamp:     1633615186
+   > account:             0x257455D4AB8d71E813E36942Bba7BbD1B7f15031
+   > balance:             230.988593109345060396
+   > gas used:            1568220 (0x17eddc)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.0313644 ETH
+
+Factory= 0xa86E90b63331B92004d324D56053F9a20BA19da5
+
+   > Saving migration to chain.
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:          0.20683742 ETH
+
+
+03_testENS.js
+=============
+
+   > Saving migration to chain.
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+Summary
+=======
+> Total deployments:   8
+> Final cost:          0.21172342 ETH
+

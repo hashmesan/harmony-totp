@@ -20,6 +20,12 @@ library Core {
         bool revealed;
     }
 
+    struct DailyLimit {
+        uint limit;
+        uint lastDay;
+        uint spentToday;
+    }
+
     enum OwnerSignature {
         Anyone,             // Anyone
         Required,           // Owner required
@@ -31,6 +37,11 @@ library Core {
     struct SignatureRequirement {
         uint8 requiredSignatures;
         OwnerSignature ownerSignatureRequirement;
+    }
+
+    struct Session {
+        address key;
+        uint expires;
     }
 
     struct Wallet { 
@@ -47,13 +58,13 @@ library Core {
         // the info about guardians
         mapping (address => GuardianInfo) info;
         
-        
-        // daily limit
-        uint dailyLimit;
-        uint lastDay;
-        uint spentToday;
-        
+        // Maps wallet to session
+        Session session;
 
+        // daily limit
+        DailyLimit dailyLimit;
+
+        
         // recovery
         string hashStorageID;
         RecoveryInfo pendingRecovery;

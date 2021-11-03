@@ -15,7 +15,7 @@ contract("Guardians", accounts => {
         var tmpWallet = web3.eth.accounts.create();
         var { root, leaves, wallet } = await commons.createWallet(
             ethers.constants.AddressZero,
-            ["", ""],
+            ["", "","hashId"],
             accounts[0],
             8,
             web3.utils.toWei("0.1", "ether"),
@@ -33,7 +33,7 @@ contract("Guardians", accounts => {
         var tmpWallet = web3.eth.accounts.create();
         var { root, leaves, wallet } = await commons.createWallet(
             ethers.constants.AddressZero,
-            ["", ""],
+            ["", "","hashId"],
             accounts[0],
             8,
             web3.utils.toWei("0.1", "ether"),

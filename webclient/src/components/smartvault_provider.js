@@ -3,7 +3,7 @@ import {CONFIG, DEFAULT_TOKEN_LIST, getStorageKey, getLocalWallet, setLocalWalle
 import SmartVault from "../../../lib/smartvault_lib";
 import { connect } from "redux-zero/react";
 
-export const SmartVaultContext = React.createContext({})
+export const SmartVaultContext = React.createContext({smartvault: null})
 SmartVaultContext.displayName = 'MyDisplayName';
 
 class AccountProvider extends Component {

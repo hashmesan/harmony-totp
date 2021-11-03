@@ -53,13 +53,18 @@ function isValidHashes(roots, hashes) {
     return true;
 }
 
-async function storeHash(env, wallet, hashesBase64) {
+async function storeHash(env, wallet, rootHashes, hashesBase64) {
     // get the root hash
-    var wallet = await new Transactions(env || "testnet").getWallet(wallet);
-    var rootHashes = await wallet.getRootHashes();
+
+    // step1: computeTheAddress...(owner, salt) -> address
+
+    // var wallet = await new Transactions(env || "testnet").getWallet(wallet);
+    // var rootHashes = await wallet.getRootHashes();
     var rawData = base64.decode(hashesBase64);
+
     // ensure reduction of hashes match with rootHash
     if(!isValidHashes(rootHashes, rawData)) {
+        console.log("rootHashes", rootHashes)
         throw "Hashes don't match"
     }
 

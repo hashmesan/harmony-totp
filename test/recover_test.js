@@ -23,7 +23,7 @@ contract("Recovery", accounts => {
         //createWallet(resolver, domain,owner, depth, spendingLimit, drainAddr, feeAddress, feeAmount) {
         var {root_arr, leaves_arr, wallet} = await commons.createWallet(
                     ethers.constants.AddressZero,  //resolver
-                    ["",""],
+                    ["","","hashId"],
                     accounts[0], //owner
                     8,
                     web3.utils.toWei("100", "ether"),
@@ -37,10 +37,7 @@ contract("Recovery", accounts => {
 
         var {token, proof} = await commons.getTOTPAndProof(0, 0, leaves_arr);
         console.log("NEW OWNER=", newOwnerWallet.address,"TOKEN=", proof[0]);
-        console.log("Whole proof", proof);
-
         console.log("precommit=", merkle.concat(newOwnerWallet.address,proof[0]));
-        console.log(proof[0]);
         
         var secretHash = web3.utils.soliditySha3(proof[0]);
         var commitHash =  web3.utils.soliditySha3(merkle.concat(newOwnerWallet.address,proof[0]));
@@ -138,26 +135,28 @@ contract("Recovery", accounts => {
             ethers.constants.AddressZero
         );
 
-        await wallet.executeMetaTx(methodData4, sigs, nonce, 0, gasLimit, ethers.constants.AddressZero, ethers.constants.AddressZero);
+        var tx = await wallet.executeMetaTx(methodData4, sigs, nonce, 0, gasLimit, ethers.constants.AddressZero, ethers.constants.AddressZero);
+        var parsed = RelayerClient.parseRelayReceipt({ logs: tx.logs});
+        console.log(parsed)
+        assert.strictEqual(parsed.error,"Bad otp counter")
+
         newOwner = await wallet.getOwner();
-        console.log("NEW OWNER", newOwner);
+        console.log("NEW OWNER (no change)", newOwner);
         assert.equal(newOwner, newOwnerWallet.address);
-        
-    })
+    });
+
     it("should start recovery with HOTP with 3 offsets", async () => {
-        const gasLimit = 100000;
-        const chainId = await web3.eth.getChainId();
-        const nonce = await commons.getNonceForRelay();
-        var tmpWallet = web3.eth.accounts.create();
         var newOwnerWallet = web3.eth.accounts.create();
+        var attackerWallet = web3.eth.accounts.create();
+
         var {root_arr, leaves_arr, wallet} = await commons.createWallet(
             ethers.constants.AddressZero,
-            ["",""],
+            ["","","hashId"],
             accounts[0], // drain
             8,
             web3.utils.toWei("100", "ether"),
             accounts[0],
-            tmpWallet.address,
+            ethers.constants.AddressZero,
             ethers.constants.AddressZero,
             "0" // fee
         );
@@ -171,42 +170,39 @@ contract("Recovery", accounts => {
         console.log("commitHash: ", commitHash)
         // await wallet.startRecoverCommit(commitHash);
 
-        const methodData = wallet.contract.methods.startRecoverCommit(secretHash, commitHash).encodeABI();
-                
-        // zero signature required, just HOTP
-        var sigs = await commons.signOffchain2(
-            [],
-            wallet.address,
-            0,
-            methodData,
-            chainId,
-            nonce,
-            0,
-            gasLimit,
-            ethers.constants.AddressZero,
-            ethers.constants.AddressZero
-        );
+        var methodData = wallet.contract.methods.startRecoverCommit(secretHash, commitHash).encodeABI();
+        await commons.executeMetaTx(wallet, methodData, [])
 
-        await wallet.executeMetaTx(methodData, sigs, nonce, 0, gasLimit, ethers.constants.AddressZero, ethers.constants.AddressZero);
+        var methodData = wallet.contract.methods.startRecoveryReveal(newOwnerWallet.address, proof).encodeABI();
+        var tx = await commons.executeMetaTx(wallet, methodData, [])
+        var parsed = RelayerClient.parseRelayReceipt({ logs: tx.logs});
+        assert.strictEqual(parsed.success, true);
 
-        const methodData2 = wallet.contract.methods.startRecoveryReveal(newOwnerWallet.address, proof).encodeABI();
-        sigs = await commons.signOffchain2(
-            [],
-            wallet.address,
-            0,
-            methodData2,
-            chainId,
-            nonce,
-            0,
-            gasLimit,
-            ethers.constants.AddressZero,
-            ethers.constants.AddressZero
-        );
-
-        await wallet.executeMetaTx(methodData2, sigs, nonce, 0, gasLimit, ethers.constants.AddressZero, ethers.constants.AddressZero);
+        var newOwner = await wallet.getOwner();
+        console.log("OLD", accounts[0], "NEW OWNER", newOwner, newOwnerWallet.address);
+        assert.strictEqual(newOwner, newOwnerWallet.address);
 
         // var pendingRecovery = await wallet.getRecovery();
         // assert.equal(pendingRecovery[0], newOwnerWallet.address);
+
+        // TRY WITH BAD PROOF
+        var badProof = "0x0000000000000000000000000100000000000000000000000000000000000000";
+        proof[0] = badProof;
+        proof[proof.length-1] = "0x0100000000000000";
+        var secretHash = web3.utils.soliditySha3(badProof);
+        var commitHash =  web3.utils.soliditySha3(merkle.concat(attackerWallet.address,badProof));
+
+        var methodData = wallet.contract.methods.startRecoverCommit(secretHash, commitHash).encodeABI();
+        await commons.executeMetaTx(wallet, methodData, [])
+
+        var methodData = wallet.contract.methods.startRecoveryReveal(attackerWallet.address, proof).encodeABI();
+        var tx = await commons.executeMetaTx(wallet, methodData, [])
+        var parsed = RelayerClient.parseRelayReceipt({ logs: tx.logs});
+        console.log("BADPROOF", parsed)
+        assert.strictEqual(parsed.success, false);
+        assert.strictEqual(parsed.error, "UNEXPECTED PROOF");
+        var newOwner = await wallet.getOwner();
+        assert.strictEqual(newOwner, newOwnerWallet.address);
     });
 
     it("should not allow old commits", async () => {
@@ -217,7 +213,7 @@ contract("Recovery", accounts => {
         var newOwnerWallet = web3.eth.accounts.create();
         var {root_arr, leaves_arr, wallet} = await commons.createWallet(
             ethers.constants.AddressZero,
-            ["",""],
+            ["","","hashId"],
             accounts[0], // drain
             8,
             web3.utils.toWei("100", "ether"),
@@ -273,9 +269,7 @@ contract("Recovery", accounts => {
         );
 
         var res = await wallet.executeMetaTx(methodData2, sigs, nonce, 0, gasLimit, ethers.constants.AddressZero, ethers.constants.AddressZero);
-        console.log(res);
         console.log("Receipt:", RelayerClient.parseRelayReceipt({ logs: res.logs}));
-
         newOwner = await wallet.getOwner();
         console.log("NEW OWNER", newOwner, newOwnerWallet.address);
         assert.notEqual(newOwner, newOwnerWallet.address);

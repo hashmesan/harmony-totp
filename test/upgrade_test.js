@@ -28,12 +28,12 @@ contract("Upgrade", accounts => {
 			owner,
 			salt
 		  );
-		await web3.eth.sendTransaction({ from: accounts[0], to: walletAddrComputed, value: web3.utils.toWei("2", "ether") , gas: 300000});
+		await web3.eth.sendTransaction({ from: accounts[0], to: walletAddrComputed, value: web3.utils.toWei("10", "ether") , gas: 300000});
 
         var subdomain = "superlongcrazynameverycheap000001" + blockNumber + salt;
 		var smartWallet = await walletFactory.createWallet({
 			resolver: resolverAddr,
-			domain: [subdomain, "crazy"],
+			domain: [subdomain, "crazy","hashId"],
 			owner: owner,
 			rootHash: root_arr,
 			merkelHeight: merkelHeight,
@@ -41,7 +41,7 @@ contract("Upgrade", accounts => {
 			dailyLimit: dailyLimit,
 			salt: salt,
 			feeReceipient: feeReceipient,
-			feeAmount: feeAmount
+			feeAmount: feeAmount,
 		});
 
         return walletAddrComputed;        
@@ -92,7 +92,7 @@ contract("Upgrade", accounts => {
 
 		var dest = web3.eth.accounts.create();
 		var feeWallet = web3.eth.accounts.create();
-		methodData = wallet.contract.methods.makeTransfer(dest.address, web3.utils.toWei("0.0012345", "ether")).encodeABI();
+		methodData = wallet.contract.methods.multiCall([{to: dest.address, value: web3.utils.toWei("0.0012345", "ether"), data: "0x"}]).encodeABI();
                 
         var sigs = await commons.signOffchain2(
             [tmpWallet],

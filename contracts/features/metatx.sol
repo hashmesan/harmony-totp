@@ -11,6 +11,7 @@ library MetaTx {
         bool success;
         bytes returnData;
     }
+    event Invoked(address indexed target, uint indexed value, bytes data, bool success, bytes returnData);
 
     function validateTx(
                         Core.Wallet storage _wallet,
@@ -39,7 +40,13 @@ library MetaTx {
             address(0),
             refundAddress);
 
-        require(validateSignatures(_wallet, ex.signHash, signatures, sigRequirement.ownerSignatureRequirement), "RM: Invalid signatures");
+        if(sigRequirement.ownerSignatureRequirement == Core.OwnerSignature.Session) {
+            require(_wallet.session.expires >= block.timestamp && _wallet.session.key == _wallet.owner, "No session");
+            address signer = recoverSigner(ex.signHash, signatures, 0);
+            require(signer == _wallet.owner, "Wrong key");
+        } else {
+            require(validateSignatures(_wallet, ex.signHash, signatures, sigRequirement.ownerSignatureRequirement), "RM: Invalid signatures");
+        }
     }
 
     function getSignHash(
@@ -72,6 +79,39 @@ library MetaTx {
                     _refundToken,
                     _refundAddress))
         ));
+    }
+
+
+    /**
+     * @notice Performs a generic transaction.
+     * @param _target The address for the transaction.
+     * @param _value The value of the transaction.
+     * @param _data The data of the transaction.
+     */
+    function invoke(address _target, uint _value, bytes calldata _data) internal returns (bytes memory _result) {
+        bool success;
+        (success, _result) = _target.call{value: _value}(_data);
+
+        emit Invoked(_target, _value, _data, success, _result);
+
+        if (!success) {
+            // solhint-disable-next-line no-inline-assembly
+            assembly {
+                returndatacopy(0, 0, returndatasize())
+                revert(0, returndatasize())
+            }
+        }
+    }
+    
+    /**
+    * @notice Helper method to parse data and extract the method signature.
+    */
+    function functionPrefix(bytes memory _data) internal pure returns (bytes4 prefix) {
+        require(_data.length >= 4, "Utils: Invalid functionPrefix");
+        // solhint-disable-next-line no-inline-assembly
+        assembly {
+            prefix := mload(add(_data, 0x20))
+        }
     }
 
     /**
