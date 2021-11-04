@@ -337,5 +337,6 @@ module.exports = {
     createNewImplementation,
     mineBlock,
     startSession,
-    executeMetaTx
+    executeMetaTx,
+    signMessage
 }
