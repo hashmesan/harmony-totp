@@ -113,6 +113,11 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
         _;
     }
 
+    modifier onlyGuardian() {
+        require(MetaTx.isGuardianAddress(wallet.guardians, msg.sender), "must be guardian");
+        _;
+    }
+
     // confirmMaterial contains OTP + intermediatory hashes + sides
     modifier onlyValidTOTP(bytes32[] memory confirmMaterial) 
     {
@@ -155,18 +160,12 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
             }
         }
 
-        if(methodId == TOTPWallet.startRecoverGuardianOnly.selector) {
-            require(wallet.guardians.length >= 2, "NOT_MEET_MINIMUM_GUARDIANS");
-            uint requiredSignatures = MetaTx.ceil(wallet.guardians.length, 2);
-            return (uint8(requiredSignatures), Core.OwnerSignature.Disallowed);            
-        }
-
         // 1 of 1 = 0 sig
         // 2 of 2 = 1 sig + HOTP
         // 2 of 3 = 1 sig + HOTP
-        if(methodId == TOTPWallet.startRecoverCommit.selector) {
-            uint requiredSignatures = MetaTx.ceil(wallet.guardians.length, 2);
-            return (uint8(requiredSignatures), Core.OwnerSignature.Disallowed);            
+        // we'll check for additional guardian later
+        if(methodId == TOTPWallet.startRecoverCommit.selector) {            
+            return (0, Core.OwnerSignature.Disallowed);            
         }
         if(methodId == TOTPWallet.startRecoveryReveal.selector) {
             return (0, Core.OwnerSignature.Disallowed);            
@@ -232,8 +231,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
      * startSession can only be started by majority of guardians
      */
     function startSession(uint duration) external onlySelf() {
-        wallet.session.key = wallet.owner;
-        wallet.session.expires = uint(block.timestamp + duration);
+        MetaTx.startSession(wallet, duration);
     }
 
     function clearSession()  external onlyFromWalletOrOwnerWhenUnlocked() {
@@ -294,15 +292,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
         wallet.revokeGuardian(guardian);
     }
 
-    function isGuardian(address addr)
-         public
-         view
-         returns (bool)
-     {
-         return wallet.isGuardian(addr);
-     }
-
-     function getGuardians()
+    function getGuardians()
          public
          view
          returns (address[] memory )
@@ -319,19 +309,35 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
     // Relay/or other coordinating system will coordinate the signatures collections 
     // from guardian and submit along with the HOTP together. In rare case, HOTP may be ommitted
     // when greater than 2 guardians can recover without HOTP.
-    function startRecoverGuardianOnly(address newOwner_) onlySelf() external {
+    function startRecoverGuardianOnly(address newOwner_) onlyGuardian() external {
         // move into recovery state
-        wallet.startRecovery(newOwner_);
+        wallet.startRecoverGuardianOnly(newOwner_);
     }
 
     // recover with combination of commithash and signatures
     function startRecoverCommit(bytes32 secretHash, bytes32 dataHash)  onlySelf() external {
         require(wallet.commitHash[secretHash].blockNumber == 0, "COMMIT ALREADY EXIST");
-        wallet.commitHash[secretHash] = Core.CommitInfo(dataHash, block.number, false);
+        address[] memory guardiansApproved;        
+        wallet.commitHash[secretHash] = Core.CommitInfo(dataHash, address(0), block.number, false, guardiansApproved);
     }
 
     function startRecoveryReveal(address newOwner, bytes32[] calldata confirmMaterial)  onlySelf() onlyValidTOTP(confirmMaterial) external {
         wallet.startRecoveryReveal(newOwner, confirmMaterial);
+    }
+
+    function guardianApprove(bytes calldata data_) external onlyGuardian() {
+        bytes4 methodId = MetaTx.functionPrefix(data_);
+        if(methodId == this.startRecoverCommit.selector) {
+            bytes32 secretHash = abi.decode(data_[4:36], (bytes32));
+            Recovery.guardianApproveRecovery(wallet, secretHash, msg.sender);
+        }else if(methodId == this.startRecoverGuardianOnly.selector) {
+            bytes32 secretHash = abi.decode(data_[4:36], (bytes32));
+            Recovery.guardianApproveRecovery(wallet, secretHash, msg.sender);            
+        } else if(methodId == this.startSession.selector) {
+            MetaTx.guardianApproveSession(wallet, data_, msg.sender);
+        } else {
+            revert("no recognized function");
+        }
     }
 
     function upgradeMasterCopy(address newMasterCopy) external onlySelf() {
@@ -346,20 +352,11 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
     //
     // ERC1155 support
     //
-    function onERC1155Received(
-        address,
-        address,
-        uint256,
-        uint256,
-        bytes calldata
-    ) external pure override returns (bytes4){
+    function onERC1155Received(address,address,uint256,uint256,bytes calldata) external pure override returns (bytes4){
         return this.onERC1155Received.selector;
     }
 
-    function onERC1155BatchReceived(address operator, address from, uint256[] calldata ids, uint256[] calldata values, bytes calldata data) external view override returns (bytes4){
-        for (uint32 i = 0; i < ids.length; i++) {
-            this.onERC1155Received(operator, from, ids[i], values[i], data);
-        }
+    function onERC1155BatchReceived(address, address, uint256[] calldata, uint256[] calldata, bytes calldata) external pure override returns (bytes4){
         return this.onERC1155BatchReceived.selector;
     }
 
@@ -370,12 +367,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
         interfaceID == _INTERFACE_ID_ERC1271;
     }
 
-    function onERC721Received(
-        address,
-        address,
-        uint256,
-        bytes calldata
-    ) external pure override returns (bytes4){
+    function onERC721Received(address,address,uint256,bytes calldata) external pure override returns (bytes4){
         return this.onERC721Received.selector;
     }
 

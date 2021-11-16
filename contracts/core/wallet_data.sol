@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 pragma solidity >=0.7.6;
-pragma experimental ABIEncoderV2;
 
 library Core {
     struct GuardianInfo {
@@ -10,14 +9,16 @@ library Core {
     }   
 
     struct RecoveryInfo {
-        address newOwner;
-        uint expiration;
+        bytes32 secretHash;
+        bytes32 dataHash;
     }
 
     struct CommitInfo {
         bytes32 dataHash;
+        address newOwner;
         uint blockNumber;
         bool revealed;
+        address[] guardiansApproved;
     }
 
     struct DailyLimit {
@@ -42,6 +43,8 @@ library Core {
     struct Session {
         address key;
         uint expires;
+        bool active;
+        address[] guardiansApproved;
     }
 
     struct Wallet { 

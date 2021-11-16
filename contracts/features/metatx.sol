@@ -12,6 +12,7 @@ library MetaTx {
         bytes returnData;
     }
     event Invoked(address indexed target, uint indexed value, bytes data, bool success, bytes returnData);
+    event SessionStarted(address indexed target, uint expires);
 
     function validateTx(
                         Core.Wallet storage _wallet,
@@ -46,6 +47,37 @@ library MetaTx {
             require(signer == _wallet.owner, "Wrong key");
         } else {
             require(validateSignatures(_wallet, ex.signHash, signatures, sigRequirement.ownerSignatureRequirement), "RM: Invalid signatures");
+        }
+    }
+
+    function startSession(Core.Wallet storage _wallet, uint duration) public {
+        _wallet.session.key = _wallet.owner;
+        _wallet.session.expires = uint(block.timestamp + duration);
+        delete _wallet.session.guardiansApproved;
+        if(_wallet.guardians.length == 0) {
+            _wallet.session.active = true;
+            emit SessionStarted(address(this), _wallet.session.expires);
+        } else {
+            // will turn on by guardian
+            _wallet.session.active = false;
+        }
+    }
+    
+    function guardianApproveSession(Core.Wallet storage _wallet, bytes calldata, address guardian) public {
+        require(_wallet.session.expires > block.timestamp, "no active session");
+
+        for (uint256 i = 0; i < _wallet.session.guardiansApproved.length; i++) {
+            if (_wallet.session.guardiansApproved[i] == guardian) {
+                revert("duplicate guardian");                
+            }
+        }       
+        _wallet.session.guardiansApproved.push(guardian);
+
+        // count & finalize
+        uint requiredSignatures = MetaTx.ceil(_wallet.guardians.length, 2);
+        if(_wallet.session.guardiansApproved.length == requiredSignatures) {
+            _wallet.session.active = true;
+            emit SessionStarted(address(this), _wallet.session.expires);
         }
     }
 

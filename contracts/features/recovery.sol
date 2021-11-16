@@ -16,21 +16,16 @@ library Recovery {
      * 2 of 2 (HOTP + Guardian)
      * 2 of 3 (2 guardians or HOTP + Guardian)
      */
-    function startRecovery(Core.Wallet storage wallet_, address newOwner) public {
+    function startRecoverGuardianOnly(Core.Wallet storage wallet_, address newOwner) public {
         // queue it for next 24hrs
-        wallet_.pendingRecovery = Core.RecoveryInfo(newOwner, block.timestamp + 86400);
+        bytes32 secretHash = abi.decode(abi.encode(newOwner), (bytes32));
+        require(wallet_.commitHash[secretHash].blockNumber == 0, "COMMIT ALREADY EXIST");
+        address[] memory guardiansApproved;     
+        wallet_.commitHash[secretHash] = Core.CommitInfo(0x0, newOwner, block.number, true, guardiansApproved);
+        wallet_.commitHash[secretHash].guardiansApproved.push(msg.sender);   
+        wallet_.pendingRecovery = Core.RecoveryInfo(secretHash, 0x0);
+        
     }
-
-    function finalizeRecovery(Core.Wallet storage wallet_) public {
-        require(wallet_.pendingRecovery.expiration > 0, "no pending recovery");
-        require(uint64(block.timestamp) > wallet_.pendingRecovery.expiration, "ongoing recovery period");
-        wallet_.owner = wallet_.pendingRecovery.newOwner;
-        wallet_.pendingRecovery = Core.RecoveryInfo(address(0),0);
-    }
-
-    //
-    // Private functions
-    //
     
     function startRecoveryReveal(Core.Wallet storage wallet, address newOwner, bytes32[] calldata confirmMaterial) public {
         bytes32 secretHash = keccak256(abi.encodePacked(confirmMaterial[0]));
@@ -41,10 +36,46 @@ library Recovery {
         bytes32 hash = keccak256(abi.encodePacked(newOwner, confirmMaterial[0]));
         require(hash == wallet.commitHash[secretHash].dataHash, "Datahash does not match");
 
+        wallet.commitHash[secretHash].newOwner = newOwner;
         wallet.commitHash[secretHash].revealed = true;
-        wallet.owner = newOwner;
         wallet.counter = wallet.counter + 1;
+
+        if(wallet.guardians.length==0) {
+            finalizeRecovery(wallet, newOwner);
+        } else {
+            wallet.pendingRecovery = Core.RecoveryInfo(secretHash, hash);
+        }
+    }
+    
+    function finalizeRecovery(Core.Wallet storage wallet, address newOwner) public {
+        wallet.owner = newOwner;
+        wallet.pendingRecovery = Core.RecoveryInfo(0x0, 0x0);
         emit WalletRecovered(newOwner, wallet.counter);
+    }
+    
+    // Guardian has not been dedup
+    // function must take steps to check it
+    function guardianApproveRecovery(Core.Wallet storage wallet, bytes32 secretHash, address guardian) public {
+        Core.CommitInfo storage info = wallet.commitHash[secretHash];
+        require(info.revealed, "COMMIT NOT REVEALED");
+        require(info.blockNumber != 0, "NO COMMIT");
+
+        // dedup
+        for (uint256 i = 0; i < info.guardiansApproved.length; i++) {
+            if (info.guardiansApproved[i] == guardian) {
+                revert("duplicate guardian");                
+            }
+        }       
+        info.guardiansApproved.push(guardian);
+
+        // count & finalize
+        uint requiredSignatures = MetaTx.ceil(wallet.guardians.length, 2);
+        if(info.dataHash == 0x0) {
+            requiredSignatures += 1; // add one if not using HOTP
+        }
+        if(info.guardiansApproved.length == requiredSignatures) {
+            finalizeRecovery(wallet, info.newOwner);
+        }
     }
 
     //

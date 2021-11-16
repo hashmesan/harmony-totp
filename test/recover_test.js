@@ -278,35 +278,187 @@ contract("Recovery", accounts => {
         // assert.equal(pendingRecovery[0], newOwnerWallet.address);
     });
 
-    // it("should start recovery", async () => {
-    //     var wrongWallet = web3.eth.accounts.create();
-    //     var tmpWallet = web3.eth.accounts.create();
-    //     var {startCounter, root, leaves, wallet} = await commons.createWallet(timeOffset, DURATION, 16, tmpWallet.address);
-    //     var proof = await commons.getTOTPAndProof(leaves, timeOffset, DURATION);
-    //     await wallet.addGuardian(tmpWallet.address, proof[0], proof[1]);
-    //     var guardians = await wallet.getGuardians();
-    //     assert.equal(guardians.length, 1);
+    it("should start recovery with HOTP + 1 guardian", async () => {
+        const gasLimit = 100000;
+        const nonce = await commons.getNonceForRelay();
+        var ownerWallet = web3.eth.accounts.create();
+        var feeWallet = web3.eth.accounts.create();
+        var newOwnerWallet = web3.eth.accounts.create();
+        const chainId = await web3.eth.getChainId();
+        var guardian1 = accounts[1];
+        var attacker = accounts[2];
 
-    //     const newRoot = commons.getLeavesAndRoot(timeOffset, DURATION, 10);
+        //createWallet(resolver, domain,owner, depth, spendingLimit, drainAddr, feeAddress, feeAmount) {
+        var {root_arr, leaves_arr, wallet} = await commons.createWallet(
+                    ethers.constants.AddressZero,  //resolver
+                    ["","","hashId"],
+                    ownerWallet.address, //owner
+                    8,
+                    web3.utils.toWei("100", "ether"),
+                    accounts[0],
+                    feeWallet.address, 
+                    "0" // fee
+                    );
 
-    //     // good signature
-    //     var sigs = await commons.signRecoveryOffchain([tmpWallet], newRoot.root, 10, DURATION, timeOffset);
-    //     await wallet.startRecovery(newRoot.root, 10, DURATION, timeOffset, sigs);
-    //     var isRecovering = await wallet.isRecovering();
-    //     assert.equal(isRecovering, true);
-
-    //     // try with a bad hash , 12 when it should be 10
-    //     sigs = await commons.signRecoveryOffchain([tmpWallet], newRoot.root, 12, DURATION, timeOffset);
-    //     await truffleAssert.reverts(wallet.startRecovery(newRoot.root, 10, DURATION, timeOffset, sigs), "Invalid signatures");
-
-    //     // try with the wrong address
-    //     sigs = await commons.signRecoveryOffchain([wrongWallet], newRoot.root, 10, DURATION, timeOffset);
-    //     await truffleAssert.reverts(wallet.startRecovery(newRoot.root, 10, DURATION, timeOffset, sigs), "Invalid signatures");
+        var info = await wallet.contract.methods.wallet().call();
+        console.log("Current OWNER=", info.owner);
         
-    //     await truffleAssert.reverts(wallet.finalizeRecovery(), "ongoing recovery period");
+        // ADD GUARDIAN
+        var methodData = wallet.contract.methods.addGuardian(guardian1).encodeABI();
+        var sigs = await commons.signOffchain2(
+            [ownerWallet],
+            wallet.address,
+            0,
+            methodData,
+            chainId,
+            nonce,
+            0,
+            gasLimit,
+            ethers.constants.AddressZero,
+            ethers.constants.AddressZero
+        );
 
-    //     await commons.increaseTime(86500);
-    //     await wallet.finalizeRecovery();
-    // })
+        var tx = await wallet.executeMetaTx(methodData, sigs, nonce, 
+            0, gasLimit, 
+            ethers.constants.AddressZero, 
+            ethers.constants.AddressZero);       
 
+        // START RECOVERY
+        var {token, proof} = await commons.getTOTPAndProof(0, 0, leaves_arr);
+        console.log("NEW OWNER=", newOwnerWallet.address,"TOKEN=", proof[0]);
+        console.log("precommit=", merkle.concat(newOwnerWallet.address,proof[0]));
+        var secretHash = web3.utils.soliditySha3(proof[0]);
+        var commitHash =  web3.utils.soliditySha3(merkle.concat(newOwnerWallet.address,proof[0]));
+        console.log("commitHash: ", commitHash)
+        var methodData = wallet.contract.methods.startRecoverCommit(secretHash, commitHash).encodeABI();
+                
+        // zero signature required, just HOTP
+        var sigs = await commons.signOffchain2(
+            [],
+            wallet.address,
+            0,
+            methodData,
+            chainId,
+            nonce,
+            0,
+            gasLimit,
+            ethers.constants.AddressZero,
+            ethers.constants.AddressZero
+        );
+
+        await wallet.executeMetaTx(methodData, sigs, nonce, 0, gasLimit, ethers.constants.AddressZero, ethers.constants.AddressZero);
+
+        const methodData2 = wallet.contract.methods.startRecoveryReveal(newOwnerWallet.address, proof).encodeABI();
+        sigs = await commons.signOffchain2(
+            [],
+            wallet.address,
+            0,
+            methodData2,
+            chainId,
+            nonce,
+            0,
+            gasLimit,
+            ethers.constants.AddressZero,
+            ethers.constants.AddressZero
+        );
+
+        await wallet.executeMetaTx(methodData2, sigs, nonce, 0, gasLimit, ethers.constants.AddressZero, ethers.constants.AddressZero);
+        var actualOwner = await wallet.getOwner();
+        console.log("contract owner (should not be same)", actualOwner, newOwnerWallet.address);
+        assert.notEqual(actualOwner, newOwnerWallet.address);
+
+        // GUARDIAN APPROVE IT
+        await truffleAssert.reverts(wallet.guardianApprove(methodData, {from: attacker}), "must be guardian");        
+        
+        // REAL GUARDIAN
+        var methodData = wallet.contract.methods.startRecoverCommit(secretHash, commitHash).encodeABI();
+        console.log("sending methodData", methodData);
+        await wallet.guardianApprove(methodData, {from: guardian1});
+        
+        var actualOwner = await wallet.getOwner();
+        console.log("contract owner (should be same)", actualOwner, newOwnerWallet.address);
+        assert.equal(actualOwner, newOwnerWallet.address);        
+    });
+
+    it("should start recovery with 2 guardian", async () => {
+        const gasLimit = 100000;
+        const nonce = await commons.getNonceForRelay();
+        var ownerWallet = web3.eth.accounts.create();
+        var feeWallet = web3.eth.accounts.create();
+        var newOwnerWallet = web3.eth.accounts.create();
+        const chainId = await web3.eth.getChainId();
+        var guardian1 = accounts[1];
+        var guardian2 = accounts[2];
+        var attacker = accounts[3];
+
+        //createWallet(resolver, domain,owner, depth, spendingLimit, drainAddr, feeAddress, feeAmount) {
+        var {root_arr, leaves_arr, wallet} = await commons.createWallet(
+                    ethers.constants.AddressZero,  //resolver
+                    ["","","hashId"],
+                    ownerWallet.address, //owner
+                    8,
+                    web3.utils.toWei("100", "ether"),
+                    accounts[0],
+                    feeWallet.address, 
+                    "0" // fee
+                    );
+
+        var info = await wallet.contract.methods.wallet().call();
+        console.log("Current OWNER=", info.owner);
+        
+        // ADD GUARDIAN
+        var methodData = wallet.contract.methods.addGuardian(guardian1).encodeABI();
+        var sigs = await commons.signOffchain2(
+            [ownerWallet],
+            wallet.address,
+            0,
+            methodData,
+            chainId,
+            nonce,
+            0,
+            gasLimit,
+            ethers.constants.AddressZero,
+            ethers.constants.AddressZero
+        );
+
+        var tx = await wallet.executeMetaTx(methodData, sigs, nonce, 
+            0, gasLimit, 
+            ethers.constants.AddressZero, 
+            ethers.constants.AddressZero);    
+            
+        var methodData = wallet.contract.methods.addGuardian(guardian2).encodeABI();
+        var sigs = await commons.signOffchain2(
+            [ownerWallet],
+            wallet.address,
+            0,
+            methodData,
+            chainId,
+            nonce,
+            0,
+            gasLimit,
+            ethers.constants.AddressZero,
+            ethers.constants.AddressZero
+        );
+
+        var tx = await wallet.executeMetaTx(methodData, sigs, nonce, 
+            0, gasLimit, 
+            ethers.constants.AddressZero, 
+            ethers.constants.AddressZero);       
+            
+            
+        var methodData = wallet.contract.methods.startRecoverGuardianOnly(newOwnerWallet.address).encodeABI();
+        console.log("methodata=", methodData);
+
+        await truffleAssert.reverts(wallet.guardianApprove(methodData, {from: attacker}), 'must be guardian');
+        await truffleAssert.reverts(wallet.startRecoverGuardianOnly(newOwnerWallet.address, {from: attacker}), 'must be guardian');
+
+        await wallet.startRecoverGuardianOnly(newOwnerWallet.address, {from: guardian1});
+        await truffleAssert.reverts(wallet.guardianApprove(methodData, {from: guardian1}), 'duplicate guardian');
+        await wallet.guardianApprove(methodData, {from: guardian2});
+
+        var actualOwner = await wallet.getOwner();
+        console.log("contract owner (should be same)", actualOwner, newOwnerWallet.address);
+        assert.equal(actualOwner, newOwnerWallet.address);        
+     });
 })
+
