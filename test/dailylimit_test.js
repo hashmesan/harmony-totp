@@ -60,7 +60,7 @@ contract("DailyLimit", accounts => {
             0);
 
         await web3.eth.sendTransaction({from: accounts[0], to: wallet.address, value: web3.utils.toWei("1", "ether")});
-        var guardian1 = web3.eth.accounts.create();
+        var guardian1 = accounts[1];
 
         // Only available in guardian mode
         var methodData0 = wallet.contract.methods.multiCallWithSession([{to: receiver.address, value: web3.utils.toWei("0.11", "ether"), data: "0x"}]).encodeABI();
@@ -68,7 +68,7 @@ contract("DailyLimit", accounts => {
         await truffleAssert.reverts(tx, "unknown method"); 
 
         // ADD GUARDIAN
-        var methodData0 = wallet.contract.methods.addGuardian(guardian1.address).encodeABI();
+        var methodData0 = wallet.contract.methods.addGuardian(guardian1).encodeABI();
         await commons.executeMetaTx(wallet, methodData0, [ownerWallet])
 
         // 0.09 + 0.02 > 0.11 limit
@@ -89,8 +89,11 @@ contract("DailyLimit", accounts => {
         
         // START SESSION
         var duration = 60*60;
-        var res = await commons.startSession(wallet, duration, [ownerWallet, guardian1])
+        var res = await commons.startSession(wallet, duration, [ownerWallet])
         assert.strictEqual(res.receipt.status, true);
+
+        var methodData = wallet.contract.methods.startSession(duration).encodeABI();
+        await wallet.guardianApprove(methodData, {from: guardian1});
 
         // SEND OVER LIMIT
         var methodData0 = wallet.contract.methods.multiCallWithSession([{to: receiver.address, value: web3.utils.toWei("0.11", "ether"), data: "0x"}]).encodeABI();
@@ -122,7 +125,7 @@ contract("DailyLimit", accounts => {
         const nonce = await commons.getNonceForRelay();
         const blockNumber = await web3.eth.getBlockNumber();
         const chainId = await web3.eth.getChainId();
-        var guardian1 = web3.eth.accounts.create();
+        var guardian1 = accounts[2];
 
         var ownerWallet = web3.eth.accounts.create();
         var { root, leaves, wallet } = await commons.createWallet(
@@ -139,7 +142,7 @@ contract("DailyLimit", accounts => {
         assert.strictEqual(walletInfo.dailyLimit.limit,  web3.utils.toWei("0.1", "ether"));
 
         // ADD GUARDIAN
-        var methodData0 = wallet.contract.methods.addGuardian(guardian1.address).encodeABI();
+        var methodData0 = wallet.contract.methods.addGuardian(guardian1).encodeABI();
         await commons.executeMetaTx(wallet, methodData0, [ownerWallet])
        
         // UPDATE LIMIT WITHOUT PERMISSION
@@ -157,13 +160,16 @@ contract("DailyLimit", accounts => {
 
         // start session with incorrect signatures
         var duration = 60*60;
-        var tx = commons.startSession(wallet, duration, [ownerWallet])
+        var tx = commons.startSession(wallet, duration, [])
         await truffleAssert.reverts(tx, "Wrong number of signatures"); 
 
         // START SESSION
         var duration = 60*60;
-        var tx = await commons.startSession(wallet, duration, [ownerWallet, guardian1])
+        var tx = await commons.startSession(wallet, duration, [ownerWallet])
         assert.strictEqual(tx.receipt.status, true);
+
+        var methodData = wallet.contract.methods.startSession(duration).encodeABI();
+        await wallet.guardianApprove(methodData, {from: guardian1});
 
         // ALLOWED IN SESSION + MULTICALLSESSION
         var methodData0 = wallet.contract.methods.setDailyLimit(web3.utils.toWei("0.234", "ether")).encodeABI();

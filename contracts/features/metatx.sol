@@ -43,6 +43,8 @@ library MetaTx {
 
         if(sigRequirement.ownerSignatureRequirement == Core.OwnerSignature.Session) {
             require(_wallet.session.expires >= block.timestamp && _wallet.session.key == _wallet.owner, "No session");
+            require(_wallet.session.active, "No active session");
+            
             address signer = recoverSigner(ex.signHash, signatures, 0);
             require(signer == _wallet.owner, "Wrong key");
         } else {

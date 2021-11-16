@@ -28,7 +28,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
     address masterCopy;
     Core.Wallet public wallet;
     bool internal isImplementationContract;
-    uint public constant version = 2;
+    uint public constant version = 3;
     bytes4 private constant _INTERFACE_ID_ERC1271 = 0x1626ba7e;
 
     // END OF DATA LAYOUT
@@ -153,7 +153,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
                 // owner + 1 guardian   => require 2
                 // owner + 2 guardian   => require 2
                 // owner + 3 guardian   => require 3            
-                return (uint8(MetaTx.ceil(wallet.guardians.length, 2) + 1), Core.OwnerSignature.Required);  
+                return (1, Core.OwnerSignature.Required);  
             }
             if(methodId == TOTPWallet.multiCallWithSession.selector) {
                 return (1, Core.OwnerSignature.Session); 
@@ -327,10 +327,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
 
     function guardianApprove(bytes calldata data_) external onlyGuardian() {
         bytes4 methodId = MetaTx.functionPrefix(data_);
-        if(methodId == this.startRecoverCommit.selector) {
-            bytes32 secretHash = abi.decode(data_[4:36], (bytes32));
-            Recovery.guardianApproveRecovery(wallet, secretHash, msg.sender);
-        }else if(methodId == this.startRecoverGuardianOnly.selector) {
+        if(methodId == this.startRecoverCommit.selector || methodId == this.startRecoverGuardianOnly.selector) {
             bytes32 secretHash = abi.decode(data_[4:36], (bytes32));
             Recovery.guardianApproveRecovery(wallet, secretHash, msg.sender);            
         } else if(methodId == this.startSession.selector) {
