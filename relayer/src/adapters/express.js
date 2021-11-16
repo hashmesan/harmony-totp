@@ -2,8 +2,10 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
 const cors = require('cors')
+const pino = require('pino-http')
 
 app.use(cors());
+app.use(pino({autoLogging: false}))
 
 function init (createRequest, port) {
   return () => {
@@ -14,6 +16,7 @@ function init (createRequest, port) {
       //console.log('POST Data: ', req.body)
       createRequest(req.body, (status, result) => {
         //console.log('Result: ', result)
+        req.log.info(`operation: ${req.body.operation} status:${status}`)
         res.status(status).json(result)
       })
     })
