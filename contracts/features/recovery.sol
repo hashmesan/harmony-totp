@@ -20,11 +20,10 @@ library Recovery {
         // queue it for next 24hrs
         bytes32 secretHash = abi.decode(abi.encode(newOwner), (bytes32));
         require(wallet_.commitHash[secretHash].blockNumber == 0, "COMMIT ALREADY EXIST");
+        wallet_.commitHash[secretHash] = Core.CommitInfo(0x0, newOwner, block.number, true);
         address[] memory guardiansApproved;     
-        wallet_.commitHash[secretHash] = Core.CommitInfo(0x0, newOwner, block.number, true, guardiansApproved);
-        wallet_.commitHash[secretHash].guardiansApproved.push(msg.sender);   
-        wallet_.pendingRecovery = Core.RecoveryInfo(secretHash, 0x0);
-        
+        wallet_.pendingRecovery = Core.RecoveryInfo(secretHash, 0x0, guardiansApproved);
+        wallet_.pendingRecovery.guardiansApproved.push(msg.sender);
     }
     
     function startRecoveryReveal(Core.Wallet storage wallet, address newOwner, bytes32[] calldata confirmMaterial) public {
@@ -43,13 +42,15 @@ library Recovery {
         if(wallet.guardians.length==0) {
             finalizeRecovery(wallet, newOwner);
         } else {
-            wallet.pendingRecovery = Core.RecoveryInfo(secretHash, hash);
+            address[] memory guardiansApproved;     
+            wallet.pendingRecovery = Core.RecoveryInfo(secretHash, hash, guardiansApproved);
         }
     }
     
     function finalizeRecovery(Core.Wallet storage wallet, address newOwner) public {
         wallet.owner = newOwner;
-        wallet.pendingRecovery = Core.RecoveryInfo(0x0, 0x0);
+        address[] memory guardiansApproved;     
+        wallet.pendingRecovery = Core.RecoveryInfo(0x0, 0x0, guardiansApproved);
         emit WalletRecovered(newOwner, wallet.counter);
     }
     
@@ -59,21 +60,22 @@ library Recovery {
         Core.CommitInfo storage info = wallet.commitHash[secretHash];
         require(info.revealed, "COMMIT NOT REVEALED");
         require(info.blockNumber != 0, "NO COMMIT");
-
+        require(wallet.pendingRecovery.secretHash == secretHash, "Is pending");
+        
         // dedup
-        for (uint256 i = 0; i < info.guardiansApproved.length; i++) {
-            if (info.guardiansApproved[i] == guardian) {
+        for (uint256 i = 0; i < wallet.pendingRecovery.guardiansApproved.length; i++) {
+            if (wallet.pendingRecovery.guardiansApproved[i] == guardian) {
                 revert("duplicate guardian");                
             }
         }       
-        info.guardiansApproved.push(guardian);
+        wallet.pendingRecovery.guardiansApproved.push(guardian);
 
         // count & finalize
         uint requiredSignatures = MetaTx.ceil(wallet.guardians.length, 2);
         if(info.dataHash == 0x0) {
             requiredSignatures += 1; // add one if not using HOTP
         }
-        if(info.guardiansApproved.length == requiredSignatures) {
+        if(wallet.pendingRecovery.guardiansApproved.length == requiredSignatures) {
             finalizeRecovery(wallet, info.newOwner);
         }
     }

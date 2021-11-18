@@ -210,7 +210,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
             uint value = _transactions[i].value;
             
             if(wallet.guardians.length > 0) {
-                require(data.length < 4 || !isRestrictedMethod(MetaTx.functionPrefix(data))); 
+                require(data.length < 4 || !isRestrictedMethod(MetaTx.functionPrefix(data)),"restricted methods"); 
                 require(wallet.isUnderLimit(value), "over limit");
                 wallet.dailyLimit.spentToday += value;
             }
@@ -317,8 +317,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
     // recover with combination of commithash and signatures
     function startRecoverCommit(bytes32 secretHash, bytes32 dataHash)  onlySelf() external {
         require(wallet.commitHash[secretHash].blockNumber == 0, "COMMIT ALREADY EXIST");
-        address[] memory guardiansApproved;        
-        wallet.commitHash[secretHash] = Core.CommitInfo(dataHash, address(0), block.number, false, guardiansApproved);
+        wallet.commitHash[secretHash] = Core.CommitInfo(dataHash, address(0), block.number, false);
     }
 
     function startRecoveryReveal(address newOwner, bytes32[] calldata confirmMaterial)  onlySelf() onlyValidTOTP(confirmMaterial) external {

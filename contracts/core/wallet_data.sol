@@ -11,6 +11,7 @@ library Core {
     struct RecoveryInfo {
         bytes32 secretHash;
         bytes32 dataHash;
+        address[] guardiansApproved;
     }
 
     struct CommitInfo {
@@ -18,7 +19,6 @@ library Core {
         address newOwner;
         uint blockNumber;
         bool revealed;
-        address[] guardiansApproved;
     }
 
     struct DailyLimit {
