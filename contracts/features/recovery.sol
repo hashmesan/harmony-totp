@@ -21,8 +21,8 @@ library Recovery {
         bytes32 secretHash = abi.decode(abi.encode(newOwner), (bytes32));
         require(wallet_.commitHash[secretHash].blockNumber == 0, "COMMIT ALREADY EXIST");
         wallet_.commitHash[secretHash] = Core.CommitInfo(0x0, newOwner, block.number, true);
-        address[] memory guardiansApproved;     
-        wallet_.pendingRecovery = Core.RecoveryInfo(secretHash, 0x0, guardiansApproved);
+        wallet_.pendingRecovery.secretHash = secretHash;
+        wallet_.pendingRecovery.dataHash = 0x0;
         wallet_.pendingRecovery.guardiansApproved.push(msg.sender);
     }
     
@@ -42,15 +42,17 @@ library Recovery {
         if(wallet.guardians.length==0) {
             finalizeRecovery(wallet, newOwner);
         } else {
-            address[] memory guardiansApproved;     
-            wallet.pendingRecovery = Core.RecoveryInfo(secretHash, hash, guardiansApproved);
+            wallet.pendingRecovery.secretHash = secretHash;
+            wallet.pendingRecovery.dataHash = hash;
+            delete wallet.pendingRecovery.guardiansApproved;
         }
     }
     
     function finalizeRecovery(Core.Wallet storage wallet, address newOwner) public {
         wallet.owner = newOwner;
-        address[] memory guardiansApproved;     
-        wallet.pendingRecovery = Core.RecoveryInfo(0x0, 0x0, guardiansApproved);
+        wallet.pendingRecovery.secretHash = 0x0;
+        wallet.pendingRecovery.dataHash = 0x0;
+        delete wallet.pendingRecovery.guardiansApproved;
         emit WalletRecovered(newOwner, wallet.counter);
     }
     
