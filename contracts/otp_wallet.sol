@@ -28,7 +28,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
     address masterCopy;
     Core.Wallet public wallet;
     bool internal isImplementationContract;
-    uint public constant version = 3;
+    uint public constant version = 4;
     bytes4 private constant _INTERFACE_ID_ERC1271 = 0x1626ba7e;
 
     // END OF DATA LAYOUT
@@ -129,6 +129,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
     function isRestrictedMethod(bytes4 methodId) internal pure returns (bool) {
         return (methodId == TOTPWallet.upgradeMasterCopy.selector ||
             methodId == TOTPWallet.setDailyLimit.selector ||
+            methodId == TOTPWallet.revokeGuardian.selector||
             methodId == TOTPWallet.setDrainAddress.selector);
     }
 
@@ -137,7 +138,6 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
 
         if(methodId == TOTPWallet.multiCall.selector ||
             methodId == TOTPWallet.addGuardian.selector ||
-            methodId == TOTPWallet.revokeGuardian.selector||
             methodId == TOTPWallet.clearSession.selector||
             methodId == TOTPWallet.setHashStorageId.selector) {
             return (1, Core.OwnerSignature.Required);
@@ -171,7 +171,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
             return (0, Core.OwnerSignature.Disallowed);            
         }
         
-        revert("unknown method");
+        revert("unknown method/try session");
     }    
 
     function executeMetaTx(
@@ -287,7 +287,7 @@ contract TOTPWallet is IERC721Receiver, IERC1155Receiver {
 
     function revokeGuardian(address guardian)
         external
-        onlyFromWalletOrOwnerWhenUnlocked()
+        onlySelf()
     {
         wallet.revokeGuardian(guardian);
     }

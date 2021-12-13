@@ -32,7 +32,7 @@ library Guardians
             _wallet.guardians[targetIndex] = lastGuardian;
             _wallet.info[lastGuardian].index = targetIndex;
         }
-        delete _wallet.guardians[_wallet.guardians.length - 1];
+        _wallet.guardians.pop();
         delete _wallet.info[_guardian];
     }
 
