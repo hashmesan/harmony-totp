@@ -1,14 +1,13 @@
 const Web3 = require('web3');
 const ethers = require("ethers");
-const { TruffleProvider } = require('@harmony-js/core')
-const { Account } = require('@harmony-js/account')
+const fs = require("fs");
 
-const Provider = require('@truffle/hdwallet-provider');
-var contract = require("@truffle/contract");
+const { Contract } = require('@ethersproject/contracts');
+const { JsonRpcProvider } = require("@ethersproject/providers");
+
 const walletArtifacts = require('../../../build/contracts/TOTPWallet.json');
 const walletFactoryArtifacts = require('../../../build/contracts/WalletFactory.json');
-var Wallet = contract(walletArtifacts)
-var WalletFactory = contract(walletFactoryArtifacts)
+
 
 const CONFIG = {
     development: {
@@ -39,30 +38,45 @@ class Transactions {
     constructor(env){
         this.env = env;
         this.config = CONFIG[env];
-        this.provider = new Provider(process.env.PRIVATE_KEY, this.config.provider);
-        this.defaultAddress = this.provider.getAddress(0);
-        console.log("WalletFactory=",walletFactoryArtifacts.networks[this.config.network_id].address);
+        this.provider = new JsonRpcProvider(this.config.provider, this.config.network_id);
+        this.wallet = new ethers.Wallet(process.env.PRIVATE_KEY, this.provider);
+        this.defaultAddress = this.wallet.address;
+
+        //console.log("WalletFactory=",walletFactoryArtifacts.networks[this.config.network_id].address);
         //console.log("Loaded ENV=" + env + " provider=" + this.config.provider, "defaultAddress=", this.defaultAddress);
     }
 
-    async getWalletFactory() {   
-        WalletFactory.setProvider(this.provider);
+    async getWalletFactory(write) {   
         const address = walletFactoryArtifacts.networks[this.config.network_id].address;
-        // console.log("walletfactory=", address);
-        return await WalletFactory.at(address);
+        return new Contract(address, walletFactoryArtifacts.abi, write? this.wallet : this.provider)
     }
 
     async getWallet(address) {   
-        Wallet.setProvider(this.provider);
-        return await Wallet.at(address);
+        return new Contract(address, walletArtifacts.abi, this.wallet)
     }
 
     async createWallet(config) {
-        var count = await new Web3(this.provider).eth.getTransactionCount(this.defaultAddress);
-        const factory = await this.getWalletFactory();
+        //var count = await this.provider.getTransactionCount(this.defaultAddress);
+        const factory = await this.getWalletFactory(true);
         console.log("sent=", count, this.env, config);
-        var tx = await factory.createWallet(config,{ from: this.defaultAddress, gas: 812388, nonce: count});
-        return {tx: tx.tx};
+        var tx = await factory.createWallet(config,{ from: this.defaultAddress, gasLimit: 812388});
+        return {tx: tx};
+    }
+
+
+    /**
+     * verify the tx before we send it, why bother if it will fail?
+     * validate gas minimums as well with estimateGas
+     * 
+     * @param {*} data 
+     * @returns 
+     */
+    async submitMetaTx(data) {
+        // console.log(data);
+       // var count = await this.provider.getTransactionCount(this.defaultAddress);
+        var wallet = await this.getWallet(data.from);
+        var tx = await wallet.executeMetaTx(data.data, data.signatures, data.nonce, data.gasPrice, data.gasLimit, data.refundToken, data.refundAddress, { from: this.defaultAddress, gasLimit: data.gasLimit, gasPrice: data.gasPrice });
+        return { tx: tx }
     }
 
     async getFactoryInfo() {
@@ -84,30 +98,14 @@ class Transactions {
 
     // returns how much deposits receive
     async getBalance(address) {
-        const tx = await new Web3(this.provider).eth.getBalance(address);
-        return {balance: tx}
+        const tx = await this.provider.getBalance(address);
+        return {balance: tx.toString()}
     }
 
     async getDepositAddress(data) {
         const factory = await this.getWalletFactory();
         var tx = await factory.computeWalletAddress(data.owner, data.salt);
         return {address: tx};
-    }
-        
-
-    /**
-     * verify the tx before we send it, why bother if it will fail?
-     * validate gas minimums as well with estimateGas
-     * 
-     * @param {*} data 
-     * @returns 
-     */
-    async submitMetaTx(data) {
-        // console.log(data);
-        var count = await new Web3(this.provider).eth.getTransactionCount(this.defaultAddress);
-        var wallet = await this.getWallet(data.from);
-        var tx = await wallet.executeMetaTx(data.data, data.signatures, data.nonce, data.gasPrice, data.gasLimit, data.refundToken, data.refundAddress, { from: this.defaultAddress, gas: data.gasLimit, gasPrice: data.gasPrice, nonce: count});
-        return {tx: tx}
     }
 
     async getContractCreated() {
@@ -120,11 +118,8 @@ class Transactions {
 
         for(var i=0; i < factories.length; i++) {
             var address = factories[i];
-            const factoryContract = new web3.eth.Contract(
-                walletFactoryArtifacts.abi,
-                address
-            );
-            const created = await factoryContract.methods.getCreated().call();
+            const factoryContract = new Contract(address, walletFactoryArtifacts.abi, this.provider)
+            const created = await factoryContract.getCreated();
             res[address] = created.map(e=>{ return {"wallet": e.wallet, "domain": e.domain}})
         }
 
