@@ -7,7 +7,8 @@ const { JsonRpcProvider } = require("@ethersproject/providers");
 
 const walletArtifacts = require('../../../build/contracts/TOTPWallet.json');
 const walletFactoryArtifacts = require('../../../build/contracts/WalletFactory.json');
-
+const { waitForDebugger } = require('inspector');
+const HarmonyClient = require("../../../lib/harmony_client")
 
 const CONFIG = {
     development: {
@@ -27,6 +28,15 @@ const CONFIG = {
       provider: "https://api.s0.t.hmny.io",
       archiveFactories: ["0xf05C50D0C89E77ce49Da9D223f371fad475fa3fF"]
     }
+}
+
+// convert arr to object
+function Result2Object(arr) {
+    var a = {}
+    for (let key in arr) {
+        a[key] = arr[key]
+    }
+    return a
 }
 
 class Transactions {
@@ -58,11 +68,10 @@ class Transactions {
     async createWallet(config) {
         //var count = await this.provider.getTransactionCount(this.defaultAddress);
         const factory = await this.getWalletFactory(true);
-        console.log("sent=", count, this.env, config);
+        //console.log("sent=", count, this.env, config);
         var tx = await factory.createWallet(config,{ from: this.defaultAddress, gasLimit: 812388});
-        return {tx: tx};
+        return {tx: { tx: tx.hash, receipt: tx}};
     }
-
 
     /**
      * verify the tx before we send it, why bother if it will fail?
@@ -73,10 +82,13 @@ class Transactions {
      */
     async submitMetaTx(data) {
         // console.log(data);
-       // var count = await this.provider.getTransactionCount(this.defaultAddress);
         var wallet = await this.getWallet(data.from);
         var tx = await wallet.executeMetaTx(data.data, data.signatures, data.nonce, data.gasPrice, data.gasLimit, data.refundToken, data.refundAddress, { from: this.defaultAddress, gasLimit: data.gasLimit, gasPrice: data.gasPrice });
-        return { tx: tx }
+        var receipt = await tx.wait();
+        var logs = HarmonyClient.decodeReceiptLogs(receipt.logs);
+        var res = {tx: { tx: tx.hash, receipt, logs: logs.map(e=>Object.assign(e, { args: Result2Object(e.args)} ))}};
+        console.log(res)
+        return res;
     }
 
     async getFactoryInfo() {
